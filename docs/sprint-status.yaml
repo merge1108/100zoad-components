@@ -3,7 +3,7 @@ project_name: "100zoad"
 project_level: 3
 sprint_plan_path: "docs/sprint-plan-100zoad-2026-01-01.md"
 current_sprint: 1
-last_updated: "2026-01-01T23:30:00Z"
+last_updated: "2026-01-01T23:45:00Z"
 
 sprints:
   - sprint_number: 0
@@ -82,7 +82,7 @@ sprints:
     end_date: "2026-01-02"
     capacity_points: 22
     committed_points: 22
-    completed_points: 9
+    completed_points: 14
     status: "in_progress"
     goal: "헤더, 푸터, 퀵메뉴, 모바일 내비게이터 추가하여 완전한 랜딩페이지 UX 제공"
     stories:
@@ -125,10 +125,11 @@ sprints:
       - story_id: "STORY-004"
         title: "PC 헤더 메뉴 기본 구조"
         points: 5
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-001"
         priority: "Must Have"
+        completed_date: "2026-01-01"
 
       - story_id: "STORY-008"
         title: "푸터 2단 레이아웃"
