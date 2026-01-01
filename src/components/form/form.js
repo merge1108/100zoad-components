@@ -277,6 +277,148 @@ class FormComponent extends BaseComponent {
           display: block;
         }
 
+        /* 법적 동의 체크박스 */
+        .legal-consent {
+          margin: 24px 0;
+          padding: 16px;
+          background-color: ${this.getConfigValue('styles.legalBgColor', '#f9f9f9')};
+          border: 1px solid ${borderColor};
+          border-radius: 8px;
+        }
+
+        .checkbox-group {
+          margin-bottom: 12px;
+        }
+
+        .checkbox-group:last-of-type {
+          margin-bottom: 0;
+        }
+
+        .checkbox-label {
+          display: flex;
+          align-items: flex-start;
+          cursor: pointer;
+          font-size: 14px;
+          line-height: 1.5;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          margin-right: 8px;
+          margin-top: 2px;
+          cursor: pointer;
+          flex-shrink: 0;
+        }
+
+        .checkbox-text {
+          color: ${textColor};
+        }
+
+        .legal-link {
+          color: ${primaryColor};
+          text-decoration: underline;
+          font-weight: 600;
+        }
+
+        .legal-link:hover {
+          color: ${buttonHoverColor};
+        }
+
+        /* 법적 정보 팝업 모달 */
+        .legal-modal {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 10000;
+        }
+
+        .legal-modal.show {
+          display: block;
+        }
+
+        .modal-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-color: ${bgColor};
+          border-radius: 12px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+          max-width: 600px;
+          width: 90%;
+          max-height: 80vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px 24px;
+          border-bottom: 1px solid ${borderColor};
+        }
+
+        .modal-title {
+          margin: 0;
+          font-size: 20px;
+          font-weight: 700;
+          color: ${textColor};
+        }
+
+        .modal-close {
+          background: none;
+          border: none;
+          font-size: 28px;
+          font-weight: 300;
+          color: ${textColor};
+          cursor: pointer;
+          padding: 0;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 4px;
+          transition: background-color 0.2s;
+        }
+
+        .modal-close:hover {
+          background-color: ${this.getConfigValue('styles.modalCloseBgColor', '#f0f0f0')};
+        }
+
+        .modal-body {
+          padding: 24px;
+          overflow-y: auto;
+          flex: 1;
+          font-size: 14px;
+          line-height: 1.8;
+          color: ${textColor};
+        }
+
+        .modal-body p {
+          margin: 0 0 12px 0;
+        }
+
+        .modal-body h4 {
+          margin: 20px 0 8px 0;
+          font-size: 16px;
+          font-weight: 600;
+        }
+
         /* 반응형 */
         @media (max-width: 768px) {
           .form-container {
@@ -285,6 +427,23 @@ class FormComponent extends BaseComponent {
 
           .form-title {
             font-size: 20px;
+          }
+
+          .modal-content {
+            width: 95%;
+            max-height: 85vh;
+          }
+
+          .modal-header {
+            padding: 16px 20px;
+          }
+
+          .modal-title {
+            font-size: 18px;
+          }
+
+          .modal-body {
+            padding: 20px;
           }
         }
       </style>
@@ -335,6 +494,29 @@ class FormComponent extends BaseComponent {
             </div>
           </div>
 
+          <!-- 법적 동의 체크박스 -->
+          <div class="form-group legal-consent">
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="terms-agree" name="terms-agree" required />
+                <span class="checkbox-text">
+                  <a href="#" class="legal-link" id="terms-link">[필수] 이용약관</a>에 동의합니다.
+                </span>
+              </label>
+            </div>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="privacy-agree" name="privacy-agree" required />
+                <span class="checkbox-text">
+                  <a href="#" class="legal-link" id="privacy-link">[필수] 개인정보처리방침</a>에 동의합니다.
+                </span>
+              </label>
+            </div>
+            <div class="error-message" id="legal-error">
+              필수 동의 항목을 모두 체크해주세요.
+            </div>
+          </div>
+
           <!-- 제출 버튼 -->
           <button type="submit" class="submit-button" id="submit-button">
             ${submitButtonText}
@@ -350,6 +532,20 @@ class FormComponent extends BaseComponent {
             ${errorMessage}
           </div>
         </form>
+
+        <!-- 법적 정보 팝업 모달 -->
+        <div class="legal-modal" id="legal-modal">
+          <div class="modal-overlay" id="modal-overlay"></div>
+          <div class="modal-content" id="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title" id="modal-title">이용약관</h3>
+              <button class="modal-close" id="modal-close">✕</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+              <!-- 내용이 동적으로 삽입됨 -->
+            </div>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -384,6 +580,56 @@ class FormComponent extends BaseComponent {
       phoneInput.addEventListener('input', (e) => {
         this.formatPhoneRealtime(e);
         this.clearFieldError('phone');
+      });
+    }
+
+    // 법적 동의 체크박스 변경 시 오류 메시지 제거
+    const termsCheckbox = this.$('#terms-agree');
+    const privacyCheckbox = this.$('#privacy-agree');
+
+    if (termsCheckbox) {
+      termsCheckbox.addEventListener('change', () => {
+        this.clearFieldError('legal');
+      });
+    }
+
+    if (privacyCheckbox) {
+      privacyCheckbox.addEventListener('change', () => {
+        this.clearFieldError('legal');
+      });
+    }
+
+    // 법적 정보 "보기" 링크 클릭 이벤트
+    const termsLink = this.$('#terms-link');
+    const privacyLink = this.$('#privacy-link');
+
+    if (termsLink) {
+      termsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.openLegalModal('terms');
+      });
+    }
+
+    if (privacyLink) {
+      privacyLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.openLegalModal('privacy');
+      });
+    }
+
+    // 모달 닫기 버튼 클릭 이벤트
+    const modalClose = this.$('#modal-close');
+    const modalOverlay = this.$('#modal-overlay');
+
+    if (modalClose) {
+      modalClose.addEventListener('click', () => {
+        this.closeLegalModal();
+      });
+    }
+
+    if (modalOverlay) {
+      modalOverlay.addEventListener('click', () => {
+        this.closeLegalModal();
       });
     }
 
@@ -502,6 +748,134 @@ class FormComponent extends BaseComponent {
   }
 
   /**
+   * 법적 정보 모달 열기
+   *
+   * @param {'terms'|'privacy'} type - 표시할 내용 타입
+   */
+  openLegalModal(type) {
+    const modal = this.$('#legal-modal');
+    const modalTitle = this.$('#modal-title');
+    const modalBody = this.$('#modal-body');
+
+    if (!modal || !modalTitle || !modalBody) {
+      console.error('[FormComponent] 모달 요소를 찾을 수 없습니다.');
+      return;
+    }
+
+    // 모달 제목과 내용 설정
+    if (type === 'terms') {
+      const termsTitle = this.getConfigValue('legal.termsTitle', '이용약관');
+      const termsText = this.getConfigValue('legal.termsText', this.getDefaultTermsText());
+
+      modalTitle.textContent = termsTitle;
+      modalBody.innerHTML = this.formatLegalText(termsText);
+    } else if (type === 'privacy') {
+      const privacyTitle = this.getConfigValue('legal.privacyTitle', '개인정보처리방침');
+      const privacyText = this.getConfigValue('legal.privacyText', this.getDefaultPrivacyText());
+
+      modalTitle.textContent = privacyTitle;
+      modalBody.innerHTML = this.formatLegalText(privacyText);
+    }
+
+    // 모달 표시
+    modal.classList.add('show');
+
+    this.debug(`법적 정보 모달 열기: ${type}`);
+  }
+
+  /**
+   * 법적 정보 모달 닫기
+   */
+  closeLegalModal() {
+    const modal = this.$('#legal-modal');
+
+    if (modal) {
+      modal.classList.remove('show');
+      this.debug('법적 정보 모달 닫기');
+    }
+  }
+
+  /**
+   * 법적 정보 텍스트 포맷팅
+   * 줄바꿈을 <p> 태그로 변환합니다.
+   *
+   * @param {string} text - 원본 텍스트
+   * @returns {string} 포맷된 HTML
+   */
+  formatLegalText(text) {
+    if (!text) {
+      return '<p>내용이 없습니다.</p>';
+    }
+
+    // 줄바꿈을 기준으로 분리하고 빈 줄 제거
+    const paragraphs = text
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
+
+    // 각 줄을 <p> 태그로 감싸기
+    return paragraphs
+      .map(line => `<p>${line}</p>`)
+      .join('');
+  }
+
+  /**
+   * 기본 이용약관 텍스트
+   * Config에 설정되지 않았을 경우 사용됩니다.
+   *
+   * @returns {string} 기본 이용약관 텍스트
+   */
+  getDefaultTermsText() {
+    return `
+제1조 (목적)
+본 약관은 회사가 제공하는 서비스의 이용과 관련하여 회사와 이용자의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
+
+제2조 (정의)
+"서비스"란 회사가 제공하는 상담 신청 및 정보 제공 서비스를 의미합니다.
+"이용자"란 본 약관에 따라 회사가 제공하는 서비스를 이용하는 고객을 의미합니다.
+
+제3조 (약관의 효력)
+본 약관은 서비스를 이용하고자 하는 모든 이용자에 대하여 그 효력을 발생합니다.
+
+제4조 (서비스의 제공)
+회사는 이용자에게 상담 서비스를 제공하며, 서비스 내용은 회사의 사정에 따라 변경될 수 있습니다.
+
+제5조 (개인정보의 보호)
+회사는 관련 법령이 정하는 바에 따라 이용자의 개인정보를 보호하기 위해 노력합니다.
+    `.trim();
+  }
+
+  /**
+   * 기본 개인정보처리방침 텍스트
+   * Config에 설정되지 않았을 경우 사용됩니다.
+   *
+   * @returns {string} 기본 개인정보처리방침 텍스트
+   */
+  getDefaultPrivacyText() {
+    return `
+1. 개인정보의 수집 및 이용 목적
+회사는 수집한 개인정보를 다음의 목적을 위해 활용합니다.
+- 상담 신청 및 서비스 제공
+- 고객 문의 및 불만 처리
+
+2. 수집하는 개인정보의 항목
+회사는 상담 신청을 위해 아래와 같은 개인정보를 수집하고 있습니다.
+- 필수항목: 이름, 전화번호
+- 선택항목: 기타 입력 필드 (현장별 상이)
+
+3. 개인정보의 보유 및 이용기간
+회사는 개인정보 수집 및 이용목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다.
+단, 관계법령의 규정에 의하여 보존할 필요가 있는 경우 일정기간 동안 개인정보를 보관합니다.
+
+4. 개인정보의 파기절차 및 방법
+회사는 원칙적으로 개인정보 수집 및 이용목적이 달성된 후에는 해당 정보를 지체없이 파기합니다.
+
+5. 이용자의 권리
+이용자는 언제든지 등록되어 있는 자신의 개인정보를 조회하거나 수정할 수 있으며 가입해지를 요청할 수도 있습니다.
+    `.trim();
+  }
+
+  /**
    * 폼 검증
    * 필수 필드가 모두 입력되었는지 확인합니다.
    *
@@ -512,6 +886,8 @@ class FormComponent extends BaseComponent {
 
     const nameInput = this.$('#name');
     const phoneInput = this.$('#phone');
+    const termsCheckbox = this.$('#terms-agree');
+    const privacyCheckbox = this.$('#privacy-agree');
 
     const nameConfig = this.getConfigValue('fields.name', { required: true });
     const phoneConfig = this.getConfigValue('fields.phone', { required: true });
@@ -534,6 +910,17 @@ class FormComponent extends BaseComponent {
         isValid = false;
       } else if (!this.validatePhoneFormat(phoneValue)) {
         this.showFieldError('phone', '올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)');
+        isValid = false;
+      }
+    }
+
+    // 법적 동의 체크박스 검증
+    if (termsCheckbox && privacyCheckbox) {
+      const termsChecked = termsCheckbox.checked;
+      const privacyChecked = privacyCheckbox.checked;
+
+      if (!termsChecked || !privacyChecked) {
+        this.showFieldError('legal', '필수 동의 항목을 모두 체크해주세요.');
         isValid = false;
       }
     }
