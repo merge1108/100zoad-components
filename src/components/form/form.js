@@ -755,6 +755,14 @@ class FormComponent extends BaseComponent {
    * @returns {string} Fallback HTML
    */
   renderFallback() {
+    // Config에서 폴백 전화번호 가져오기
+    const fallbackPhone = this.getConfigValue('fallback.phone',
+      this.getConfigValue('contactPhone', '1588-0000')
+    );
+
+    // 전화번호를 tel: 링크 형식으로 변환 (하이픈 제거)
+    const telLink = fallbackPhone.replace(/[^0-9]/g, '');
+
     return `
       <style>
         :host {
@@ -788,7 +796,7 @@ class FormComponent extends BaseComponent {
         <div class="fallback-title">⚠️ 입력폼을 불러올 수 없습니다</div>
         <p>전화로 상담 신청해주세요</p>
         <div class="fallback-tel">
-          <a href="tel:1588-0000">☎ 1588-0000</a>
+          <a href="tel:${telLink}">☎ ${fallbackPhone}</a>
         </div>
         <p style="font-size: 12px; color: #666;">
           오류: ${this.error}
