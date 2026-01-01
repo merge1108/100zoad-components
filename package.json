@@ -1,0 +1,22 @@
+{
+  "name": "100zoad-components",
+  "version": "1.0.0",
+  "description": "100zoad Web Components System - 부동산 분양 랜딩페이지용 규격화 웹 컴포넌트",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "web-components",
+    "landing-page",
+    "real-estate",
+    "imweb"
+  ],
+  "author": "merge",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

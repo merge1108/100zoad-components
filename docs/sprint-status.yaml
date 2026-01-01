@@ -1,0 +1,321 @@
+version: "6.0.0"
+project_name: "100zoad"
+project_level: 3
+sprint_plan_path: "docs/sprint-plan-100zoad-2026-01-01.md"
+current_sprint: 0
+last_updated: "2026-01-01T00:00:00Z"
+
+sprints:
+  - sprint_number: 0
+    name: "Sprint 0 - MVP LAUNCH"
+    start_date: "2026-01-01"
+    end_date: "2026-01-01"
+    capacity_points: 19
+    committed_points: 19
+    completed_points: 0
+    status: "not_started"
+    goal: "핵심 리드 수집 기능 구현 - 사용자가 입력폼으로 리드를 등록하고 Airtable에 저장"
+    stories:
+      - story_id: "STORY-028"
+        title: "개발 환경 및 빌드 설정"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-008"
+        priority: "Must Have"
+        dependencies: []
+
+      - story_id: "STORY-001"
+        title: "Config 스키마 정의 및 파싱 시스템"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-005"
+        priority: "Must Have"
+        dependencies: []
+
+      - story_id: "STORY-003"
+        title: "베이스 웹 컴포넌트 클래스"
+        points: 5
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-005"
+        priority: "Must Have"
+        dependencies: ["STORY-001"]
+
+      - story_id: "STORY-010"
+        title: "입력폼 필수 필드 (이름, 전화번호)"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-003"
+        priority: "Must Have"
+        dependencies: ["STORY-003"]
+
+      - story_id: "STORY-014"
+        title: "Cloudflare Worker - Airtable API 프록시"
+        points: 5
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-003"
+        priority: "Must Have"
+        dependencies: []
+
+      - story_id: "STORY-015"
+        title: "입력폼 제출 및 성공 메시지"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-003"
+        priority: "Must Have"
+        dependencies: ["STORY-010", "STORY-014"]
+
+  - sprint_number: 1
+    name: "Sprint 1 - 사용자 경험 완성"
+    start_date: "2026-01-02"
+    end_date: "2026-01-02"
+    capacity_points: 22
+    committed_points: 22
+    completed_points: 0
+    status: "not_started"
+    goal: "헤더, 푸터, 퀵메뉴, 모바일 내비게이터 추가하여 완전한 랜딩페이지 UX 제공"
+    stories:
+      - story_id: "STORY-002"
+        title: "Shadow DOM 스타일 격리 시스템"
+        points: 2
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-005"
+        priority: "Must Have"
+
+      - story_id: "STORY-011"
+        title: "전화번호 실시간 하이픈 삽입"
+        points: 2
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-003"
+        priority: "Must Have"
+
+      - story_id: "STORY-013"
+        title: "법적 동의 체크박스"
+        points: 2
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-003"
+        priority: "Must Have"
+
+      - story_id: "STORY-016"
+        title: "입력폼 팝업 및 섹션 모드"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-003"
+        priority: "Must Have"
+
+      - story_id: "STORY-004"
+        title: "PC 헤더 메뉴 기본 구조"
+        points: 5
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-001"
+        priority: "Must Have"
+
+      - story_id: "STORY-008"
+        title: "푸터 2단 레이아웃"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-002"
+        priority: "Must Have"
+
+      - story_id: "STORY-017"
+        title: "PC 퀵메뉴 고정 버튼"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-004"
+        priority: "Must Have"
+
+      - story_id: "STORY-019"
+        title: "모바일 하단 내비게이터"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-004"
+        priority: "Must Have"
+
+  - sprint_number: 2
+    name: "Sprint 2 - 기능 확장 및 마케팅 연동"
+    start_date: "2026-01-03"
+    end_date: "2026-01-03"
+    capacity_points: 25
+    committed_points: 25
+    completed_points: 0
+    status: "not_started"
+    goal: "동적 필드, 이벤트 추적, 반응형 디자인 완성하여 실전 배포 준비"
+    stories:
+      - story_id: "STORY-005"
+        title: "헤더 '관심고객등록' 특수 메뉴"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-001"
+        priority: "Must Have"
+
+      - story_id: "STORY-006"
+        title: "모바일 햄버거 메뉴"
+        points: 5
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-001"
+        priority: "Must Have"
+
+      - story_id: "STORY-009"
+        title: "푸터 법적 정보 링크"
+        points: 1
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-002"
+        priority: "Must Have"
+
+      - story_id: "STORY-012"
+        title: "선택 필드 동적 구성"
+        points: 5
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-003"
+        priority: "Must Have"
+
+      - story_id: "STORY-018"
+        title: "퀵메뉴 버튼 액션 (입력폼, 전화, URL)"
+        points: 2
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-004"
+        priority: "Must Have"
+
+      - story_id: "STORY-020"
+        title: "모바일 내비게이터 버튼 액션"
+        points: 2
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-004"
+        priority: "Must Have"
+
+      - story_id: "STORY-021"
+        title: "GTM/GA4 전환 이벤트 추적"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-006"
+        priority: "Must Have"
+
+      - story_id: "STORY-023"
+        title: "PC/모바일 반응형 전환"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-007"
+        priority: "Must Have"
+
+      - story_id: "STORY-027"
+        title: "HTTPS 강제 및 데이터 암호화"
+        points: 2
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-008"
+        priority: "Must Have"
+
+  - sprint_number: 3
+    name: "Sprint 3 - 최적화 및 문서화"
+    start_date: "2026-01-04"
+    end_date: "2026-01-04"
+    capacity_points: 20
+    committed_points: 20
+    completed_points: 0
+    status: "not_started"
+    goal: "성능 최적화, 크로스 브라우저 호환성, 폴백 시스템, 문서화 완료"
+    stories:
+      - story_id: "STORY-007"
+        title: "파비콘 자동 설정"
+        points: 1
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-001"
+        priority: "Should Have"
+
+      - story_id: "STORY-022"
+        title: "비전환 이벤트 추적"
+        points: 2
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-006"
+        priority: "Should Have"
+
+      - story_id: "STORY-024"
+        title: "크로스 브라우저 호환성 검증"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-007"
+        priority: "Must Have"
+
+      - story_id: "STORY-025"
+        title: "로딩 최적화 및 로딩 화면"
+        points: 3
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-008"
+        priority: "Must Have"
+
+      - story_id: "STORY-026"
+        title: "Graceful Degradation (폴백 시스템)"
+        points: 5
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-008"
+        priority: "Must Have"
+
+      - story_id: "STORY-029"
+        title: "Config 예시 및 문서"
+        points: 2
+        status: "not_started"
+        assigned_to: "merge"
+        epic: "EPIC-005"
+        priority: "Must Have"
+
+# Velocity Tracking (업데이트 예정)
+velocity:
+  sprint_0: null  # Sprint 완료 후 실제 완료 포인트 기록
+  sprint_1: null
+  sprint_2: null
+  sprint_3: null
+  rolling_average: null
+
+# Team Configuration
+team:
+  size: 1
+  members:
+    - name: "merge"
+      role: "Developer/Designer"
+      experience: "Junior"
+      ai_assistance: "Claude Code"
+  sprint_length_days: 1
+  daily_capacity_hours: 20
+  capacity_per_sprint_points: 19  # Sprint 0 기준, 향후 조정
+
+# Project Metadata
+project_metadata:
+  total_epics: 8
+  total_stories: 29
+  total_points: 86
+  mvp_points: 19  # Sprint 0
+  mvp_completion_target: "2026-01-01"
+  full_completion_target: "2026-01-04"
+
+# Requirements Coverage (Sprint 0)
+requirements_coverage:
+  functional_requirements_total: 26
+  functional_requirements_mvp: 5  # FR-009, FR-013, FR-019, FR-020, FR-024
+  non_functional_requirements_total: 10
+  non_functional_requirements_mvp: 2  # NFR-004, NFR-007

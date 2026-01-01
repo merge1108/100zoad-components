@@ -1,0 +1,11 @@
+# Cloudflare Pages 배포 설정 (향후 Workers용)
+# 현재는 Cloudflare Pages가 자동으로 감지하므로 별도 설정 불필요
+# Workers 구현 시 이 파일을 활용
+
+name = "100zoad-components"
+compatibility_date = "2024-01-01"
+
+# Workers 설정은 STORY-014에서 추가 예정
+# [env.production]
+# workers_dev = false
+# route = "https://100zoad-components.pages.dev/*"
