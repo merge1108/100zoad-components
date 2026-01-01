@@ -2,8 +2,8 @@ version: "6.0.0"
 project_name: "100zoad"
 project_level: 3
 sprint_plan_path: "docs/sprint-plan-100zoad-2026-01-01.md"
-current_sprint: 0
-last_updated: "2026-01-01T22:00:00Z"
+current_sprint: 1
+last_updated: "2026-01-01T23:30:00Z"
 
 sprints:
   - sprint_number: 0
@@ -82,25 +82,27 @@ sprints:
     end_date: "2026-01-02"
     capacity_points: 22
     committed_points: 22
-    completed_points: 0
-    status: "not_started"
+    completed_points: 4
+    status: "in_progress"
     goal: "헤더, 푸터, 퀵메뉴, 모바일 내비게이터 추가하여 완전한 랜딩페이지 UX 제공"
     stories:
       - story_id: "STORY-002"
         title: "Shadow DOM 스타일 격리 시스템"
         points: 2
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-005"
         priority: "Must Have"
+        completed_date: "2026-01-01"
 
       - story_id: "STORY-011"
         title: "전화번호 실시간 하이픈 삽입"
         points: 2
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-003"
         priority: "Must Have"
+        completed_date: "2026-01-01"
 
       - story_id: "STORY-013"
         title: "법적 동의 체크박스"

@@ -308,7 +308,7 @@ class FormComponent extends BaseComponent {
               autocomplete="tel"
             />
             <div class="error-message" id="phone-error">
-              ${phoneConfig.label}을(를) 입력해주세요.
+              올바른 전화번호를 입력해주세요.
             </div>
           </div>
 
@@ -358,12 +358,68 @@ class FormComponent extends BaseComponent {
     }
 
     if (phoneInput) {
-      phoneInput.addEventListener('input', () => {
+      phoneInput.addEventListener('input', (e) => {
+        this.formatPhoneRealtime(e);
         this.clearFieldError('phone');
       });
     }
 
     this.debug('이벤트 리스너 연결 완료');
+  }
+
+  /**
+   * 전화번호 실시간 포맷팅 (입력 중)
+   * 사용자가 전화번호를 입력할 때 자동으로 하이픈을 삽입합니다.
+   * 숫자만 허용하고, 010-1234-5678 형식으로 포맷팅합니다.
+   *
+   * @param {Event} event - input 이벤트
+   */
+  formatPhoneRealtime(event) {
+    const input = event.target;
+    if (!input) return;
+
+    // 현재 커서 위치 저장
+    let cursorPosition = input.selectionStart;
+
+    // 입력된 값에서 숫자만 추출
+    const numbers = input.value.replace(/[^0-9]/g, '');
+
+    // 이전 값의 길이 (하이픈 포함)
+    const prevLength = input.value.length;
+
+    // 숫자를 형식에 맞게 변환
+    let formatted = '';
+
+    if (numbers.length === 0) {
+      formatted = '';
+    } else if (numbers.length <= 3) {
+      // 010
+      formatted = numbers;
+    } else if (numbers.length <= 7) {
+      // 010-1234
+      formatted = `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+    } else if (numbers.length <= 11) {
+      // 010-1234-5678
+      formatted = `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
+    } else {
+      // 11자리 초과는 잘라냄
+      formatted = `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
+    }
+
+    // 포맷팅된 값 설정
+    input.value = formatted;
+
+    // 커서 위치 조정
+    // 하이픈이 추가되었으면 커서도 한 칸 이동
+    const newLength = formatted.length;
+    if (newLength > prevLength) {
+      cursorPosition += (newLength - prevLength);
+    }
+
+    // 커서 위치 복원
+    input.setSelectionRange(cursorPosition, cursorPosition);
+
+    this.debug('전화번호 포맷팅:', formatted);
   }
 
   /**
@@ -449,13 +505,51 @@ class FormComponent extends BaseComponent {
     // 전화번호 검증
     if (phoneConfig.required && phoneInput) {
       const phoneValue = phoneInput.value.trim();
+
       if (!phoneValue) {
         this.showFieldError('phone', `${phoneConfig.label || '전화번호'}을(를) 입력해주세요.`);
+        isValid = false;
+      } else if (!this.validatePhoneFormat(phoneValue)) {
+        this.showFieldError('phone', '올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)');
         isValid = false;
       }
     }
 
     return isValid;
+  }
+
+  /**
+   * 전화번호 형식 검증
+   * 올바른 한국 전화번호 형식인지 확인합니다.
+   *
+   * @param {string} phone - 전화번호
+   * @returns {boolean} 유효 여부
+   */
+  validatePhoneFormat(phone) {
+    // 숫자만 추출
+    const numbers = phone.replace(/[^0-9]/g, '');
+
+    // 핸드폰: 010으로 시작하는 11자리
+    if (numbers.length === 11 && numbers.startsWith('010')) {
+      return true;
+    }
+
+    // 지역번호: 02로 시작하는 9-10자리
+    if (numbers.length >= 9 && numbers.length <= 10 && numbers.startsWith('02')) {
+      return true;
+    }
+
+    // 지역번호: 031, 032 등으로 시작하는 10-11자리
+    if (numbers.length >= 10 && numbers.length <= 11 && /^0(3[1-6]|4[1-4]|5[1-5]|6[1-4])/.test(numbers)) {
+      return true;
+    }
+
+    // 1588, 1577 등 대표번호: 8자리
+    if (numbers.length === 8 && /^15(77|88|99|44|66)/.test(numbers)) {
+      return true;
+    }
+
+    return false;
   }
 
   /**
