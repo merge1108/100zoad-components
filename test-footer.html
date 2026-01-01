@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>푸터 컴포넌트 테스트 - 100zoad</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .test-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .test-header {
+      background-color: #007bff;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .test-content {
+      flex: 1;
+      padding: 40px 20px;
+      background-color: #f5f5f5;
+    }
+
+    .test-info {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .test-info h2 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .test-info ul {
+      line-height: 1.8;
+      color: #666;
+    }
+
+    .test-instructions {
+      background-color: #e7f3ff;
+      border-left: 4px solid #007bff;
+      padding: 16px;
+      margin-top: 20px;
+      border-radius: 4px;
+    }
+
+    .test-instructions h3 {
+      margin-top: 0;
+      color: #007bff;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <!-- 테스트 헤더 -->
+    <div class="test-header">
+      <h1>🧪 푸터 컴포넌트 테스트</h1>
+      <p>STORY-008: 푸터 2단 레이아웃</p>
+    </div>
+
+    <!-- 테스트 컨텐츠 -->
+    <div class="test-content">
+      <div class="test-info">
+        <h2>테스트 목적</h2>
+        <ul>
+          <li><strong>1단:</strong> 현장명, 상담사 전화번호 표시 확인</li>
+          <li><strong>2단:</strong> 대행사 회사명, 대표자, 전화번호, 사업자번호 표시 확인</li>
+          <li><strong>PC 레이아웃:</strong> 2단 가로 배치 확인 (창 너비 > 768px)</li>
+          <li><strong>모바일 레이아웃:</strong> 세로 스택 확인 (창 너비 ≤ 768px)</li>
+          <li><strong>Config 연동:</strong> Window.CONFIG.footer 설정값 반영 확인</li>
+        </ul>
+
+        <div class="test-instructions">
+          <h3>테스트 방법</h3>
+          <ol>
+            <li>페이지 하단에 푸터 컴포넌트가 표시되는지 확인</li>
+            <li>PC 화면에서 2단이 가로로 배치되는지 확인</li>
+            <li>브라우저 창 크기를 768px 이하로 줄여서 세로 스택으로 변경되는지 확인</li>
+            <li>전화번호 링크 클릭 시 tel: 링크가 작동하는지 확인 (모바일에서)</li>
+            <li>스타일이 Config 설정값을 따르는지 확인</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- 푸터 컴포넌트 -->
+    <zoad-footer></zoad-footer>
+  </div>
+
+  <!-- Config 설정 -->
+  <script>
+    // Window.CONFIG 전역 객체 설정
+    window.CONFIG = {
+      meta: {
+        siteName: '강남 센트럴 파크',
+        version: '1.0.0',
+        lastUpdated: '2026-01-01'
+      },
+      debug: true, // 디버그 모드 활성화
+
+      // 푸터 Config
+      footer: {
+        enabled: true,
+
+        // 1단: 현장정보
+        line1: {
+          siteName: '강남 센트럴 파크',
+          phone: '1588-1234'
+        },
+
+        // 2단: 대행사정보
+        line2: {
+          company: '100zoad 마케팅',
+          ceo: '홍길동',
+          phone: '02-1234-5678',
+          businessNumber: '123-45-67890'
+        },
+
+        // 스타일
+        styles: {
+          bgColor: '#f8f9fa',
+          textColor: '#666666',
+          borderColor: '#e5e5e5',
+          linkColor: '#007bff',
+          footerPadding: '40px 20px',
+          fontSize: '14px',
+          lineHeight: '1.6'
+        }
+      }
+    };
+
+    console.log('✅ Config 설정 완료:', window.CONFIG);
+  </script>
+
+  <!-- 컴포넌트 로드 (ES Module) -->
+  <script type="module">
+    // Config Parser 로드
+    import './src/core/config-parser.js';
+
+    // Footer Component 로드
+    import './src/components/footer/footer.js';
+
+    console.log('✅ 모든 컴포넌트 로드 완료');
+  </script>
+</body>
+</html>
