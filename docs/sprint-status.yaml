@@ -82,7 +82,7 @@ sprints:
     end_date: "2026-01-02"
     capacity_points: 22
     committed_points: 22
-    completed_points: 6
+    completed_points: 9
     status: "in_progress"
     goal: "헤더, 푸터, 퀵메뉴, 모바일 내비게이터 추가하여 완전한 랜딩페이지 UX 제공"
     stories:
@@ -116,10 +116,11 @@ sprints:
       - story_id: "STORY-016"
         title: "입력폼 팝업 및 섹션 모드"
         points: 3
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-003"
         priority: "Must Have"
+        completed_date: "2026-01-01"
 
       - story_id: "STORY-004"
         title: "PC 헤더 메뉴 기본 구조"

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>입력폼 모드 테스트 - 100zoad</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 40px;
+    }
+
+    .mode-selector {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .mode-selector h2 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .mode-buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .mode-button {
+      flex: 1;
+      min-width: 150px;
+      padding: 15px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      background-color: #6c757d;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mode-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .mode-button.active {
+      background-color: #007bff;
+    }
+
+    .mode-button.section { background-color: #28a745; }
+    .mode-button.popup { background-color: #007bff; }
+    .mode-button.both { background-color: #6f42c1; }
+
+    .mode-button.section.active,
+    .mode-button.popup.active,
+    .mode-button.both.active {
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+    }
+
+    .test-section {
+      background-color: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      display: none;
+    }
+
+    .test-section.active {
+      display: block;
+    }
+
+    .test-section h3 {
+      margin-top: 0;
+      color: #333;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 10px;
+    }
+
+    .info-box {
+      background-color: #e7f3ff;
+      border-left: 4px solid #007bff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+
+    .info-box p {
+      margin: 5px 0;
+      color: #004085;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .action-button {
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-button:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .action-button.secondary {
+      background-color: #6c757d;
+    }
+
+    .action-button.secondary:hover {
+      background-color: #545b62;
+    }
+
+    .form-container {
+      margin-top: 30px;
+      min-height: 200px;
+    }
+
+    .code-example {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      overflow-x: auto;
+      color: #212529;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+
+    .status.success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .status.warning {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 입력폼 모드 테스트</h1>
+    <p class="subtitle">STORY-016: 입력폼 팝업 및 섹션 모드 구현 테스트</p>
+
+    <!-- 모드 선택 -->
+    <div class="mode-selector">
+      <h2>테스트할 모드 선택</h2>
+      <div class="mode-buttons">
+        <button class="mode-button section active" onclick="switchMode('section')">
+          📄 Section 모드
+        </button>
+        <button class="mode-button popup" onclick="switchMode('popup')">
+          🪟 Popup 모드
+        </button>
+        <button class="mode-button both" onclick="switchMode('both')">
+          ✨ Both 모드
+        </button>
+      </div>
+      <p style="color: #6c757d; margin: 0;">
+        현재 활성 모드: <strong id="current-mode">Section 모드</strong>
+      </p>
+    </div>
+
+    <!-- Section 모드 테스트 -->
+    <div class="test-section active" id="section-test">
+      <h3>📄 Section 모드 <span class="status success">기본 모드</span></h3>
+
+      <div class="info-box">
+        <p><strong>✅ 인수 기준:</strong> 섹션 모드 - 아임웹 코드위젯에 배치, 헤더에서 스크롤/이동</p>
+        <p><strong>📝 설명:</strong> 폼이 페이지에 항상 표시됩니다. 일반적인 섹션처럼 작동합니다.</p>
+      </div>
+
+      <div class="code-example">
+window.CONFIG = {
+  form: {
+    displayMode: "section",
+    title: "관심고객 등록",
+    ...
+  }
+}
+      </div>
+
+      <div class="form-container" id="section-form-container">
+        <zoad-form id="section-form"></zoad-form>
+      </div>
+    </div>
+
+    <!-- Popup 모드 테스트 -->
+    <div class="test-section" id="popup-test">
+      <h3>🪟 Popup 모드 <span class="status warning">버튼 클릭 필요</span></h3>
+
+      <div class="info-box">
+        <p><strong>✅ 인수 기준:</strong> 팝업 모드 - 퀵메뉴/모바일 내비게이터 버튼 클릭 시 모달 팝업</p>
+        <p><strong>✅ 인수 기준:</strong> 팝업 닫기 버튼 제공</p>
+        <p><strong>📝 설명:</strong> 폼이 처음엔 숨겨져 있고, 버튼 클릭 시 모달 팝업으로 표시됩니다.</p>
+      </div>
+
+      <div class="action-buttons">
+        <button class="action-button" onclick="window.openZoadForm()">
+          📝 팝업 열기 (window.openZoadForm)
+        </button>
+        <button class="action-button secondary" onclick="window.closeZoadForm()">
+          ✕ 팝업 닫기 (window.closeZoadForm)
+        </button>
+      </div>
+
+      <div class="code-example">
+// 전역 API 사용
+window.openZoadForm();  // 팝업 열기
+window.closeZoadForm(); // 팝업 닫기
+
+// HTML에서 직접 호출
+&lt;button onclick="window.openZoadForm()"&gt;상담 신청&lt;/button&gt;
+      </div>
+
+      <div class="form-container" id="popup-form-container">
+        <zoad-form id="popup-form"></zoad-form>
+      </div>
+    </div>
+
+    <!-- Both 모드 테스트 -->
+    <div class="test-section" id="both-test">
+      <h3>✨ Both 모드 <span class="status success">섹션 + 팝업</span></h3>
+
+      <div class="info-box">
+        <p><strong>✅ 인수 기준:</strong> 두 모드 모두 동일한 필드 구성</p>
+        <p><strong>📝 설명:</strong> 섹션에도 표시되고, 팝업으로도 열 수 있습니다.</p>
+      </div>
+
+      <div class="action-buttons">
+        <button class="action-button" onclick="window.openZoadForm()">
+          🚀 팝업으로도 열기
+        </button>
+      </div>
+
+      <p style="color: #6c757d; margin-top: 20px;">
+        👇 아래에 섹션 모드로 표시된 폼이 있으며, 위 버튼을 클릭하면 동일한 폼이 팝업으로도 열립니다.
+      </p>
+
+      <div class="code-example">
+window.CONFIG = {
+  form: {
+    displayMode: "both",  // 섹션 + 팝업 모두 지원
+    ...
+  }
+}
+      </div>
+
+      <div class="form-container" id="both-form-container">
+        <zoad-form id="both-form"></zoad-form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Config 설정 -->
+  <script>
+    // 각 모드별 Config
+    const CONFIGS = {
+      section: {
+        meta: {
+          siteName: '100zoad 테스트',
+          version: '1.0.0'
+        },
+        form: {
+          displayMode: 'section',
+          title: '관심고객 등록 (섹션 모드)',
+          description: '간단한 정보를 입력해주시면 상담 전화를 드리겠습니다.',
+          submitButtonText: '신청하기',
+          fields: {
+            name: { label: '이름', placeholder: '홍길동', required: true },
+            phone: { label: '전화번호', placeholder: '010-0000-0000', required: true }
+          },
+          legal: {
+            termsTitle: '이용약관',
+            termsText: '본 약관은 테스트 목적으로 작성되었습니다.\n\n제1조: 테스트 조항입니다.',
+            privacyTitle: '개인정보처리방침',
+            privacyText: '개인정보는 안전하게 보호됩니다.\n\n수집 항목: 이름, 전화번호'
+          },
+          messages: {
+            success: '✓ 신청이 완료되었습니다!',
+            error: '제출 중 오류가 발생했습니다. (테스트용 URL이므로 정상입니다)'
+          },
+          airtable: {
+            workerUrl: 'https://example.com/submit'
+          },
+          styles: {
+            bgColor: '#ffffff',
+            textColor: '#333333',
+            primaryColor: '#28a745'
+          }
+        }
+      },
+      popup: {
+        meta: {
+          siteName: '100zoad 테스트',
+          version: '1.0.0'
+        },
+        form: {
+          displayMode: 'popup',
+          title: '관심고객 등록 (팝업 모드)',
+          description: '간단한 정보를 입력해주시면 상담 전화를 드리겠습니다.',
+          submitButtonText: '신청하기',
+          fields: {
+            name: { label: '이름', placeholder: '홍길동', required: true },
+            phone: { label: '전화번호', placeholder: '010-0000-0000', required: true }
+          },
+          legal: {
+            termsTitle: '이용약관',
+            termsText: '본 약관은 테스트 목적으로 작성되었습니다.\n\n제1조: 테스트 조항입니다.',
+            privacyTitle: '개인정보처리방침',
+            privacyText: '개인정보는 안전하게 보호됩니다.\n\n수집 항목: 이름, 전화번호'
+          },
+          messages: {
+            success: '✓ 신청이 완료되었습니다!',
+            error: '제출 중 오류가 발생했습니다. (테스트용 URL이므로 정상입니다)'
+          },
+          airtable: {
+            workerUrl: 'https://example.com/submit'
+          },
+          styles: {
+            bgColor: '#ffffff',
+            textColor: '#333333',
+            primaryColor: '#007bff'
+          }
+        }
+      },
+      both: {
+        meta: {
+          siteName: '100zoad 테스트',
+          version: '1.0.0'
+        },
+        form: {
+          displayMode: 'both',
+          title: '관심고객 등록 (Both 모드)',
+          description: '섹션에도 표시되고, 팝업으로도 열 수 있습니다.',
+          submitButtonText: '신청하기',
+          fields: {
+            name: { label: '이름', placeholder: '홍길동', required: true },
+            phone: { label: '전화번호', placeholder: '010-0000-0000', required: true }
+          },
+          legal: {
+            termsTitle: '이용약관',
+            termsText: '본 약관은 테스트 목적으로 작성되었습니다.\n\n제1조: 테스트 조항입니다.',
+            privacyTitle: '개인정보처리방침',
+            privacyText: '개인정보는 안전하게 보호됩니다.\n\n수집 항목: 이름, 전화번호'
+          },
+          messages: {
+            success: '✓ 신청이 완료되었습니다!',
+            error: '제출 중 오류가 발생했습니다. (테스트용 URL이므로 정상입니다)'
+          },
+          airtable: {
+            workerUrl: 'https://example.com/submit'
+          },
+          styles: {
+            bgColor: '#ffffff',
+            textColor: '#333333',
+            primaryColor: '#6f42c1'
+          }
+        }
+      }
+    };
+
+    let currentMode = 'section';
+
+    // 모드 전환 함수
+    function switchMode(mode) {
+      currentMode = mode;
+
+      // 모든 버튼과 섹션 비활성화
+      document.querySelectorAll('.mode-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.test-section').forEach(section => section.classList.remove('active'));
+
+      // 선택한 모드 활성화
+      document.querySelector(`.mode-button.${mode}`).classList.add('active');
+      document.getElementById(`${mode}-test`).classList.add('active');
+      document.getElementById('current-mode').textContent =
+        mode === 'section' ? 'Section 모드' :
+        mode === 'popup' ? 'Popup 모드' : 'Both 모드';
+
+      // Config 업데이트 및 폼 다시 렌더링
+      window.CONFIG = CONFIGS[mode];
+
+      // 기존 폼 제거
+      const formContainers = document.querySelectorAll('.form-container');
+      formContainers.forEach(container => {
+        container.innerHTML = '';
+      });
+
+      // 새 폼 생성
+      const container = document.getElementById(`${mode}-form-container`);
+      const newForm = document.createElement('zoad-form');
+      newForm.id = `${mode}-form`;
+      container.appendChild(newForm);
+
+      console.log(`✅ ${mode} 모드로 전환 완료`);
+    }
+
+    // 페이지 로드 시 초기화
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('🚀 테스트 페이지 로드 완료');
+
+      // 초기 CONFIG 설정
+      window.CONFIG = CONFIGS.section;
+
+      console.log('💡 window.openZoadForm() 전역 API 사용 가능');
+      console.log('💡 모드 전환 버튼을 클릭하여 각 모드를 테스트하세요');
+    });
+  </script>
+
+  <!-- 컴포넌트 로드 -->
+  <script type="module" src="./src/core/base-component.js"></script>
+  <script type="module" src="./src/components/form/form.js"></script>
+</body>
+</html>

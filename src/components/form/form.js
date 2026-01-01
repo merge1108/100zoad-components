@@ -52,6 +52,9 @@ class FormComponent extends BaseComponent {
    * @returns {string} HTML 문자열
    */
   render() {
+    // displayMode 설정 가져오기 ("section", "popup", "both")
+    this.displayMode = this.getConfigValue('displayMode', 'section');
+
     // Config에서 필드 설정 가져오기
     const nameConfig = this.getConfigValue('fields.name', {
       label: '이름',
@@ -95,6 +98,10 @@ class FormComponent extends BaseComponent {
     const errorAlertTextColor = this.getConfigValue('styles.errorAlertTextColor', '#721c24');
     const errorAlertBorderColor = this.getConfigValue('styles.errorAlertBorderColor', '#f5c6cb');
 
+    // 팝업 모드 설정
+    const isPopup = this.displayMode === 'popup' || this.displayMode === 'both';
+    const isSection = this.displayMode === 'section' || this.displayMode === 'both';
+
     return `
       <style>
         :host {
@@ -106,6 +113,65 @@ class FormComponent extends BaseComponent {
           box-sizing: border-box;
         }
 
+        /* 팝업 오버레이 (popup 또는 both 모드) */
+        .form-popup-overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.6);
+          z-index: 99999;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .form-popup-overlay.show {
+          display: flex;
+        }
+
+        .form-popup-wrapper {
+          position: relative;
+          max-width: 550px;
+          width: 90%;
+          max-height: 90vh;
+          overflow-y: auto;
+          background-color: ${bgColor};
+          border-radius: 12px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-popup-close {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          background: none;
+          border: none;
+          font-size: 32px;
+          font-weight: 300;
+          color: ${textColor};
+          cursor: pointer;
+          padding: 0;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          transition: background-color 0.2s;
+          z-index: 1;
+        }
+
+        .form-popup-close:hover {
+          background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* 섹션 컨테이너 (section 또는 both 모드) */
+        .form-section-container {
+          display: ${isSection && this.displayMode !== 'popup' ? 'block' : 'none'};
+        }
+
         .form-container {
           background-color: ${bgColor};
           color: ${textColor};
@@ -114,6 +180,11 @@ class FormComponent extends BaseComponent {
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
           max-width: 500px;
           margin: 0 auto;
+        }
+
+        .form-container.popup-mode {
+          box-shadow: none;
+          max-width: none;
         }
 
         .form-title {
@@ -445,105 +516,179 @@ class FormComponent extends BaseComponent {
           .modal-body {
             padding: 20px;
           }
+
+          .form-popup-wrapper {
+            width: 95%;
+            max-height: 95vh;
+          }
         }
       </style>
 
-      <div class="form-container">
-        <h2 class="form-title">${formTitle}</h2>
+      ${this.getFormHTML(formTitle, formDescription, nameConfig, phoneConfig, submitButtonText, successMessage, errorMessage, isPopup, isSection)}
+    `;
+  }
 
-        <p class="form-description">
-          ${formDescription}
-        </p>
+  /**
+   * 폼 HTML 생성
+   * displayMode에 따라 섹션 모드와/또는 팝업 모드로 렌더링
+   *
+   * @param {string} formTitle - 폼 제목
+   * @param {string} formDescription - 폼 설명
+   * @param {Object} nameConfig - 이름 필드 설정
+   * @param {Object} phoneConfig - 전화번호 필드 설정
+   * @param {string} submitButtonText - 제출 버튼 텍스트
+   * @param {string} successMessage - 성공 메시지
+   * @param {string} errorMessage - 오류 메시지
+   * @param {boolean} isPopup - 팝업 모드 여부
+   * @param {boolean} isSection - 섹션 모드 여부
+   * @returns {string} HTML 문자열
+   */
+  getFormHTML(formTitle, formDescription, nameConfig, phoneConfig, submitButtonText, successMessage, errorMessage, isPopup, isSection) {
+    let html = '';
 
-        <form id="lead-form">
-          <!-- 이름 필드 -->
-          <div class="form-group">
-            <label for="name" class="form-label${nameConfig.required ? ' required' : ''}">
-              ${nameConfig.label}
+    // 섹션 모드 렌더링
+    if (isSection) {
+      const sectionContent = this.getFormContent(formTitle, formDescription, nameConfig, phoneConfig, submitButtonText, successMessage, errorMessage, 'section');
+      html += `
+        <div class="form-section-container">
+          <div class="form-container">
+            ${sectionContent}
+          </div>
+        </div>
+      `;
+    }
+
+    // 팝업 모드 렌더링
+    if (isPopup) {
+      const popupContent = this.getFormContent(formTitle, formDescription, nameConfig, phoneConfig, submitButtonText, successMessage, errorMessage, 'popup');
+      html += `
+        <div class="form-popup-overlay" id="form-popup-overlay">
+          <div class="form-popup-wrapper">
+            <button class="form-popup-close" id="form-popup-close" aria-label="닫기">✕</button>
+            <div class="form-container popup-mode">
+              ${popupContent}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    return html;
+  }
+
+  /**
+   * 폼 내용 생성 (공통)
+   * 섹션/팝업 모드에서 공통으로 사용되는 폼 내용
+   *
+   * @param {string} formTitle - 폼 제목
+   * @param {string} formDescription - 폼 설명
+   * @param {Object} nameConfig - 이름 필드 설정
+   * @param {Object} phoneConfig - 전화번호 필드 설정
+   * @param {string} submitButtonText - 제출 버튼 텍스트
+   * @param {string} successMessage - 성공 메시지
+   * @param {string} errorMessage - 오류 메시지
+   * @param {string} idPrefix - ID prefix ('section' 또는 'popup')
+   * @returns {string} HTML 문자열
+   */
+  getFormContent(formTitle, formDescription, nameConfig, phoneConfig, submitButtonText, successMessage, errorMessage, idPrefix = 'section') {
+    // ID prefix 추가 (both 모드에서 섹션/팝업 구분용)
+    const pfx = idPrefix ? `${idPrefix}-` : '';
+
+    return `
+      <h2 class="form-title">${formTitle}</h2>
+
+      <p class="form-description">
+        ${formDescription}
+      </p>
+
+      <form id="${pfx}lead-form">
+        <!-- 이름 필드 -->
+        <div class="form-group">
+          <label for="${pfx}name" class="form-label${nameConfig.required ? ' required' : ''}">
+            ${nameConfig.label}
+          </label>
+          <input
+            type="text"
+            id="${pfx}name"
+            name="name"
+            class="form-input"
+            placeholder="${nameConfig.placeholder}"
+            ${nameConfig.required ? 'required' : ''}
+            autocomplete="name"
+          />
+          <div class="error-message" id="${pfx}name-error">
+            ${nameConfig.label}을(를) 입력해주세요.
+          </div>
+        </div>
+
+        <!-- 전화번호 필드 -->
+        <div class="form-group">
+          <label for="${pfx}phone" class="form-label${phoneConfig.required ? ' required' : ''}">
+            ${phoneConfig.label}
+          </label>
+          <input
+            type="tel"
+            id="${pfx}phone"
+            name="phone"
+            class="form-input"
+            placeholder="${phoneConfig.placeholder}"
+            ${phoneConfig.required ? 'required' : ''}
+            autocomplete="tel"
+          />
+          <div class="error-message" id="${pfx}phone-error">
+            올바른 전화번호를 입력해주세요.
+          </div>
+        </div>
+
+        <!-- 법적 동의 체크박스 -->
+        <div class="form-group legal-consent">
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="${pfx}terms-agree" name="terms-agree" required />
+              <span class="checkbox-text">
+                <a href="#" class="legal-link" id="${pfx}terms-link">[필수] 이용약관</a>에 동의합니다.
+              </span>
             </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              class="form-input"
-              placeholder="${nameConfig.placeholder}"
-              ${nameConfig.required ? 'required' : ''}
-              autocomplete="name"
-            />
-            <div class="error-message" id="name-error">
-              ${nameConfig.label}을(를) 입력해주세요.
-            </div>
           </div>
-
-          <!-- 전화번호 필드 -->
-          <div class="form-group">
-            <label for="phone" class="form-label${phoneConfig.required ? ' required' : ''}">
-              ${phoneConfig.label}
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="${pfx}privacy-agree" name="privacy-agree" required />
+              <span class="checkbox-text">
+                <a href="#" class="legal-link" id="${pfx}privacy-link">[필수] 개인정보처리방침</a>에 동의합니다.
+              </span>
             </label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              class="form-input"
-              placeholder="${phoneConfig.placeholder}"
-              ${phoneConfig.required ? 'required' : ''}
-              autocomplete="tel"
-            />
-            <div class="error-message" id="phone-error">
-              올바른 전화번호를 입력해주세요.
-            </div>
           </div>
-
-          <!-- 법적 동의 체크박스 -->
-          <div class="form-group legal-consent">
-            <div class="checkbox-group">
-              <label class="checkbox-label">
-                <input type="checkbox" id="terms-agree" name="terms-agree" required />
-                <span class="checkbox-text">
-                  <a href="#" class="legal-link" id="terms-link">[필수] 이용약관</a>에 동의합니다.
-                </span>
-              </label>
-            </div>
-            <div class="checkbox-group">
-              <label class="checkbox-label">
-                <input type="checkbox" id="privacy-agree" name="privacy-agree" required />
-                <span class="checkbox-text">
-                  <a href="#" class="legal-link" id="privacy-link">[필수] 개인정보처리방침</a>에 동의합니다.
-                </span>
-              </label>
-            </div>
-            <div class="error-message" id="legal-error">
-              필수 동의 항목을 모두 체크해주세요.
-            </div>
+          <div class="error-message" id="${pfx}legal-error">
+            필수 동의 항목을 모두 체크해주세요.
           </div>
+        </div>
 
-          <!-- 제출 버튼 -->
-          <button type="submit" class="submit-button" id="submit-button">
-            ${submitButtonText}
-          </button>
+        <!-- 제출 버튼 -->
+        <button type="submit" class="submit-button" id="${pfx}submit-button">
+          ${submitButtonText}
+        </button>
 
-          <!-- 성공 메시지 -->
-          <div class="success-message" id="success-message">
-            ${successMessage}
+        <!-- 성공 메시지 -->
+        <div class="success-message" id="${pfx}success-message">
+          ${successMessage}
+        </div>
+
+        <!-- 오류 메시지 -->
+        <div class="error-alert" id="${pfx}error-alert">
+          ${errorMessage}
+        </div>
+      </form>
+
+      <!-- 법적 정보 팝업 모달 -->
+      <div class="legal-modal" id="${pfx}legal-modal">
+        <div class="modal-overlay" id="${pfx}modal-overlay"></div>
+        <div class="modal-content" id="${pfx}modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title" id="${pfx}modal-title">이용약관</h3>
+            <button class="modal-close" id="${pfx}modal-close" aria-label="닫기">✕</button>
           </div>
-
-          <!-- 오류 메시지 -->
-          <div class="error-alert" id="error-alert">
-            ${errorMessage}
-          </div>
-        </form>
-
-        <!-- 법적 정보 팝업 모달 -->
-        <div class="legal-modal" id="legal-modal">
-          <div class="modal-overlay" id="modal-overlay"></div>
-          <div class="modal-content" id="modal-content">
-            <div class="modal-header">
-              <h3 class="modal-title" id="modal-title">이용약관</h3>
-              <button class="modal-close" id="modal-close">✕</button>
-            </div>
-            <div class="modal-body" id="modal-body">
-              <!-- 내용이 동적으로 삽입됨 -->
-            </div>
+          <div class="modal-body" id="${pfx}modal-body">
+            <!-- 내용이 동적으로 삽입됨 -->
           </div>
         </div>
       </div>
@@ -554,86 +699,130 @@ class FormComponent extends BaseComponent {
    * 이벤트 리스너 연결
    */
   attachEvents() {
-    const form = this.$('#lead-form');
+    // displayMode에 따라 연결할 prefix 결정
+    const prefixes = [];
+    if (this.displayMode === 'section') {
+      prefixes.push('section');
+    } else if (this.displayMode === 'popup') {
+      prefixes.push('popup');
+    } else if (this.displayMode === 'both') {
+      prefixes.push('section', 'popup');
+    }
+
+    // 각 prefix에 대해 이벤트 연결
+    prefixes.forEach(prefix => {
+      this.attachEventsForPrefix(prefix);
+    });
+
+    // 팝업 닫기 버튼 클릭 이벤트 (팝업 모드)
+    const popupClose = this.$('#form-popup-close');
+    const popupOverlay = this.$('#form-popup-overlay');
+
+    if (popupClose) {
+      popupClose.addEventListener('click', () => {
+        this.closePopup();
+      });
+    }
+
+    if (popupOverlay) {
+      popupOverlay.addEventListener('click', (e) => {
+        // 오버레이를 직접 클릭한 경우에만 닫기 (wrapper 내부 클릭은 무시)
+        if (e.target === popupOverlay) {
+          this.closePopup();
+        }
+      });
+    }
+
+    this.debug('이벤트 리스너 연결 완료');
+  }
+
+  /**
+   * 특정 prefix의 폼에 이벤트 리스너 연결
+   * @param {string} prefix - 'section' 또는 'popup'
+   */
+  attachEventsForPrefix(prefix) {
+    const pfx = prefix ? `${prefix}-` : '';
+
+    const form = this.$(`#${pfx}lead-form`);
     if (!form) {
-      console.error('[FormComponent] 폼을 찾을 수 없습니다.');
+      console.error(`[FormComponent] ${prefix} 폼을 찾을 수 없습니다.`);
       return;
     }
 
     // 폼 제출 이벤트
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      this.handleSubmit();
+      this.handleSubmit(prefix);
     });
 
     // 입력 필드 실시간 검증 (오류 메시지 제거)
-    const nameInput = this.$('#name');
-    const phoneInput = this.$('#phone');
+    const nameInput = this.$(`#${pfx}name`);
+    const phoneInput = this.$(`#${pfx}phone`);
 
     if (nameInput) {
       nameInput.addEventListener('input', () => {
-        this.clearFieldError('name');
+        this.clearFieldError(`${pfx}name`);
       });
     }
 
     if (phoneInput) {
       phoneInput.addEventListener('input', (e) => {
         this.formatPhoneRealtime(e);
-        this.clearFieldError('phone');
+        this.clearFieldError(`${pfx}phone`);
       });
     }
 
     // 법적 동의 체크박스 변경 시 오류 메시지 제거
-    const termsCheckbox = this.$('#terms-agree');
-    const privacyCheckbox = this.$('#privacy-agree');
+    const termsCheckbox = this.$(`#${pfx}terms-agree`);
+    const privacyCheckbox = this.$(`#${pfx}privacy-agree`);
 
     if (termsCheckbox) {
       termsCheckbox.addEventListener('change', () => {
-        this.clearFieldError('legal');
+        this.clearFieldError(`${pfx}legal`);
       });
     }
 
     if (privacyCheckbox) {
       privacyCheckbox.addEventListener('change', () => {
-        this.clearFieldError('legal');
+        this.clearFieldError(`${pfx}legal`);
       });
     }
 
     // 법적 정보 "보기" 링크 클릭 이벤트
-    const termsLink = this.$('#terms-link');
-    const privacyLink = this.$('#privacy-link');
+    const termsLink = this.$(`#${pfx}terms-link`);
+    const privacyLink = this.$(`#${pfx}privacy-link`);
 
     if (termsLink) {
       termsLink.addEventListener('click', (e) => {
         e.preventDefault();
-        this.openLegalModal('terms');
+        this.openLegalModal('terms', prefix);
       });
     }
 
     if (privacyLink) {
       privacyLink.addEventListener('click', (e) => {
         e.preventDefault();
-        this.openLegalModal('privacy');
+        this.openLegalModal('privacy', prefix);
       });
     }
 
     // 모달 닫기 버튼 클릭 이벤트
-    const modalClose = this.$('#modal-close');
-    const modalOverlay = this.$('#modal-overlay');
+    const modalClose = this.$(`#${pfx}modal-close`);
+    const modalOverlay = this.$(`#${pfx}modal-overlay`);
 
     if (modalClose) {
       modalClose.addEventListener('click', () => {
-        this.closeLegalModal();
+        this.closeLegalModal(prefix);
       });
     }
 
     if (modalOverlay) {
       modalOverlay.addEventListener('click', () => {
-        this.closeLegalModal();
+        this.closeLegalModal(prefix);
       });
     }
 
-    this.debug('이벤트 리스너 연결 완료');
+    this.debug(`${prefix} 폼 이벤트 리스너 연결 완료`);
   }
 
   /**
@@ -693,21 +882,22 @@ class FormComponent extends BaseComponent {
 
   /**
    * 폼 제출 핸들러
+   * @param {string} prefix - 'section' 또는 'popup'
    */
-  async handleSubmit() {
-    this.debug('폼 제출 시작');
+  async handleSubmit(prefix = 'section') {
+    this.debug(`${prefix} 폼 제출 시작`);
 
     // 1. 검증
-    if (!this.validateForm()) {
-      this.debug('폼 검증 실패');
+    if (!this.validateForm(prefix)) {
+      this.debug(`${prefix} 폼 검증 실패`);
       return;
     }
 
     // 2. 폼 데이터 수집
-    this.collectFormData();
+    this.collectFormData(prefix);
 
     // 3. UI 상태 업데이트 (제출 중)
-    this.setSubmitState('submitting');
+    this.setSubmitState('submitting', prefix);
 
     // 4. Cloudflare Worker에 데이터 전송
     this.debug('폼 데이터:', this.formData);
@@ -732,18 +922,18 @@ class FormComponent extends BaseComponent {
       if (response.ok && result.success) {
         // 성공
         this.debug('제출 성공:', result);
-        this.setSubmitState('success');
-        this.resetForm();
+        this.setSubmitState('success', prefix);
+        this.resetForm(prefix);
       } else {
         // 실패
         this.debug('제출 실패:', result);
-        this.setSubmitState('error');
+        this.setSubmitState('error', prefix);
       }
     } catch (error) {
       // 네트워크 오류 등
       console.error('[FormComponent] 제출 오류:', error);
       this.debug('제출 오류:', error.message);
-      this.setSubmitState('error');
+      this.setSubmitState('error', prefix);
     }
   }
 
@@ -751,11 +941,13 @@ class FormComponent extends BaseComponent {
    * 법적 정보 모달 열기
    *
    * @param {'terms'|'privacy'} type - 표시할 내용 타입
+   * @param {string} prefix - 'section' 또는 'popup'
    */
-  openLegalModal(type) {
-    const modal = this.$('#legal-modal');
-    const modalTitle = this.$('#modal-title');
-    const modalBody = this.$('#modal-body');
+  openLegalModal(type, prefix = 'section') {
+    const pfx = prefix ? `${prefix}-` : '';
+    const modal = this.$(`#${pfx}legal-modal`);
+    const modalTitle = this.$(`#${pfx}modal-title`);
+    const modalBody = this.$(`#${pfx}modal-body`);
 
     if (!modal || !modalTitle || !modalBody) {
       console.error('[FormComponent] 모달 요소를 찾을 수 없습니다.');
@@ -785,13 +977,15 @@ class FormComponent extends BaseComponent {
 
   /**
    * 법적 정보 모달 닫기
+   * @param {string} prefix - 'section' 또는 'popup'
    */
-  closeLegalModal() {
-    const modal = this.$('#legal-modal');
+  closeLegalModal(prefix = 'section') {
+    const pfx = prefix ? `${prefix}-` : '';
+    const modal = this.$(`#${pfx}legal-modal`);
 
     if (modal) {
       modal.classList.remove('show');
-      this.debug('법적 정보 모달 닫기');
+      this.debug(`${prefix} 법적 정보 모달 닫기`);
     }
   }
 
@@ -879,15 +1073,17 @@ class FormComponent extends BaseComponent {
    * 폼 검증
    * 필수 필드가 모두 입력되었는지 확인합니다.
    *
+   * @param {string} prefix - 'section' 또는 'popup'
    * @returns {boolean} 검증 통과 여부
    */
-  validateForm() {
+  validateForm(prefix = 'section') {
     let isValid = true;
 
-    const nameInput = this.$('#name');
-    const phoneInput = this.$('#phone');
-    const termsCheckbox = this.$('#terms-agree');
-    const privacyCheckbox = this.$('#privacy-agree');
+    const pfx = prefix ? `${prefix}-` : '';
+    const nameInput = this.$(`#${pfx}name`);
+    const phoneInput = this.$(`#${pfx}phone`);
+    const termsCheckbox = this.$(`#${pfx}terms-agree`);
+    const privacyCheckbox = this.$(`#${pfx}privacy-agree`);
 
     const nameConfig = this.getConfigValue('fields.name', { required: true });
     const phoneConfig = this.getConfigValue('fields.phone', { required: true });
@@ -896,7 +1092,7 @@ class FormComponent extends BaseComponent {
     if (nameConfig.required && nameInput) {
       const nameValue = nameInput.value.trim();
       if (!nameValue) {
-        this.showFieldError('name', `${nameConfig.label || '이름'}을(를) 입력해주세요.`);
+        this.showFieldError(`${pfx}name`, `${nameConfig.label || '이름'}을(를) 입력해주세요.`);
         isValid = false;
       }
     }
@@ -906,10 +1102,10 @@ class FormComponent extends BaseComponent {
       const phoneValue = phoneInput.value.trim();
 
       if (!phoneValue) {
-        this.showFieldError('phone', `${phoneConfig.label || '전화번호'}을(를) 입력해주세요.`);
+        this.showFieldError(`${pfx}phone`, `${phoneConfig.label || '전화번호'}을(를) 입력해주세요.`);
         isValid = false;
       } else if (!this.validatePhoneFormat(phoneValue)) {
-        this.showFieldError('phone', '올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)');
+        this.showFieldError(`${pfx}phone`, '올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)');
         isValid = false;
       }
     }
@@ -920,7 +1116,7 @@ class FormComponent extends BaseComponent {
       const privacyChecked = privacyCheckbox.checked;
 
       if (!termsChecked || !privacyChecked) {
-        this.showFieldError('legal', '필수 동의 항목을 모두 체크해주세요.');
+        this.showFieldError(`${pfx}legal`, '필수 동의 항목을 모두 체크해주세요.');
         isValid = false;
       }
     }
@@ -1002,10 +1198,12 @@ class FormComponent extends BaseComponent {
 
   /**
    * 폼 데이터 수집
+   * @param {string} prefix - 'section' 또는 'popup'
    */
-  collectFormData() {
-    const nameInput = this.$('#name');
-    const phoneInput = this.$('#phone');
+  collectFormData(prefix = 'section') {
+    const pfx = prefix ? `${prefix}-` : '';
+    const nameInput = this.$(`#${pfx}name`);
+    const phoneInput = this.$(`#${pfx}phone`);
 
     // 전화번호 포맷팅 (하이픈 자동 삽입)
     let phoneValue = phoneInput ? phoneInput.value.trim() : '';
@@ -1089,13 +1287,15 @@ class FormComponent extends BaseComponent {
    * 제출 상태 변경
    *
    * @param {'idle'|'submitting'|'success'|'error'} state - 새로운 상태
+   * @param {string} prefix - 'section' 또는 'popup'
    */
-  setSubmitState(state) {
+  setSubmitState(state, prefix = 'section') {
     this.submitState = state;
 
-    const submitButton = this.$('#submit-button');
-    const successMessage = this.$('#success-message');
-    const errorAlert = this.$('#error-alert');
+    const pfx = prefix ? `${prefix}-` : '';
+    const submitButton = this.$(`#${pfx}submit-button`);
+    const successMessage = this.$(`#${pfx}success-message`);
+    const errorAlert = this.$(`#${pfx}error-alert`);
 
     if (!submitButton) return;
 
@@ -1141,9 +1341,11 @@ class FormComponent extends BaseComponent {
 
   /**
    * 폼 초기화
+   * @param {string} prefix - 'section' 또는 'popup'
    */
-  resetForm() {
-    const form = this.$('#lead-form');
+  resetForm(prefix = 'section') {
+    const pfx = prefix ? `${prefix}-` : '';
+    const form = this.$(`#${pfx}lead-form`);
     if (form) {
       form.reset();
     }
@@ -1153,10 +1355,53 @@ class FormComponent extends BaseComponent {
       phone: ''
     };
 
-    this.clearFieldError('name');
-    this.clearFieldError('phone');
+    this.clearFieldError(`${pfx}name`);
+    this.clearFieldError(`${pfx}phone`);
 
-    this.debug('폼 초기화 완료');
+    this.debug(`${prefix} 폼 초기화 완료`);
+  }
+
+  /**
+   * 팝업 열기
+   * 팝업 모드일 때 입력폼을 모달로 표시합니다.
+   *
+   * @public
+   */
+  openPopup() {
+    if (this.displayMode !== 'popup' && this.displayMode !== 'both') {
+      console.warn('[FormComponent] 팝업 모드가 아닙니다. displayMode:', this.displayMode);
+      return;
+    }
+
+    const popupOverlay = this.$('#form-popup-overlay');
+
+    if (popupOverlay) {
+      popupOverlay.classList.add('show');
+      this.debug('팝업 열기');
+
+      // body 스크롤 방지 (선택사항)
+      // document.body.style.overflow = 'hidden';
+    } else {
+      console.error('[FormComponent] 팝업 오버레이를 찾을 수 없습니다.');
+    }
+  }
+
+  /**
+   * 팝업 닫기
+   * 팝업 모달을 숨깁니다.
+   *
+   * @public
+   */
+  closePopup() {
+    const popupOverlay = this.$('#form-popup-overlay');
+
+    if (popupOverlay) {
+      popupOverlay.classList.remove('show');
+      this.debug('팝업 닫기');
+
+      // body 스크롤 복원 (선택사항)
+      // document.body.style.overflow = '';
+    }
   }
 
   /**
@@ -1228,5 +1473,50 @@ class FormComponent extends BaseComponent {
 customElements.define('zoad-form', FormComponent);
 
 console.log('✅ FormComponent 등록 완료: <zoad-form>');
+
+// 전역 API 제공: 외부에서 팝업을 열 수 있도록 함
+// 퀵메뉴, 모바일 내비게이터 등에서 사용
+if (typeof window !== 'undefined') {
+  /**
+   * 입력폼 팝업 열기 (전역 함수)
+   * 퀵메뉴, 모바일 내비게이터, 헤더 버튼 등에서 호출 가능
+   *
+   * @example
+   * // HTML에서 직접 호출
+   * <button onclick="window.openZoadForm()">상담 신청</button>
+   *
+   * @example
+   * // JavaScript에서 호출
+   * window.openZoadForm();
+   */
+  window.openZoadForm = function() {
+    const formComponent = document.querySelector('zoad-form');
+    if (formComponent && typeof formComponent.openPopup === 'function') {
+      formComponent.openPopup();
+      console.log('[Global API] 입력폼 팝업 열기');
+    } else {
+      console.error('[Global API] <zoad-form> 컴포넌트를 찾을 수 없거나 openPopup 메서드가 없습니다.');
+    }
+  };
+
+  /**
+   * 입력폼 팝업 닫기 (전역 함수)
+   * 팝업 외부에서 프로그래밍 방식으로 닫을 때 사용
+   *
+   * @example
+   * window.closeZoadForm();
+   */
+  window.closeZoadForm = function() {
+    const formComponent = document.querySelector('zoad-form');
+    if (formComponent && typeof formComponent.closePopup === 'function') {
+      formComponent.closePopup();
+      console.log('[Global API] 입력폼 팝업 닫기');
+    } else {
+      console.error('[Global API] <zoad-form> 컴포넌트를 찾을 수 없거나 closePopup 메서드가 없습니다.');
+    }
+  };
+
+  console.log('✅ 전역 API 등록 완료: window.openZoadForm(), window.closeZoadForm()');
+}
 
 export default FormComponent;
