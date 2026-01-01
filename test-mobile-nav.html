@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>모바일 내비게이터 테스트 - 100zoad</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      padding-bottom: 100px; /* 모바일 내비게이터 공간 확보 */
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .info-box {
+      background: #f8f9fa;
+      border-left: 4px solid #007bff;
+      padding: 16px;
+      margin-bottom: 24px;
+      border-radius: 4px;
+    }
+
+    .info-box h2 {
+      font-size: 16px;
+      color: #007bff;
+      margin-bottom: 8px;
+    }
+
+    .info-box ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .info-box li {
+      padding: 4px 0;
+      color: #666;
+    }
+
+    .info-box li::before {
+      content: "✓ ";
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    .test-section {
+      margin-bottom: 24px;
+    }
+
+    .test-section h3 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 12px;
+    }
+
+    .test-button {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+
+    .test-button:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .test-button:active {
+      transform: translateY(0);
+    }
+
+    .content {
+      margin-top: 24px;
+    }
+
+    .content p {
+      line-height: 1.8;
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .device-info {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 12px;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #856404;
+    }
+
+    /* 폼 섹션 (테스트용) */
+    #form-section {
+      background: #e3f2fd;
+      padding: 24px;
+      border-radius: 8px;
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    #form-section h3 {
+      color: #1976d2;
+      margin-bottom: 12px;
+    }
+
+    /* 반응형 표시 */
+    .screen-size {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      z-index: 10000;
+    }
+  </style>
+</head>
+<body>
+  <!-- 화면 크기 표시 -->
+  <div class="screen-size" id="screenSize"></div>
+
+  <div class="container">
+    <h1>📱 모바일 내비게이터 테스트</h1>
+
+    <div class="info-box">
+      <h2>테스트 항목</h2>
+      <ul>
+        <li>최대 3개 버튼 지원</li>
+        <li>모바일 화면 최하단 고정 (bottom: 0)</li>
+        <li>필수 버튼: 입력폼 팝업, 전화걸기</li>
+        <li>Config로 버튼 개수, 문구, 아이콘, 색상, 액션 설정</li>
+        <li>PC 화면에서는 숨김 (768px 초과)</li>
+      </ul>
+    </div>
+
+    <div class="test-section">
+      <h3>테스트 방법</h3>
+      <button class="test-button" onclick="testMobileView()">📱 모바일 뷰로 전환 (375px)</button>
+      <button class="test-button" onclick="testPCView()">🖥️ PC 뷰로 전환 (1024px)</button>
+      <button class="test-button" onclick="testResponsive()">🔄 반응형 테스트 시작</button>
+    </div>
+
+    <div class="content">
+      <p><strong>현재 상태:</strong></p>
+      <p>화면을 스크롤해도 모바일 내비게이터는 하단에 고정되어 있어야 합니다. (모바일 뷰에서만 표시)</p>
+      <p>PC 화면(768px 초과)에서는 내비게이터가 숨겨져야 합니다.</p>
+      <p>각 버튼을 클릭하면 다음과 같이 동작합니다:</p>
+      <ul>
+        <li><strong>상담신청:</strong> 입력폼 섹션으로 스크롤 (또는 팝업)</li>
+        <li><strong>전화:</strong> 전화 앱 실행 (tel: 링크)</li>
+        <li><strong>위치:</strong> 네이버 지도 새 창 열기</li>
+      </ul>
+
+      <p style="margin-top: 24px;">스크롤 테스트를 위한 더미 콘텐츠:</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+    </div>
+
+    <!-- 입력폼 섹션 (테스트용) -->
+    <div id="form-section">
+      <h3>📝 입력폼 섹션</h3>
+      <p>이곳은 입력폼 섹션입니다. "상담신청" 버튼을 클릭하면 여기로 스크롤됩니다.</p>
+    </div>
+
+    <div class="device-info">
+      <strong>📱 모바일 테스트 가이드:</strong>
+      <br>1. Chrome DevTools에서 모바일 시뮬레이션 (F12 → Device Toolbar)
+      <br>2. 화면 너비를 768px 이하로 설정
+      <br>3. 하단에 내비게이터가 표시되는지 확인
+      <br>4. 각 버튼 클릭하여 기능 테스트
+    </div>
+  </div>
+
+  <!-- Config 설정 -->
+  <script>
+    // 모바일 내비게이터 Config
+    window.MOBILENAV_CONFIG = {
+      enabled: true,
+      buttons: [
+        {
+          text: '상담신청',
+          icon: '📝',
+          action: 'openForm',
+          color: '#007bff'
+        },
+        {
+          text: '전화',
+          icon: '📞',
+          action: 'call',
+          phone: '010-1234-5678',
+          color: '#28a745'
+        },
+        {
+          text: '위치',
+          icon: '📍',
+          action: 'link',
+          url: 'https://naver.me/example',
+          target: '_blank',
+          color: '#17a2b8'
+        }
+      ]
+    };
+
+    // GTM dataLayer 초기화 (테스트용)
+    window.dataLayer = window.dataLayer || [];
+
+    // 화면 크기 표시 업데이트
+    function updateScreenSize() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const isMobile = width <= 768;
+      document.getElementById('screenSize').textContent =
+        `${width}×${height} ${isMobile ? '(모바일)' : '(PC)'}`;
+    }
+
+    // 테스트 함수들
+    function testMobileView() {
+      alert('Chrome DevTools (F12)를 열고\nDevice Toolbar (Ctrl+Shift+M)에서\n화면 너비를 375px로 설정하세요.');
+    }
+
+    function testPCView() {
+      alert('Chrome DevTools (F12)를 열고\nDevice Toolbar를 끄거나\n화면 너비를 1024px 이상으로 설정하세요.');
+    }
+
+    function testResponsive() {
+      alert('반응형 테스트를 시작합니다.\n\n화면 너비를 천천히 조절하면서\n768px를 기준으로 내비게이터가\n나타나고 사라지는지 확인하세요.');
+    }
+
+    // 초기화
+    updateScreenSize();
+    window.addEventListener('resize', updateScreenSize);
+
+    // dataLayer 이벤트 로그
+    window.addEventListener('message', function(e) {
+      console.log('Message:', e.data);
+    });
+  </script>
+
+  <!-- 모바일 내비게이터 컴포넌트 -->
+  <zoad-mobile-nav></zoad-mobile-nav>
+
+  <!-- 컴포넌트 로드 -->
+  <script type="module">
+    import './src/components/mobile-nav/mobile-nav.js';
+
+    console.log('✅ 모바일 내비게이터 컴포넌트 로드 완료');
+    console.log('Config:', window.MOBILENAV_CONFIG);
+
+    // dataLayer 이벤트 감지
+    const originalPush = window.dataLayer.push;
+    window.dataLayer.push = function(...args) {
+      console.log('📊 GTM 이벤트:', args);
+      return originalPush.apply(window.dataLayer, args);
+    };
+  </script>
+</body>
+</html>
