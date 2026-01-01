@@ -61,7 +61,8 @@
 </head>
 <body>
   <h1>🚀 100zoad 웹 컴포넌트 개발 환경</h1>
-  <p>STORY-001: Config 스키마 정의 및 파싱 시스템 테스트</p>
+  <p><strong>STORY-001:</strong> Config 스키마 정의 및 파싱 시스템 ✅ 완료</p>
+  <p><strong>STORY-003:</strong> 베이스 웹 컴포넌트 클래스 🔄 진행 중</p>
 
   <div class="test-section">
     <h2>📋 Config 파서 테스트</h2>
@@ -81,6 +82,20 @@
     <div id="test-output">
       <p>테스트를 실행하면 여기에 결과가 표시됩니다.</p>
       <p><strong>참고:</strong> 브라우저 개발자 도구 콘솔(F12)도 함께 확인하세요.</p>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>🧪 STORY-003: BaseComponent 테스트</h2>
+    <p>BaseComponent 클래스가 제대로 작동하는지 확인합니다.</p>
+
+    <button onclick="testBaseComponent()">🚀 BaseComponent 테스트 시작</button>
+    <button onclick="testBaseComponentError()">❌ 오류 처리 테스트</button>
+
+    <div style="margin-top: 20px;">
+      <h3>테스트 컴포넌트:</h3>
+      <!-- 테스트 컴포넌트가 여기에 렌더링됩니다 -->
+      <div id="component-container"></div>
     </div>
   </div>
 
@@ -214,6 +229,7 @@
 
   <script type="module">
     import { parseConfig, validateConfig, isComponentEnabled, getExampleConfig } from '/src/core/config-parser.js';
+    import '/src/components/test/test-component.js';
 
     // 전역 함수로 노출
     window.testValidConfig = function() {
@@ -271,6 +287,63 @@
       const example = getExampleConfig();
       displayResult(true, '예시 Config 생성 완료', JSON.stringify(example, null, 2));
       console.log('예시 Config:', example);
+    };
+
+    // STORY-003: BaseComponent 테스트
+    window.testBaseComponent = function() {
+      console.log('\n=== 🚀 BaseComponent 테스트 ===');
+
+      // 테스트용 Config 설정
+      window.CONFIG = {
+        meta: {
+          siteName: 'BaseComponent 테스트',
+          version: '1.0.0'
+        },
+        test: {
+          title: 'BaseComponent 기능 테스트',
+          styles: {
+            bgColor: '#e3f2fd',
+            textColor: '#1976d2',
+            borderColor: '#2196f3'
+          }
+        },
+        debug: true
+      };
+
+      // 컴포넌트 추가
+      const container = document.getElementById('component-container');
+      container.innerHTML = '<zoad-test></zoad-test>';
+
+      displayResult(true, 'BaseComponent 테스트 컴포넌트 로드 완료!',
+        '위 테스트 컴포넌트를 확인하세요.\n' +
+        '- Config 로드 확인\n' +
+        '- Shadow DOM 격리 확인\n' +
+        '- 이벤트 리스너 작동 확인\n' +
+        '- 커스텀 render() 메서드 확인');
+    };
+
+    window.testBaseComponentError = function() {
+      console.log('\n=== ❌ BaseComponent 오류 처리 테스트 ===');
+
+      // 잘못된 Config 설정 (meta.siteName 누락)
+      window.CONFIG = {
+        meta: {
+          version: '1.0.0'
+          // siteName 누락!
+        },
+        test: {
+          title: '오류 테스트'
+        }
+      };
+
+      // 컴포넌트 추가 (오류 발생 예상)
+      const container = document.getElementById('component-container');
+      container.innerHTML = '<zoad-test></zoad-test>';
+
+      displayResult(true, '오류 처리 테스트 완료',
+        'Config 검증 오류가 발생했습니다.\n' +
+        '컴포넌트는 Fallback HTML을 표시해야 합니다.\n' +
+        '콘솔에서 오류 메시지를 확인하세요.');
     };
 
     // 페이지 로드 시 안내 메시지
