@@ -62,7 +62,9 @@
 <body>
   <h1>🚀 100zoad 웹 컴포넌트 개발 환경</h1>
   <p><strong>STORY-001:</strong> Config 스키마 정의 및 파싱 시스템 ✅ 완료</p>
-  <p><strong>STORY-003:</strong> 베이스 웹 컴포넌트 클래스 🔄 진행 중</p>
+  <p><strong>STORY-003:</strong> 베이스 웹 컴포넌트 클래스 ✅ 완료</p>
+  <p><strong>STORY-010:</strong> 입력폼 필수 필드 🔄 테스트 중</p>
+  <p style="color: #dc3545; font-weight: bold;">⚠️ 브라우저 개발자 도구(F12)의 Console 탭을 열어서 오류를 확인하세요!</p>
 
   <div class="test-section">
     <h2>📋 Config 파서 테스트</h2>
@@ -96,6 +98,21 @@
       <h3>테스트 컴포넌트:</h3>
       <!-- 테스트 컴포넌트가 여기에 렌더링됩니다 -->
       <div id="component-container"></div>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>📝 STORY-010: Form 컴포넌트 테스트</h2>
+    <p>입력폼 필수 필드 (이름, 전화번호) 구현을 테스트합니다.</p>
+
+    <button onclick="testFormComponent()">🚀 Form 컴포넌트 로드</button>
+    <button onclick="testFormValidation()">✅ 검증 로직 테스트</button>
+    <button onclick="testFormSubmit()">📤 제출 테스트</button>
+
+    <div style="margin-top: 20px;">
+      <h3>Form 컴포넌트:</h3>
+      <!-- Form 컴포넌트가 여기에 렌더링됩니다 -->
+      <div id="form-container"></div>
     </div>
   </div>
 
@@ -174,7 +191,7 @@
             error: '제출 중 오류가 발생했습니다.'
           },
           airtable: {
-            workerUrl: 'https://lead-submit.example.workers.dev/submit'
+            workerUrl: 'https://100zoad-airtable-proxy.choiwseok.workers.dev/submit'
           }
         }
       };
@@ -230,6 +247,7 @@
   <script type="module">
     import { parseConfig, validateConfig, isComponentEnabled, getExampleConfig } from '/src/core/config-parser.js';
     import '/src/components/test/test-component.js';
+    import '/src/components/form/form.js';
 
     // 전역 함수로 노출
     window.testValidConfig = function() {
@@ -344,6 +362,126 @@
         'Config 검증 오류가 발생했습니다.\n' +
         '컴포넌트는 Fallback HTML을 표시해야 합니다.\n' +
         '콘솔에서 오류 메시지를 확인하세요.');
+    };
+
+    // STORY-010: Form 컴포넌트 테스트
+    window.testFormComponent = function() {
+      console.log('\n=== 📝 STORY-010: Form 컴포넌트 테스트 ===');
+      console.log('1️⃣ Config 설정 중...');
+
+      // Form용 Config 설정
+      window.CONFIG = {
+        meta: {
+          siteName: 'Form 컴포넌트 테스트',
+          version: '1.0.0'
+        },
+        form: {
+          displayMode: 'section',
+          fields: {
+            name: {
+              label: '이름',
+              placeholder: '홍길동',
+              required: true
+            },
+            phone: {
+              label: '전화번호',
+              placeholder: '010-0000-0000',
+              required: true
+            },
+            additional: []
+          },
+          legal: {
+            termsText: '이용약관 전문...',
+            privacyText: '개인정보처리방침 전문...'
+          },
+          messages: {
+            success: '✓ 신청이 완료되었습니다!',
+            error: '제출 중 오류가 발생했습니다.'
+          },
+          airtable: {
+            workerUrl: 'https://100zoad-airtable-proxy.choiwseok.workers.dev/submit'
+          },
+          styles: {
+            bgColor: '#ffffff',
+            textColor: '#333333',
+            primaryColor: '#007bff',
+            borderColor: '#dddddd',
+            errorColor: '#dc3545'
+          }
+        },
+        debug: true
+      };
+
+      console.log('✅ Config 설정 완료:', window.CONFIG);
+      console.log('2️⃣ Form 컴포넌트 삽입 중...');
+
+      // 컴포넌트 추가
+      const container = document.getElementById('form-container');
+      if (!container) {
+        console.error('❌ form-container를 찾을 수 없습니다!');
+        displayResult(false, '오류: form-container를 찾을 수 없습니다.');
+        return;
+      }
+
+      console.log('✅ Container 찾음:', container);
+      container.innerHTML = '<zoad-form></zoad-form>';
+      console.log('✅ <zoad-form> 엘리먼트 삽입 완료');
+
+      // 컴포넌트가 렌더링되었는지 1초 후 확인
+      setTimeout(() => {
+        const formElement = container.querySelector('zoad-form');
+        console.log('3️⃣ Form 엘리먼트 확인:', formElement);
+
+        if (formElement) {
+          console.log('   - shadowRoot:', formElement.shadowRoot);
+          console.log('   - state:', formElement.state);
+          console.log('   - componentConfig:', formElement.componentConfig);
+        }
+      }, 1000);
+
+      displayResult(true, 'Form 컴포넌트 로드 시도 완료!',
+        'Acceptance Criteria 확인:\n' +
+        '✓ 이름 입력 필드 렌더링\n' +
+        '✓ 전화번호 입력 필드 렌더링\n' +
+        '✓ Config 기반 라벨/플레이스홀더 적용\n\n' +
+        '위 Form을 사용하여 다음을 테스트하세요:\n' +
+        '1. 필수 필드 미입력 시 제출 차단\n' +
+        '2. 입력값 검증\n' +
+        '3. 제출 버튼 동작\n\n' +
+        '⚠️ 브라우저 콘솔(F12)에서 디버그 로그를 확인하세요!');
+    };
+
+    window.testFormValidation = function() {
+      console.log('\n=== ✅ Form 검증 로직 테스트 ===');
+
+      displayResult(true, '검증 로직 테스트 시작',
+        '테스트 시나리오:\n\n' +
+        '1. Form을 로드하세요 (위 "Form 컴포넌트 로드" 버튼 클릭)\n' +
+        '2. 아무것도 입력하지 않고 "신청하기" 버튼 클릭\n' +
+        '   → 두 필드 모두 오류 메시지 표시되어야 함\n\n' +
+        '3. 이름만 입력하고 전화번호 비워둔 채 제출\n' +
+        '   → 전화번호 오류 메시지만 표시되어야 함\n\n' +
+        '4. 전화번호만 입력하고 이름 비워둔 채 제출\n' +
+        '   → 이름 오류 메시지만 표시되어야 함\n\n' +
+        '5. 두 필드 모두 입력하고 제출\n' +
+        '   → 제출 성공 (로딩 → 성공 메시지)\n\n' +
+        '콘솔에서 디버그 로그를 확인하세요.');
+    };
+
+    window.testFormSubmit = function() {
+      console.log('\n=== 📤 Form 제출 테스트 ===');
+
+      displayResult(true, 'Form 제출 시퀀스 테스트',
+        '제출 프로세스 확인:\n\n' +
+        '1. Form을 로드하고 모든 필드를 올바르게 입력\n' +
+        '2. "신청하기" 버튼 클릭\n' +
+        '3. 다음 동작 확인:\n' +
+        '   → 버튼이 비활성화되고 로딩 스피너 표시\n' +
+        '   → 1초 후 성공 메시지 표시\n' +
+        '   → Form 초기화 (모든 필드 비워짐)\n' +
+        '   → 3초 후 성공 메시지 자동 숨김\n\n' +
+        '4. 콘솔에서 수집된 폼 데이터 확인\n\n' +
+        '참고: STORY-015에서 실제 Cloudflare Worker 연동 구현 예정');
     };
 
     // 페이지 로드 시 안내 메시지
