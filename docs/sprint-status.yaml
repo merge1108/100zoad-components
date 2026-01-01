@@ -82,7 +82,7 @@ sprints:
     end_date: "2026-01-02"
     capacity_points: 22
     committed_points: 22
-    completed_points: 17
+    completed_points: 20
     status: "in_progress"
     goal: "헤더, 푸터, 퀵메뉴, 모바일 내비게이터 추가하여 완전한 랜딩페이지 UX 제공"
     stories:
@@ -143,10 +143,11 @@ sprints:
       - story_id: "STORY-017"
         title: "PC 퀵메뉴 고정 버튼"
         points: 3
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-004"
         priority: "Must Have"
+        completed_date: "2026-01-02"
 
       - story_id: "STORY-019"
         title: "모바일 하단 내비게이터"

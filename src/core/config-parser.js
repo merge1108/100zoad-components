@@ -431,14 +431,22 @@ export function parseConfig() {
  * }
  */
 export function isComponentEnabled(config, component) {
-  switch (component) {
+  // 컴포넌트 이름을 camelCase로 변환 (quickmenu -> quickMenu)
+  const componentKey = component === 'quickmenu' ? 'quickMenu'
+                     : component === 'mobilenav' ? 'mobileNav'
+                     : component;
+
+  // 위젯 모드를 위해 원본 키(소문자)도 확인
+  const componentData = config[componentKey] || config[component];
+
+  switch (componentKey) {
     case 'header':
     case 'footer':
     case 'form':
-      return !!config[component];
+      return !!componentData;
     case 'quickMenu':
     case 'mobileNav':
-      return !!(config[component] && config[component].enabled);
+      return !!(componentData && componentData.enabled);
     default:
       return false;
   }

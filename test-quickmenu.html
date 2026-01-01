@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickMenu 컴포넌트 테스트 - 100zoad</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+      line-height: 1.6;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 300vh; /* 스크롤 테스트를 위해 긴 페이지 */
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .section h2 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    .section p {
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .test-info {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    .test-info h3 {
+      color: #856404;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .test-info ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .test-info li {
+      color: #856404;
+      margin-bottom: 5px;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .test-info li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    code {
+      background: #e9ecef;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+
+    #form-section {
+      background: #d1ecf1;
+      border: 2px solid #0c5460;
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    #form-section h2 {
+      color: #0c5460;
+    }
+
+    .responsive-test {
+      background: #d4edda;
+      border: 1px solid #28a745;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+    }
+
+    .responsive-test h3 {
+      color: #155724;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .responsive-test {
+        background: #f8d7da;
+        border-color: #dc3545;
+      }
+
+      .responsive-test h3 {
+        color: #721c24;
+      }
+
+      .responsive-test::after {
+        content: ' (모바일 모드: 퀵메뉴 숨김)';
+        font-weight: bold;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 QuickMenu 컴포넌트 테스트</h1>
+    <p class="subtitle">STORY-017: PC 퀵메뉴 고정 버튼</p>
+
+    <div class="test-info">
+      <h3>📋 테스트 항목</h3>
+      <ul>
+        <li>최대 4개 버튼 표시 확인</li>
+        <li>PC 화면 우측 고정 위치 확인</li>
+        <li>스크롤 시에도 고정 위치 유지 확인</li>
+        <li>버튼 클릭 액션 동작 확인 (입력폼, 전화, URL)</li>
+        <li>모바일 화면에서 숨김 확인</li>
+        <li>Config로 버튼 커스터마이징 확인</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>1. 퀵메뉴 버튼 표시</h2>
+      <p>화면 우측에 4개의 버튼이 고정되어 표시되어야 합니다:</p>
+      <ul style="padding-left: 20px; margin-top: 10px;">
+        <li><strong>📝 입력폼</strong> - 파란색 버튼</li>
+        <li><strong>📞 전화걸기</strong> - 초록색 버튼</li>
+        <li><strong>🏠 홈페이지</strong> - 보라색 버튼</li>
+        <li><strong>📍 위치</strong> - 주황색 버튼</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>2. 스크롤 테스트</h2>
+      <p>페이지를 스크롤해도 퀵메뉴 버튼이 항상 화면 우측에 고정되어 있어야 합니다.</p>
+      <p style="color: #007bff; font-weight: 600;">👇 아래로 스크롤해보세요!</p>
+    </div>
+
+    <div class="section">
+      <h2>3. 버튼 액션 테스트</h2>
+      <p><code>📝 입력폼</code> 버튼 클릭 시 → 입력폼 섹션으로 스크롤 (또는 팝업)</p>
+      <p><code>📞 전화걸기</code> 버튼 클릭 시 → 전화번호 표시 (PC) 또는 전화 앱 실행 (모바일)</p>
+      <p><code>🏠 홈페이지</code> 버튼 클릭 시 → 새 창에서 URL 열기</p>
+      <p><code>📍 위치</code> 버튼 클릭 시 → 지도 페이지 열기</p>
+    </div>
+
+    <div class="responsive-test">
+      <h3>📱 반응형 테스트</h3>
+      <p>브라우저 개발자 도구(F12)에서 모바일 모드로 전환하면 퀵메뉴가 숨겨집니다.</p>
+      <p>현재 화면: <strong id="screen-size"></strong></p>
+    </div>
+
+    <div class="section" style="margin-top: 100vh;">
+      <h2>4. 스크롤 중간 지점</h2>
+      <p>퀵메뉴 버튼이 여전히 우측에 고정되어 있나요?</p>
+    </div>
+
+    <div id="form-section" style="margin-top: 100vh;">
+      <h2>📝 입력폼 섹션</h2>
+      <p>퀵메뉴의 "입력폼" 버튼을 클릭하면 이 섹션으로 스크롤됩니다.</p>
+      <p style="margin-top: 20px; color: #0c5460; font-size: 14px;">
+        (실제 입력폼 컴포넌트는 STORY-016에서 팝업 모드로 구현됩니다)
+      </p>
+    </div>
+  </div>
+
+  <!-- QuickMenu 컴포넌트 -->
+  <zoad-quickmenu></zoad-quickmenu>
+
+  <!-- Config 설정 (위젯 모드) -->
+  <script>
+    // QuickMenu Config (위젯 모드)
+    window.QUICKMENU_CONFIG = {
+      enabled: true,
+      position: {
+        right: '30px',
+        top: '50%'
+      },
+      buttons: [
+        {
+          text: '입력폼',
+          icon: '📝',
+          action: 'openForm',
+          color: '#007bff' // 파란색
+        },
+        {
+          text: '전화걸기',
+          icon: '📞',
+          action: 'call',
+          phone: '010-1234-5678',
+          color: '#28a745' // 초록색
+        },
+        {
+          text: '홈페이지',
+          icon: '🏠',
+          action: 'link',
+          url: 'https://example.com',
+          target: '_blank',
+          color: '#6f42c1' // 보라색
+        },
+        {
+          text: '위치',
+          icon: '📍',
+          action: 'link',
+          url: 'https://map.naver.com',
+          target: '_blank',
+          color: '#fd7e14' // 주황색
+        }
+      ],
+      meta: {
+        siteName: '100zoad',
+        debug: true
+      }
+    };
+
+    // GTM dataLayer 초기화 (이벤트 추적 테스트용)
+    window.dataLayer = window.dataLayer || [];
+
+    // 화면 크기 표시
+    function updateScreenSize() {
+      const width = window.innerWidth;
+      const screenSizeEl = document.getElementById('screen-size');
+      if (screenSizeEl) {
+        if (width > 768) {
+          screenSizeEl.textContent = `PC 모드 (${width}px) - 퀵메뉴 표시`;
+          screenSizeEl.style.color = '#28a745';
+        } else {
+          screenSizeEl.textContent = `모바일 모드 (${width}px) - 퀵메뉴 숨김`;
+          screenSizeEl.style.color = '#dc3545';
+        }
+      }
+    }
+
+    window.addEventListener('resize', updateScreenSize);
+    updateScreenSize();
+
+    console.log('✅ QuickMenu Config 로드 완료');
+    console.log('Config:', window.QUICKMENU_CONFIG);
+  </script>
+
+  <!-- Vite Dev Server에서 컴포넌트 로드 -->
+  <script type="module">
+    import '/src/components/quickmenu/quickmenu.js';
+    console.log('✅ QuickMenu 컴포넌트 로드 완료');
+  </script>
+</body>
+</html>

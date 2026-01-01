@@ -14,9 +14,9 @@ if (import.meta.env.DEV) {
   console.log('✓ Hot Module Replacement (HMR) is enabled');
 }
 
-// 향후 컴포넌트들이 이곳에서 import 됩니다
-// import './components/header/header.js';
-// import './components/footer/footer.js';
-// import './components/form/form.js';
-// import './components/quickmenu/quickmenu.js';
+// 컴포넌트들 import
+import './components/header/header.js';
+import './components/footer/footer.js';
+import './components/form/form.js';
+import './components/quickmenu/quickmenu.js';
 // import './components/mobile-nav/mobile-nav.js';
