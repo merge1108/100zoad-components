@@ -65,12 +65,35 @@ class FormComponent extends BaseComponent {
       required: true
     });
 
-    // 스타일 설정
+    // 텍스트 설정
+    const formTitle = this.getConfigValue('title', '관심고객 등록');
+    const formDescription = this.getConfigValue('description', '간단한 정보를 입력해주시면 상담 전화를 드리겠습니다.');
+    const submitButtonText = this.getConfigValue('submitButtonText', '신청하기');
+    const successMessage = this.getConfigValue('messages.success', '✓ 신청이 완료되었습니다!');
+    const errorMessage = this.getConfigValue('messages.error', '제출 중 오류가 발생했습니다. 다시 시도해주세요.');
+
+    // 기본 스타일 설정
     const bgColor = this.getConfigValue('styles.bgColor', '#ffffff');
     const textColor = this.getConfigValue('styles.textColor', '#333333');
     const primaryColor = this.getConfigValue('styles.primaryColor', '#007bff');
     const borderColor = this.getConfigValue('styles.borderColor', '#dddddd');
     const errorColor = this.getConfigValue('styles.errorColor', '#dc3545');
+
+    // 추가 스타일 설정
+    const inputBgColor = this.getConfigValue('styles.inputBgColor', '#ffffff');
+    const inputDisabledBgColor = this.getConfigValue('styles.inputDisabledBgColor', '#f5f5f5');
+    const buttonTextColor = this.getConfigValue('styles.buttonTextColor', '#ffffff');
+    const buttonHoverColor = this.getConfigValue('styles.buttonHoverColor', '#0056b3');
+    const buttonDisabledColor = this.getConfigValue('styles.buttonDisabledColor', '#cccccc');
+    const descriptionColor = this.getConfigValue('styles.descriptionColor', '#666666');
+
+    // 성공/오류 알림 스타일
+    const successBgColor = this.getConfigValue('styles.successBgColor', '#d4edda');
+    const successTextColor = this.getConfigValue('styles.successTextColor', '#155724');
+    const successBorderColor = this.getConfigValue('styles.successBorderColor', '#c3e6cb');
+    const errorAlertBgColor = this.getConfigValue('styles.errorAlertBgColor', '#f8d7da');
+    const errorAlertTextColor = this.getConfigValue('styles.errorAlertTextColor', '#721c24');
+    const errorAlertBorderColor = this.getConfigValue('styles.errorAlertBorderColor', '#f5c6cb');
 
     return `
       <style>
@@ -125,7 +148,7 @@ class FormComponent extends BaseComponent {
           font-size: 16px;
           border: 2px solid ${borderColor};
           border-radius: 8px;
-          background-color: #ffffff;
+          background-color: ${inputBgColor};
           color: ${textColor};
           transition: all 0.2s;
           outline: none;
@@ -133,11 +156,11 @@ class FormComponent extends BaseComponent {
 
         .form-input:focus {
           border-color: ${primaryColor};
-          box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+          box-shadow: 0 0 0 3px ${primaryColor}1a;
         }
 
         .form-input:disabled {
-          background-color: #f5f5f5;
+          background-color: ${inputDisabledBgColor};
           cursor: not-allowed;
         }
 
@@ -146,7 +169,7 @@ class FormComponent extends BaseComponent {
         }
 
         .form-input.error:focus {
-          box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+          box-shadow: 0 0 0 3px ${errorColor}1a;
         }
 
         .error-message {
@@ -165,7 +188,7 @@ class FormComponent extends BaseComponent {
           padding: 14px 24px;
           font-size: 16px;
           font-weight: 600;
-          color: #ffffff;
+          color: ${buttonTextColor};
           background-color: ${primaryColor};
           border: none;
           border-radius: 8px;
@@ -175,9 +198,9 @@ class FormComponent extends BaseComponent {
         }
 
         .submit-button:hover:not(:disabled) {
-          background-color: #0056b3;
+          background-color: ${buttonHoverColor};
           transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+          box-shadow: 0 4px 12px ${primaryColor}4d;
         }
 
         .submit-button:active:not(:disabled) {
@@ -185,7 +208,7 @@ class FormComponent extends BaseComponent {
         }
 
         .submit-button:disabled {
-          background-color: #cccccc;
+          background-color: ${buttonDisabledColor};
           cursor: not-allowed;
           transform: none;
         }
@@ -204,7 +227,7 @@ class FormComponent extends BaseComponent {
           left: 50%;
           margin-left: -10px;
           margin-top: -10px;
-          border: 3px solid #ffffff;
+          border: 3px solid ${buttonTextColor};
           border-radius: 50%;
           border-top-color: transparent;
           animation: spin 0.8s linear infinite;
@@ -216,7 +239,7 @@ class FormComponent extends BaseComponent {
 
         .form-description {
           font-size: 14px;
-          color: #666666;
+          color: ${descriptionColor};
           text-align: center;
           margin-bottom: 24px;
           line-height: 1.5;
@@ -225,9 +248,9 @@ class FormComponent extends BaseComponent {
         .success-message {
           display: none;
           padding: 16px;
-          background-color: #d4edda;
-          color: #155724;
-          border: 1px solid #c3e6cb;
+          background-color: ${successBgColor};
+          color: ${successTextColor};
+          border: 1px solid ${successBorderColor};
           border-radius: 8px;
           margin-top: 16px;
           text-align: center;
@@ -241,9 +264,9 @@ class FormComponent extends BaseComponent {
         .error-alert {
           display: none;
           padding: 16px;
-          background-color: #f8d7da;
-          color: #721c24;
-          border: 1px solid #f5c6cb;
+          background-color: ${errorAlertBgColor};
+          color: ${errorAlertTextColor};
+          border: 1px solid ${errorAlertBorderColor};
           border-radius: 8px;
           margin-top: 16px;
           text-align: center;
@@ -267,10 +290,10 @@ class FormComponent extends BaseComponent {
       </style>
 
       <div class="form-container">
-        <h2 class="form-title">관심고객 등록</h2>
+        <h2 class="form-title">${formTitle}</h2>
 
         <p class="form-description">
-          간단한 정보를 입력해주시면 상담 전화를 드리겠습니다.
+          ${formDescription}
         </p>
 
         <form id="lead-form">
@@ -314,17 +337,17 @@ class FormComponent extends BaseComponent {
 
           <!-- 제출 버튼 -->
           <button type="submit" class="submit-button" id="submit-button">
-            신청하기
+            ${submitButtonText}
           </button>
 
           <!-- 성공 메시지 -->
           <div class="success-message" id="success-message">
-            ✓ 신청이 완료되었습니다!
+            ${successMessage}
           </div>
 
           <!-- 오류 메시지 -->
           <div class="error-alert" id="error-alert">
-            제출 중 오류가 발생했습니다. 다시 시도해주세요.
+            ${errorMessage}
           </div>
         </form>
       </div>
@@ -755,10 +778,18 @@ class FormComponent extends BaseComponent {
    * @returns {string} Fallback HTML
    */
   renderFallback() {
-    // Config에서 폴백 전화번호 가져오기
+    // Config에서 폴백 설정 가져오기
     const fallbackPhone = this.getConfigValue('fallback.phone',
       this.getConfigValue('contactPhone', '1588-0000')
     );
+    const fallbackTitle = this.getConfigValue('fallback.title', '⚠️ 입력폼을 불러올 수 없습니다');
+    const fallbackDescription = this.getConfigValue('fallback.description', '전화로 상담 신청해주세요');
+
+    // 폴백 스타일 설정
+    const fallbackBgColor = this.getConfigValue('fallback.styles.bgColor', '#fff3cd');
+    const fallbackBorderColor = this.getConfigValue('fallback.styles.borderColor', '#ffc107');
+    const fallbackTextColor = this.getConfigValue('fallback.styles.textColor', '#856404');
+    const fallbackLinkColor = this.getConfigValue('fallback.styles.linkColor', '#007bff');
 
     // 전화번호를 tel: 링크 형식으로 변환 (하이픈 제거)
     const telLink = fallbackPhone.replace(/[^0-9]/g, '');
@@ -768,10 +799,10 @@ class FormComponent extends BaseComponent {
         :host {
           display: block;
           padding: 20px;
-          background-color: #fff3cd;
-          border: 2px solid #ffc107;
+          background-color: ${fallbackBgColor};
+          border: 2px solid ${fallbackBorderColor};
           border-radius: 8px;
-          color: #856404;
+          color: ${fallbackTextColor};
         }
         .fallback-container {
           text-align: center;
@@ -784,7 +815,7 @@ class FormComponent extends BaseComponent {
         .fallback-tel {
           font-size: 24px;
           font-weight: bold;
-          color: #007bff;
+          color: ${fallbackLinkColor};
           margin: 15px 0;
         }
         .fallback-tel a {
@@ -793,12 +824,12 @@ class FormComponent extends BaseComponent {
         }
       </style>
       <div class="fallback-container">
-        <div class="fallback-title">⚠️ 입력폼을 불러올 수 없습니다</div>
-        <p>전화로 상담 신청해주세요</p>
+        <div class="fallback-title">${fallbackTitle}</div>
+        <p>${fallbackDescription}</p>
         <div class="fallback-tel">
           <a href="tel:${telLink}">☎ ${fallbackPhone}</a>
         </div>
-        <p style="font-size: 12px; color: #666;">
+        <p style="font-size: 12px; color: ${fallbackTextColor};">
           오류: ${this.error}
         </p>
       </div>
