@@ -130,18 +130,26 @@ Window.CONFIG = {
 
 ## 🌐 Cloudflare Pages 배포
 
-### 초기 설정
+**✅ 라이브 URL:** https://100zoad-components.pages.dev
 
-1. Cloudflare Dashboard에서 프로젝트 생성
-2. GitHub 저장소 연결
-3. 빌드 설정:
-   - **빌드 명령어:** `npm run build`
-   - **빌드 출력 디렉토리:** `dist`
-   - **Node 버전:** 20
+### 배포 정보
+
+- **GitHub 레포지토리:** https://github.com/merge1108/100zoad-components
+- **프로덕션 브랜치:** master
+- **빌드 명령어:** `npm run build`
+- **빌드 출력:** `dist/`
+- **자동 배포:** ✅ 활성화
 
 ### 자동 배포
 
-`main` 브랜치에 푸시하면 자동으로 배포됩니다.
+`master` 브랜치에 푸시하면 자동으로 배포됩니다.
+
+```bash
+git add .
+git commit -m "feat: 새 기능 추가"
+git push origin master
+# → Cloudflare Pages가 자동으로 빌드 & 배포
+```
 
 ## 📚 관련 문서
 
