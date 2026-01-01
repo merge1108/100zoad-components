@@ -3,7 +3,7 @@ project_name: "100zoad"
 project_level: 3
 sprint_plan_path: "docs/sprint-plan-100zoad-2026-01-01.md"
 current_sprint: 0
-last_updated: "2026-01-01T20:00:00Z"
+last_updated: "2026-01-01T21:00:00Z"
 
 sprints:
   - sprint_number: 0
@@ -12,7 +12,7 @@ sprints:
     end_date: "2026-01-01"
     capacity_points: 19
     committed_points: 19
-    completed_points: 6
+    completed_points: 11
     status: "in_progress"
     goal: "핵심 리드 수집 기능 구현 - 사용자가 입력폼으로 리드를 등록하고 Airtable에 저장"
     stories:
@@ -39,11 +39,12 @@ sprints:
       - story_id: "STORY-003"
         title: "베이스 웹 컴포넌트 클래스"
         points: 5
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-005"
         priority: "Must Have"
         dependencies: ["STORY-001"]
+        completed_date: "2026-01-01"
 
       - story_id: "STORY-010"
         title: "입력폼 필수 필드 (이름, 전화번호)"
