@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STORY-005 테스트: 멀티페이지 모드</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      flex-direction: column;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+
+    .test-instructions {
+      background: white;
+      color: #333;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: 20px;
+    }
+
+    .test-instructions h2 {
+      margin-top: 0;
+    }
+
+    .test-instructions ul {
+      text-align: left;
+    }
+
+    .test-instructions li {
+      margin: 10px 0;
+    }
+
+    .test-info {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 12px;
+      max-width: 300px;
+      z-index: 9999;
+    }
+
+    .test-info h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 헤더 컴포넌트 -->
+  <zoad-header></zoad-header>
+
+  <!-- 히어로 섹션 -->
+  <div class="hero">
+    <h1>멀티페이지 모드 테스트</h1>
+    <p>이 페이지는 메인 페이지입니다</p>
+
+    <div class="test-instructions">
+      <h2>🧪 테스트 방법</h2>
+      <ul>
+        <li>헤더 오른쪽의 "<strong>관심고객등록</strong>" 버튼을 클릭하세요</li>
+        <li>멀티페이지 모드이므로 <code>form.html</code> 페이지로 이동합니다</li>
+        <li>애니메이션이 적용되어 눈에 띄게 표시됩니다</li>
+        <li>현재 애니메이션: <strong>glow</strong></li>
+      </ul>
+
+      <h3>✅ Acceptance Criteria 체크</h3>
+      <ul>
+        <li>✓ 맨 오른쪽 메뉴로 고정</li>
+        <li>✓ CSS 애니메이션 (glow)</li>
+        <li>✓ 멀티페이지: 입력폼 페이지로 이동</li>
+        <li>✓ Config로 타겟 URL 설정</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 테스트 정보 -->
+  <div class="test-info">
+    <h3>페이지 정보</h3>
+    <p><strong>모드:</strong> 멀티페이지</p>
+    <p><strong>타겟:</strong> form.html</p>
+    <p><strong>애니메이션:</strong> glow</p>
+  </div>
+
+  <!-- Config 설정 -->
+  <script>
+    // Window.CONFIG 전역 객체 설정
+    window.CONFIG = {
+      meta: {
+        siteName: '100zoad 테스트',
+        version: '1.0.0'
+      },
+      header: {
+        logo: {
+          url: '',
+          alt: '100zoad'
+        },
+        pageType: 'multipage',  // 멀티페이지 모드
+        menu: [
+          { text: '홈', target: 'index.html' },
+          { text: '소개', target: 'about.html' },
+          { text: '문의', target: 'contact.html' }
+        ],
+        // STORY-005: 특수 메뉴 설정 (멀티페이지 모드)
+        specialMenu: {
+          text: '관심고객등록',
+          target: 'form.html',  // 다른 페이지로 이동
+          animation: 'glow'
+        },
+        styles: {
+          bgColor: '#ffffff',
+          textColor: '#333333',
+          hoverColor: '#007bff',
+          borderColor: '#e5e5e5',
+          logoHeight: '40px',
+          headerHeight: '70px',
+          menuFontSize: '16px',
+          menuFontWeight: '500',
+          menuSpacing: '30px'
+        }
+      }
+    };
+
+    console.log('✅ Config 설정 완료 (멀티페이지 모드):', window.CONFIG);
+  </script>
+
+  <!-- 컴포넌트 로드 -->
+  <script type="module">
+    import './src/components/header/header.js';
+    console.log('✅ HeaderComponent 로드 완료');
+  </script>
+</body>
+</html>

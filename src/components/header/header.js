@@ -53,6 +53,9 @@ class HeaderComponent extends BaseComponent {
     const pageType = this.getConfigValue('pageType', 'onepage');
     const menu = this.getConfigValue('menu', []);
 
+    // 특수 메뉴 설정 (STORY-005)
+    const specialMenu = this.getConfigValue('specialMenu', null);
+
     // 스타일 설정
     const bgColor = this.getConfigValue('styles.bgColor', '#ffffff');
     const textColor = this.getConfigValue('styles.textColor', '#333333');
@@ -169,6 +172,67 @@ class HeaderComponent extends BaseComponent {
           color: ${hoverColor};
         }
 
+        /* 특수 메뉴 (STORY-005) */
+        .menu-link.special-menu {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: #ffffff !important;
+          padding: 10px 20px;
+          border-radius: 25px;
+          font-weight: 600;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .menu-link.special-menu:hover {
+          color: #ffffff !important;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 애니메이션: pulse */
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+          }
+        }
+
+        .special-menu.animation-pulse {
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* 애니메이션: glow */
+        @keyframes glow {
+          0%, 100% {
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
+          }
+          50% {
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.8), 0 0 30px rgba(118, 75, 162, 0.6);
+          }
+        }
+
+        .special-menu.animation-glow {
+          animation: glow 2s ease-in-out infinite;
+        }
+
+        /* 애니메이션: shake */
+        @keyframes shake {
+          0%, 100% {
+            transform: translateX(0);
+          }
+          10%, 30%, 50%, 70%, 90% {
+            transform: translateX(-5px);
+          }
+          20%, 40%, 60%, 80% {
+            transform: translateX(5px);
+          }
+        }
+
+        .special-menu.animation-shake {
+          animation: shake 3s ease-in-out infinite;
+        }
+
         /* 스페이서 (헤더가 fixed일 때 컨텐츠가 가려지지 않도록) */
         .header-spacer {
           height: ${headerHeight};
@@ -200,6 +264,7 @@ class HeaderComponent extends BaseComponent {
           <nav class="menu-nav" id="menu-nav">
             <ul class="menu" id="menu">
               ${this.renderMenuItems(displayMenu, pageType)}
+              ${specialMenu ? this.renderSpecialMenu(specialMenu, pageType) : ''}
             </ul>
           </nav>
         </div>
@@ -263,6 +328,41 @@ class HeaderComponent extends BaseComponent {
         </li>
       `;
     }).join('');
+  }
+
+  /**
+   * 특수 메뉴 렌더링 (STORY-005)
+   * 맨 오른쪽에 표시되는 "관심고객등록" 메뉴
+   *
+   * @param {Object} specialMenu - 특수 메뉴 설정
+   * @param {string} pageType - 페이지 타입
+   * @returns {string} HTML 문자열
+   */
+  renderSpecialMenu(specialMenu, pageType) {
+    if (!specialMenu || !specialMenu.text) {
+      return '';
+    }
+
+    const text = specialMenu.text || '관심고객등록';
+    const target = specialMenu.target || '#form-section';
+    const animation = specialMenu.animation || 'pulse'; // pulse, shake, glow
+
+    // 애니메이션 클래스 생성
+    const animationClass = animation ? `animation-${animation}` : '';
+
+    return `
+      <li class="menu-item">
+        <a
+          href="${target}"
+          class="menu-link special-menu ${animationClass}"
+          data-target="${target}"
+          data-page-type="${pageType}"
+          data-special="true"
+        >
+          ${text}
+        </a>
+      </li>
+    `;
   }
 
   /**

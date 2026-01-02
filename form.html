@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>관심고객등록 - STORY-005 테스트</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    }
+
+    .form-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      padding: 20px;
+    }
+
+    .form-container {
+      background: white;
+      color: #333;
+      padding: 40px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-container h1 {
+      margin-top: 0;
+      color: #667eea;
+    }
+
+    .success-message {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+      padding: 20px;
+      border-radius: 5px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .success-message h2 {
+      margin-top: 0;
+      font-size: 24px;
+    }
+
+    .success-message p {
+      margin-bottom: 0;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 헤더 컴포넌트 -->
+  <zoad-header></zoad-header>
+
+  <!-- 입력폼 페이지 -->
+  <div class="form-page">
+    <div class="form-container">
+      <h1>✅ 관심고객등록 페이지</h1>
+      <p>멀티페이지 모드에서 특수 메뉴 클릭 시 이 페이지로 이동합니다.</p>
+
+      <div class="success-message">
+        <h2>✓ 테스트 성공!</h2>
+        <p>특수 메뉴를 클릭하여 이 페이지로 성공적으로 이동했습니다.</p>
+        <p><strong>STORY-005 Acceptance Criteria:</strong> 멀티페이지 모드에서 입력폼 페이지로 이동 ✓</p>
+      </div>
+
+      <p style="margin-top: 30px; text-align: center; color: #666;">
+        <a href="test-story-005-multipage.html" style="color: #667eea;">← 메인 페이지로 돌아가기</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Config 설정 -->
+  <script>
+    // Window.CONFIG 전역 객체 설정
+    window.CONFIG = {
+      meta: {
+        siteName: '100zoad 테스트',
+        version: '1.0.0'
+      },
+      header: {
+        logo: {
+          url: '',
+          alt: '100zoad'
+        },
+        pageType: 'multipage',
+        menu: [
+          { text: '홈', target: 'test-story-005-multipage.html' },
+          { text: '소개', target: 'about.html' },
+          { text: '문의', target: 'contact.html' }
+        ],
+        specialMenu: {
+          text: '관심고객등록',
+          target: 'form.html',
+          animation: 'glow'
+        },
+        styles: {
+          bgColor: '#ffffff',
+          textColor: '#333333',
+          hoverColor: '#007bff',
+          borderColor: '#e5e5e5',
+          logoHeight: '40px',
+          headerHeight: '70px',
+          menuFontSize: '16px',
+          menuFontWeight: '500',
+          menuSpacing: '30px'
+        }
+      }
+    };
+
+    console.log('✅ Config 설정 완료 (입력폼 페이지):', window.CONFIG);
+  </script>
+
+  <!-- 컴포넌트 로드 -->
+  <script type="module">
+    import './src/components/header/header.js';
+    console.log('✅ HeaderComponent 로드 완료');
+  </script>
+</body>
+</html>

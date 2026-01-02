@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STORY-005 테스트: 헤더 '관심고객등록' 특수 메뉴</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    }
+
+    /* 테스트용 섹션들 */
+    .section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      font-weight: bold;
+      color: white;
+    }
+
+    #section1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    #section2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    #section3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    #form-section {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      flex-direction: column;
+    }
+
+    #form-section .form-placeholder {
+      background: white;
+      color: #333;
+      padding: 40px;
+      border-radius: 10px;
+      margin-top: 20px;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .test-info {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 12px;
+      max-width: 300px;
+      z-index: 9999;
+    }
+
+    .test-info h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+    }
+
+    .test-info ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .test-info li {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- 헤더 컴포넌트 -->
+  <zoad-header></zoad-header>
+
+  <!-- 테스트 섹션들 -->
+  <div id="section1" class="section">
+    섹션 1
+  </div>
+
+  <div id="section2" class="section">
+    섹션 2
+  </div>
+
+  <div id="section3" class="section">
+    섹션 3
+  </div>
+
+  <div id="form-section" class="section">
+    입력폼 섹션
+    <div class="form-placeholder">
+      <h2>관심고객등록 폼</h2>
+      <p>여기에 입력폼이 표시됩니다.</p>
+      <p>특수 메뉴를 클릭하면 이 섹션으로 부드럽게 스크롤됩니다.</p>
+    </div>
+  </div>
+
+  <!-- 테스트 정보 -->
+  <div class="test-info">
+    <h3>✅ Acceptance Criteria</h3>
+    <ul>
+      <li>맨 오른쪽 메뉴로 고정</li>
+      <li>CSS 애니메이션 (pulse, shake, glow)</li>
+      <li>원페이지: 입력폼 섹션으로 스크롤</li>
+      <li>Config로 타겟 설정</li>
+    </ul>
+    <p style="margin-top: 10px; font-size: 11px; opacity: 0.8;">
+      현재 애니메이션: <strong>pulse</strong><br>
+      아래 Config를 수정해서 다른 애니메이션을 테스트하세요.
+    </p>
+  </div>
+
+  <!-- Config 설정 -->
+  <script>
+    // Window.CONFIG 전역 객체 설정
+    window.CONFIG = {
+      meta: {
+        siteName: '100zoad 테스트',
+        version: '1.0.0'
+      },
+      header: {
+        logo: {
+          url: '',
+          alt: '100zoad'
+        },
+        pageType: 'onepage',
+        menu: [
+          { text: '섹션 1', target: '#section1' },
+          { text: '섹션 2', target: '#section2' },
+          { text: '섹션 3', target: '#section3' }
+        ],
+        // STORY-005: 특수 메뉴 설정
+        specialMenu: {
+          text: '관심고객등록',
+          target: '#form-section',
+          animation: 'pulse'  // 'pulse', 'shake', 'glow' 중 선택
+        },
+        styles: {
+          bgColor: '#ffffff',
+          textColor: '#333333',
+          hoverColor: '#007bff',
+          borderColor: '#e5e5e5',
+          logoHeight: '40px',
+          headerHeight: '70px',
+          menuFontSize: '16px',
+          menuFontWeight: '500',
+          menuSpacing: '30px'
+        }
+      }
+    };
+
+    console.log('✅ Config 설정 완료:', window.CONFIG);
+  </script>
+
+  <!-- 컴포넌트 로드 -->
+  <script type="module">
+    import './src/components/header/header.js';
+    console.log('✅ HeaderComponent 로드 완료');
+  </script>
+
+  <!-- 테스트 스크립트 -->
+  <script>
+    // 페이지 로드 완료 시
+    window.addEventListener('load', () => {
+      console.log('📋 STORY-005 테스트 시작');
+
+      // 특수 메뉴 요소 확인
+      setTimeout(() => {
+        const header = document.querySelector('zoad-header');
+        if (header && header.shadowRoot) {
+          const specialMenu = header.shadowRoot.querySelector('.special-menu');
+          if (specialMenu) {
+            console.log('✅ 특수 메뉴 렌더링 확인');
+            console.log('   - 텍스트:', specialMenu.textContent.trim());
+            console.log('   - 애니메이션 클래스:', specialMenu.className);
+            console.log('   - 타겟:', specialMenu.dataset.target);
+          } else {
+            console.error('❌ 특수 메뉴를 찾을 수 없습니다');
+          }
+        }
+      }, 1000);
+
+      // 애니메이션 변경 테스트 도우미
+      console.log(`
+🧪 애니메이션 테스트:
+- changeAnimation('pulse')  // pulse 애니메이션
+- changeAnimation('shake')  // shake 애니메이션
+- changeAnimation('glow')   // glow 애니메이션
+      `);
+    });
+
+    // 애니메이션 변경 함수 (콘솔에서 테스트용)
+    window.changeAnimation = function(animation) {
+      window.CONFIG.header.specialMenu.animation = animation;
+      location.reload();
+    };
+  </script>
+</body>
+</html>
