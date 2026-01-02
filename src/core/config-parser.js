@@ -181,6 +181,34 @@ class ConfigValidationError extends Error {
 }
 
 /**
+ * URL이 HTTPS인지 확인하는 헬퍼 함수
+ * Mixed Content 방지를 위한 검증
+ *
+ * @param {string} url - 검증할 URL
+ * @returns {boolean} HTTPS 또는 상대 경로이면 true
+ */
+function isSecureUrl(url) {
+  if (!url) return true; // 빈 URL은 허용 (옵션 필드일 수 있음)
+
+  // 상대 경로는 허용 (/, ./, ../, #)
+  if (url.startsWith('/') || url.startsWith('./') || url.startsWith('../') || url.startsWith('#')) {
+    return true;
+  }
+
+  // 프로토콜이 없으면 상대 경로로 간주
+  if (!url.includes('://') && !url.startsWith('//')) {
+    return true;
+  }
+
+  // HTTP는 허용하지 않음 (Mixed Content)
+  if (url.toLowerCase().startsWith('http://')) {
+    return false;
+  }
+
+  return true; // HTTPS, data:, blob: 등은 허용
+}
+
+/**
  * Config 검증 함수
  * Window.CONFIG 객체가 유효한지 검증
  *
@@ -227,7 +255,13 @@ export function validateConfig(config) {
         field: 'header.logo.url',
         message: 'header.logo.url이 필수입니다. 로고 이미지 URL을 설정해주세요.'
       });
+    } else if (!isSecureUrl(config.header.logo.url)) {
+      errors.push({
+        field: 'header.logo.url',
+        message: '⚠️ HTTPS 보안: header.logo.url은 HTTPS URL을 사용해야 합니다. HTTP는 Mixed Content 오류를 발생시킵니다.'
+      });
     }
+
     if (!config.header.pageType || !['onepage', 'multipage'].includes(config.header.pageType)) {
       errors.push({
         field: 'header.pageType',
@@ -255,6 +289,22 @@ export function validateConfig(config) {
         field: 'footer.line2.company',
         message: 'footer.line2.company (대행사 회사명)이 필수입니다.'
       });
+    }
+
+    // 법적 정보 URL HTTPS 검증
+    if (config.footer.legal) {
+      if (config.footer.legal.termsUrl && !isSecureUrl(config.footer.legal.termsUrl)) {
+        errors.push({
+          field: 'footer.legal.termsUrl',
+          message: '⚠️ HTTPS 보안: footer.legal.termsUrl은 HTTPS URL을 사용해야 합니다.'
+        });
+      }
+      if (config.footer.legal.privacyUrl && !isSecureUrl(config.footer.legal.privacyUrl)) {
+        errors.push({
+          field: 'footer.legal.privacyUrl',
+          message: '⚠️ HTTPS 보안: footer.legal.privacyUrl은 HTTPS URL을 사용해야 합니다.'
+        });
+      }
     }
   }
 
@@ -285,6 +335,11 @@ export function validateConfig(config) {
       errors.push({
         field: 'form.airtable.workerUrl',
         message: 'form.airtable.workerUrl (Cloudflare Worker URL)이 필수입니다.'
+      });
+    } else if (!isSecureUrl(config.form.airtable.workerUrl)) {
+      errors.push({
+        field: 'form.airtable.workerUrl',
+        message: '⚠️ HTTPS 보안: form.airtable.workerUrl은 HTTPS URL을 사용해야 합니다. Cloudflare Workers는 자동으로 HTTPS를 지원합니다.'
       });
     }
 

@@ -1010,6 +1010,13 @@ class FormComponent extends BaseComponent {
         throw new Error('Worker URL이 설정되지 않았습니다.');
       }
 
+      // HTTPS 검증 (NFR-003: 데이터 전송 암호화)
+      if (!workerUrl.startsWith('https://') && !workerUrl.startsWith('/')) {
+        console.error('⚠️ HTTPS 보안 오류: Worker URL은 HTTPS를 사용해야 합니다.');
+        console.error('현재 URL:', workerUrl);
+        throw new Error('보안 오류: HTTPS 연결만 허용됩니다. Worker URL을 확인해주세요.');
+      }
+
       const response = await fetch(workerUrl, {
         method: 'POST',
         headers: {

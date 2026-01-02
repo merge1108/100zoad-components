@@ -44,6 +44,25 @@ function getCorsHeaders(origin, allowedOrigins) {
 }
 
 /**
+ * 보안 헤더 생성
+ * HTTPS 강제 및 보안 강화를 위한 헤더
+ *
+ * @returns {Object} 보안 헤더 객체
+ */
+function getSecurityHeaders() {
+  return {
+    // HTTPS 강제: 브라우저가 1년간 HTTPS만 사용하도록 강제
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+    // XSS 보호
+    'X-Content-Type-Options': 'nosniff',
+    // 클릭재킹 방지
+    'X-Frame-Options': 'DENY',
+    // Referrer 정책
+    'Referrer-Policy': 'strict-origin-when-cross-origin'
+  };
+}
+
+/**
  * Rate Limiting 체크
  * IP 주소 기반으로 1분에 최대 3회 요청 허용
  *
@@ -176,11 +195,28 @@ export default {
     const origin = request.headers.get('Origin') || '';
     const clientIP = request.headers.get('CF-Connecting-IP') || 'unknown';
 
+    // HTTPS 강제 확인 (프로덕션 환경)
+    if (env.ENVIRONMENT === 'production' && url.protocol !== 'https:') {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'HTTPS 연결만 허용됩니다.'
+      }), {
+        status: 403,
+        headers: {
+          'Content-Type': 'application/json',
+          ...getSecurityHeaders()
+        }
+      });
+    }
+
     // CORS Preflight 요청 처리
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
-        headers: getCorsHeaders(origin, env.ALLOWED_ORIGINS)
+        headers: {
+          ...getCorsHeaders(origin, env.ALLOWED_ORIGINS),
+          ...getSecurityHeaders()
+        }
       });
     }
 
@@ -193,7 +229,8 @@ export default {
         status: 404,
         headers: {
           'Content-Type': 'application/json',
-          ...getCorsHeaders(origin, env.ALLOWED_ORIGINS)
+          ...getCorsHeaders(origin, env.ALLOWED_ORIGINS),
+          ...getSecurityHeaders()
         }
       });
     }
@@ -207,7 +244,8 @@ export default {
         status: 405,
         headers: {
           'Content-Type': 'application/json',
-          ...getCorsHeaders(origin, env.ALLOWED_ORIGINS)
+          ...getCorsHeaders(origin, env.ALLOWED_ORIGINS),
+          ...getSecurityHeaders()
         }
       });
     }
@@ -223,7 +261,8 @@ export default {
           headers: {
             'Content-Type': 'application/json',
             'Retry-After': '60',
-            ...getCorsHeaders(origin, env.ALLOWED_ORIGINS)
+            ...getCorsHeaders(origin, env.ALLOWED_ORIGINS),
+            ...getSecurityHeaders()
           }
         });
       }
@@ -240,7 +279,8 @@ export default {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...getCorsHeaders(origin, env.ALLOWED_ORIGINS)
+            ...getCorsHeaders(origin, env.ALLOWED_ORIGINS),
+            ...getSecurityHeaders()
           }
         });
       }
@@ -256,7 +296,8 @@ export default {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...getCorsHeaders(origin, env.ALLOWED_ORIGINS)
+            ...getCorsHeaders(origin, env.ALLOWED_ORIGINS),
+            ...getSecurityHeaders()
           }
         });
       }
@@ -271,7 +312,8 @@ export default {
           status: 500,
           headers: {
             'Content-Type': 'application/json',
-            ...getCorsHeaders(origin, env.ALLOWED_ORIGINS)
+            ...getCorsHeaders(origin, env.ALLOWED_ORIGINS),
+            ...getSecurityHeaders()
           }
         });
       }
@@ -288,7 +330,8 @@ export default {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          ...getCorsHeaders(origin, env.ALLOWED_ORIGINS)
+          ...getCorsHeaders(origin, env.ALLOWED_ORIGINS),
+          ...getSecurityHeaders()
         }
       });
 
@@ -303,7 +346,8 @@ export default {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
-          ...getCorsHeaders(origin, env.ALLOWED_ORIGINS)
+          ...getCorsHeaders(origin, env.ALLOWED_ORIGINS),
+          ...getSecurityHeaders()
         }
       });
     }
