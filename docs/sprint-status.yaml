@@ -2,8 +2,8 @@ version: "6.0.0"
 project_name: "100zoad"
 project_level: 3
 sprint_plan_path: "docs/sprint-plan-100zoad-2026-01-01.md"
-current_sprint: 3
-last_updated: "2026-01-02T23:00:00Z"
+current_sprint: 4
+last_updated: "2026-01-02T23:30:00Z"
 
 sprints:
   - sprint_number: 0
@@ -313,13 +313,61 @@ sprints:
         priority: "Must Have"
         completed_date: "2026-01-02"
 
+  - sprint_number: 4
+    name: "Sprint 4 - 아임웹 배포 최적화"
+    start_date: "2026-01-03"
+    end_date: "2026-01-03"
+    capacity_points: 12
+    committed_points: 12
+    completed_points: 5
+    status: "in_progress"
+    goal: "아임웹 환경에서 폰트, 버튼, 메시지, 헤더 렌더링 이슈 해결"
+    stories:
+      - story_id: "STORY-IMWEB-004"
+        title: "Header 배경색 및 메뉴 렌더링 수정"
+        points: 5
+        status: "completed"
+        assigned_to: "merge"
+        epic: "EPIC-IMWEB"
+        priority: "Critical"
+        dependencies: []
+        completed_date: "2026-01-02"
+
+      - story_id: "STORY-IMWEB-001"
+        title: "Pretendard 폰트 강제 적용"
+        points: 3
+        status: "pending"
+        assigned_to: "merge"
+        epic: "EPIC-IMWEB"
+        priority: "High"
+        dependencies: []
+
+      - story_id: "STORY-IMWEB-002"
+        title: "Form 버튼 초기 상태 수정"
+        points: 2
+        status: "pending"
+        assigned_to: "merge"
+        epic: "EPIC-IMWEB"
+        priority: "High"
+        dependencies: []
+
+      - story_id: "STORY-IMWEB-003"
+        title: "Form 성공 메시지 초기 상태 수정"
+        points: 2
+        status: "pending"
+        assigned_to: "merge"
+        epic: "EPIC-IMWEB"
+        priority: "High"
+        dependencies: []
+
 # Velocity Tracking (업데이트 예정)
 velocity:
-  sprint_0: null  # Sprint 완료 후 실제 완료 포인트 기록
-  sprint_1: null
-  sprint_2: null
-  sprint_3: null
-  rolling_average: null
+  sprint_0: 22  # MVP 완료
+  sprint_1: 22  # 사용자 경험 완성
+  sprint_2: 25  # 기능 확장 및 마케팅 연동
+  sprint_3: 16  # 최적화 및 문서화 (진행중)
+  sprint_4: null  # 아임웹 배포 최적화
+  rolling_average: 21.25
 
 # Team Configuration
 team:
@@ -335,12 +383,12 @@ team:
 
 # Project Metadata
 project_metadata:
-  total_epics: 8
-  total_stories: 29
-  total_points: 86
+  total_epics: 9  # 기존 8 + EPIC-IMWEB
+  total_stories: 33  # 기존 29 + IMWEB 4
+  total_points: 98  # 기존 86 + IMWEB 12
   mvp_points: 19  # Sprint 0
   mvp_completion_target: "2026-01-01"
-  full_completion_target: "2026-01-04"
+  full_completion_target: "2026-01-05"  # Sprint 4 추가로 연장
 
 # Requirements Coverage (Sprint 0)
 requirements_coverage:

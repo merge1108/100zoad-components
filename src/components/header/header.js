@@ -101,14 +101,18 @@ class HeaderComponent extends BaseComponent {
 
         /* 헤더 컨테이너 */
         .header {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: ${headerHeight};
-          background-color: ${bgColor};
-          color: ${textColor};
-          z-index: 1000;
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          width: 100% !important;
+          height: ${headerHeight} !important;
+          background-color: ${bgColor} !important;
+          color: ${textColor} !important;
+          z-index: 9999 !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+          display: block !important;
           transition: box-shadow 0.3s ease;
           border-bottom: 1px solid ${borderColor};
         }
@@ -121,25 +125,32 @@ class HeaderComponent extends BaseComponent {
         .header-inner {
           max-width: 1200px;
           margin: 0 auto;
-          height: 100%;
+          height: 100% !important;
           padding: ${headerPadding};
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          opacity: 1 !important;
+          visibility: visible !important;
         }
 
         /* 로고 */
         .logo {
-          display: flex;
-          align-items: center;
+          display: flex !important;
+          align-items: center !important;
           flex-shrink: 0;
+          opacity: 1 !important;
+          visibility: visible !important;
         }
 
         .logo img {
-          height: ${logoHeight};
-          width: ${logoWidth};
+          height: ${logoHeight} !important;
+          width: ${logoWidth} !important;
           object-fit: contain;
           cursor: pointer;
+          opacity: 1 !important;
+          visibility: visible !important;
+          display: block !important;
         }
 
         .logo-text {
@@ -152,41 +163,59 @@ class HeaderComponent extends BaseComponent {
 
         /* 메뉴 */
         .menu {
-          display: flex;
-          align-items: center;
+          display: flex !important;
+          align-items: center !important;
           gap: ${menuSpacing};
           list-style: none;
           margin: 0;
           padding: 0;
+          opacity: 1 !important;
+          visibility: visible !important;
         }
 
         .menu-item {
           margin: 0;
           padding: 0;
+          display: list-item !important;
+          opacity: 1 !important;
+          visibility: visible !important;
         }
 
         .menu-link {
-          color: ${textColor};
+          color: ${textColor} !important;
           text-decoration: none;
           font-size: ${menuFontSize};
           font-weight: ${menuFontWeight};
           transition: color 0.2s ease;
           cursor: pointer;
           white-space: nowrap;
+          display: inline-block !important;
+          opacity: 1 !important;
+          visibility: visible !important;
         }
 
         .menu-link:hover {
           color: ${hoverColor};
         }
 
+        /* PC 메뉴 네비게이션 */
+        .menu-nav {
+          display: block !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+
         /* 특수 메뉴 (STORY-005) */
         .menu-link.special-menu {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
           color: #ffffff !important;
-          padding: 10px 20px;
-          border-radius: 25px;
-          font-weight: 600;
+          padding: 10px 20px !important;
+          border-radius: 25px !important;
+          font-weight: 600 !important;
           transition: transform 0.2s ease, box-shadow 0.2s ease;
+          display: inline-block !important;
+          opacity: 1 !important;
+          visibility: visible !important;
         }
 
         .menu-link.special-menu:hover {
@@ -660,6 +689,9 @@ class HeaderComponent extends BaseComponent {
    * 이벤트 리스너 연결
    */
   attachEvents() {
+    // STORY-IMWEB-004: 렌더링 후 스타일 강제 적용
+    this.forceHeaderStyles();
+
     // 스크롤 이벤트 (헤더 그림자 효과)
     window.addEventListener('scroll', this.handleScroll.bind(this));
 
@@ -703,6 +735,93 @@ class HeaderComponent extends BaseComponent {
 
     // STORY-007: 파비콘 자동 설정
     this.setFavicon();
+  }
+
+  /**
+   * 헤더 스타일 강제 적용 (STORY-IMWEB-004)
+   * 아임웹 환경에서 CSS 우선순위 문제를 해결하기 위해
+   * JavaScript로 스타일을 강제로 적용합니다.
+   *
+   * @see STORY-IMWEB-004
+   */
+  forceHeaderStyles() {
+    try {
+      // Config에서 스타일 값 가져오기
+      const bgColor = this.getConfigValue('styles.bgColor', '#ffffff');
+      const textColor = this.getConfigValue('styles.textColor', '#333333');
+
+      // 약간의 딜레이 후 스타일 강제 적용 (아임웹 CSS 로드 후)
+      setTimeout(() => {
+        const header = this.$('#header');
+        const menuNav = this.$('#menu-nav');
+        const menu = this.$('#menu');
+        const menuLinks = this.$$('.menu-link');
+        const logo = this.$('#logo');
+
+        // 헤더 스타일 강제 적용
+        if (header) {
+          header.style.cssText = `
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            background-color: ${bgColor} !important;
+            color: ${textColor} !important;
+            z-index: 9999 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: block !important;
+          `;
+          this.debug('✅ 헤더 스타일 강제 적용 완료');
+        }
+
+        // 메뉴 네비게이션 표시
+        if (menuNav) {
+          menuNav.style.cssText = `
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          `;
+          this.debug('✅ 메뉴 네비게이션 표시 완료');
+        }
+
+        // 메뉴 리스트 표시
+        if (menu) {
+          menu.style.cssText = `
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          `;
+          this.debug('✅ 메뉴 리스트 표시 완료');
+        }
+
+        // 각 메뉴 링크 표시
+        menuLinks.forEach((link, index) => {
+          link.style.cssText = `
+            display: inline-block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            color: ${textColor} !important;
+          `;
+          this.debug(`✅ 메뉴 링크 ${index + 1} 표시 완료`);
+        });
+
+        // 로고 표시
+        if (logo) {
+          logo.style.cssText = `
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          `;
+          this.debug('✅ 로고 표시 완료');
+        }
+
+        console.log('[STORY-IMWEB-004] 헤더 스타일 강제 적용 완료');
+      }, 100); // 100ms 딜레이
+    } catch (error) {
+      console.error('[STORY-IMWEB-004] 헤더 스타일 강제 적용 실패:', error);
+    }
   }
 
   /**
