@@ -20,8 +20,30 @@
   ================================================
 -->
 
-<!-- Pretendard 폰트 (필수) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<!-- Paperlogy 폰트 (CDN via Cloudflare Pages) -->
+<style>
+  @font-face {
+    font-family: 'Paperlogy';
+    src: url('https://100zoad-components.pages.dev/fonts/Paperlogy-3Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Paperlogy';
+    src: url('https://100zoad-components.pages.dev/fonts/Paperlogy-5Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Paperlogy';
+    src: url('https://100zoad-components.pages.dev/fonts/Paperlogy-7Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+</style>
 
 <!-- 로딩 화면 (스크립트 로드 전 즉시 표시) -->
 <div id="zoad-loading-screen" style="
@@ -167,7 +189,7 @@ console.log('✅ [main.html] ZOAD_CONFIG 설정 완료');
   const script = document.createElement('script');
   script.type = 'module';
   script.crossOrigin = 'anonymous';
-  script.src = `${CLOUDFLARE_URL}/assets/main-Ch9DBpvr.js`;
+  script.src = `${CLOUDFLARE_URL}/assets/main-eVSGXr5i.js`;
 
   script.onerror = () => {
     console.error('❌ 100zoad 컴포넌트 로드 실패:', script.src);

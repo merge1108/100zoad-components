@@ -79,7 +79,7 @@ class FooterComponent extends BaseComponent {
       <style>
         :host {
           display: block;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+          font-family: 'Paperlogy', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
         }
 
         * {
@@ -176,7 +176,7 @@ class FooterComponent extends BaseComponent {
         /* 모바일 화면: 세로 스택 */
         @media (max-width: 768px) {
           .footer {
-            padding: 30px 16px;
+            padding: 30px 16px 120px 16px; /* 하단 120px: 모바일 내비게이터 가림 방지 */
           }
 
           .footer-content {
@@ -261,7 +261,7 @@ class FooterComponent extends BaseComponent {
 
             <!-- 2단: 대행사정보 -->
             <div class="footer-line" id="line2">
-              <div class="line-title">대행사 정보</div>
+              <div class="line-title">광고 대행사 정보</div>
               <div class="line-content">
                 <div class="info-item">${company}</div>
                 <div class="info-item">대표: ${ceo}</div>

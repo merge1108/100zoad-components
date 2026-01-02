@@ -110,10 +110,12 @@ export class MobileNavigatorComponent extends BaseComponent {
         :host {
           display: none; /* 기본값: 숨김 (PC) */
           position: fixed;
-          bottom: 0;
+          bottom: 0 !important;
           left: 0;
           right: 0;
           z-index: 9999;
+          margin: 0 !important;
+          padding: 0 !important;
         }
 
         .mobile-nav-container {
@@ -125,7 +127,9 @@ export class MobileNavigatorComponent extends BaseComponent {
           background-color: #ffffff;
           box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
           padding: 8px 0;
+          padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); /* iOS safe area 대응 */
           border-top: 1px solid #e0e0e0;
+          margin: 0 !important;
         }
 
         .mobile-nav-button {

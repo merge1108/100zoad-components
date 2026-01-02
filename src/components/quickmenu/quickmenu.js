@@ -52,7 +52,7 @@ export class QuickMenuComponent extends BaseComponent {
    * QuickMenuComponent 생성자
    */
   constructor() {
-    super('quickmenu');
+    super('quickMenu'); // Config 키: window.ZOAD_CONFIG.quickMenu
   }
 
   /**

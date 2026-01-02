@@ -92,7 +92,7 @@ class HeaderComponent extends BaseComponent {
       <style>
         :host {
           display: block;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+          font-family: 'Paperlogy', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
         }
 
         * {
@@ -751,6 +751,9 @@ class HeaderComponent extends BaseComponent {
       const textColor = this.getConfigValue('styles.textColor', '#333333');
       const borderColor = this.getConfigValue('styles.borderColor', '#e5e5e5');
 
+      // 모바일 여부 확인 (768px 이하)
+      const isMobile = window.innerWidth <= 768;
+
       // 약간의 딜레이 후 스타일 강제 적용 (아임웹 CSS 로드 후)
       setTimeout(() => {
         const header = this.$('#header');
@@ -760,16 +763,18 @@ class HeaderComponent extends BaseComponent {
         const menuLinks = this.$$('.menu-link');
         const specialMenuLinks = this.$$('.special-menu');
         const logo = this.$('#logo');
+        const hamburgerBtn = this.$('#hamburger-btn');
 
         // 헤더를 플로팅 레이어처럼 완전히 독립적으로 설정
         if (header) {
+          const headerHeight = isMobile ? '60px' : '70px';
           header.style.cssText = `
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             right: 0 !important;
             width: 100vw !important;
-            height: 70px !important;
+            height: ${headerHeight} !important;
             background: ${bgColor} !important;
             color: ${textColor} !important;
             z-index: 999999 !important;
@@ -789,6 +794,7 @@ class HeaderComponent extends BaseComponent {
 
         // 헤더 내부 컨테이너
         if (headerInner) {
+          const padding = isMobile ? '0 16px' : '0 20px';
           headerInner.style.cssText = `
             display: flex !important;
             align-items: center !important;
@@ -797,7 +803,7 @@ class HeaderComponent extends BaseComponent {
             max-width: 1200px !important;
             height: 100% !important;
             margin: 0 auto !important;
-            padding: 0 20px !important;
+            padding: ${padding} !important;
             opacity: 1 !important;
             visibility: visible !important;
             pointer-events: auto !important;
@@ -805,98 +811,173 @@ class HeaderComponent extends BaseComponent {
           this.debug('✅ 헤더 내부 컨테이너 스타일 적용 완료');
         }
 
-        // 메뉴 네비게이션 표시
-        if (menuNav) {
-          menuNav.style.cssText = `
-            display: flex !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            pointer-events: auto !important;
-          `;
-          this.debug('✅ 메뉴 네비게이션 표시 완료');
-        }
+        // 모바일에서는 PC 메뉴 숨기고 햄버거 표시
+        if (isMobile) {
+          // 메뉴 네비게이션 숨김 (모바일)
+          if (menuNav) {
+            menuNav.style.cssText = `
+              display: none !important;
+            `;
+            this.debug('✅ 모바일: PC 메뉴 숨김');
+          }
 
-        // 메뉴 리스트 표시
-        if (menu) {
-          menu.style.cssText = `
-            display: flex !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            list-style: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            gap: 30px !important;
-            pointer-events: auto !important;
-          `;
-          this.debug('✅ 메뉴 리스트 표시 완료');
-        }
+          // 햄버거 버튼 표시 (모바일)
+          if (hamburgerBtn) {
+            hamburgerBtn.style.cssText = `
+              display: flex !important;
+              flex-direction: column !important;
+              justify-content: space-around !important;
+              width: 30px !important;
+              height: 24px !important;
+              background: transparent !important;
+              border: none !important;
+              cursor: pointer !important;
+              padding: 0 !important;
+              z-index: 10 !important;
+              opacity: 1 !important;
+              visibility: visible !important;
+              pointer-events: auto !important;
+            `;
+            // 햄버거 라인 스타일
+            const spans = hamburgerBtn.querySelectorAll('span');
+            spans.forEach(span => {
+              span.style.cssText = `
+                width: 100% !important;
+                height: 3px !important;
+                background-color: ${textColor} !important;
+                transition: all 0.3s ease !important;
+                border-radius: 2px !important;
+                display: block !important;
+              `;
+            });
+            this.debug('✅ 모바일: 햄버거 버튼 표시');
+          }
 
-        // 각 메뉴 링크 표시
-        menuLinks.forEach((link, index) => {
-          // 특수 메뉴가 아닌 일반 메뉴만
-          if (!link.classList.contains('special-menu')) {
+          // 로고 크기 조정 (모바일)
+          if (logo) {
+            logo.style.cssText = `
+              display: flex !important;
+              align-items: center !important;
+              opacity: 1 !important;
+              visibility: visible !important;
+              pointer-events: auto !important;
+              cursor: pointer !important;
+            `;
+            const logoImg = this.$('#logo-img');
+            if (logoImg) {
+              logoImg.style.cssText = `
+                display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                height: 32px !important;
+                width: auto !important;
+                object-fit: contain !important;
+              `;
+            }
+            this.debug('✅ 모바일: 로고 스타일 적용');
+          }
+        } else {
+          // PC에서는 기존 스타일 적용
+          // 메뉴 네비게이션 표시
+          if (menuNav) {
+            menuNav.style.cssText = `
+              display: flex !important;
+              opacity: 1 !important;
+              visibility: visible !important;
+              pointer-events: auto !important;
+            `;
+            this.debug('✅ 메뉴 네비게이션 표시 완료');
+          }
+
+          // 메뉴 리스트 표시
+          if (menu) {
+            menu.style.cssText = `
+              display: flex !important;
+              opacity: 1 !important;
+              visibility: visible !important;
+              list-style: none !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              gap: 30px !important;
+              pointer-events: auto !important;
+            `;
+            this.debug('✅ 메뉴 리스트 표시 완료');
+          }
+
+          // 각 메뉴 링크 표시
+          menuLinks.forEach((link, index) => {
+            // 특수 메뉴가 아닌 일반 메뉴만
+            if (!link.classList.contains('special-menu')) {
+              link.style.cssText = `
+                display: inline-block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                color: ${textColor} !important;
+                text-decoration: none !important;
+                font-size: 16px !important;
+                font-weight: 500 !important;
+                white-space: nowrap !important;
+                pointer-events: auto !important;
+                cursor: pointer !important;
+              `;
+              this.debug(`✅ 메뉴 링크 ${index + 1} 표시 완료`);
+            }
+          });
+
+          // 특수 메뉴 버튼 (관심고객등록) 스타일 강제 적용
+          specialMenuLinks.forEach((link, index) => {
             link.style.cssText = `
               display: inline-block !important;
               opacity: 1 !important;
               visibility: visible !important;
-              color: ${textColor} !important;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+              color: #ffffff !important;
+              padding: 10px 20px !important;
+              border-radius: 25px !important;
+              font-weight: 600 !important;
               text-decoration: none !important;
               font-size: 16px !important;
-              font-weight: 500 !important;
               white-space: nowrap !important;
               pointer-events: auto !important;
               cursor: pointer !important;
+              border: none !important;
+              box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
             `;
-            this.debug(`✅ 메뉴 링크 ${index + 1} 표시 완료`);
+            this.debug(`✅ 특수 메뉴 버튼 ${index + 1} 표시 완료`);
+          });
+
+          // 햄버거 버튼 숨김 (PC)
+          if (hamburgerBtn) {
+            hamburgerBtn.style.cssText = `
+              display: none !important;
+            `;
           }
-        });
 
-        // 특수 메뉴 버튼 (관심고객등록) 스타일 강제 적용
-        specialMenuLinks.forEach((link, index) => {
-          link.style.cssText = `
-            display: inline-block !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-            color: #ffffff !important;
-            padding: 10px 20px !important;
-            border-radius: 25px !important;
-            font-weight: 600 !important;
-            text-decoration: none !important;
-            font-size: 16px !important;
-            white-space: nowrap !important;
-            pointer-events: auto !important;
-            cursor: pointer !important;
-            border: none !important;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
-          `;
-          this.debug(`✅ 특수 메뉴 버튼 ${index + 1} 표시 완료`);
-        });
-
-        // 로고 표시
-        if (logo) {
-          logo.style.cssText = `
-            display: flex !important;
-            align-items: center !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            pointer-events: auto !important;
-            cursor: pointer !important;
-          `;
-
-          // 로고 이미지도 강제 표시
-          const logoImg = this.$('#logo-img');
-          if (logoImg) {
-            logoImg.style.cssText = `
-              display: block !important;
+          // 로고 표시
+          if (logo) {
+            logo.style.cssText = `
+              display: flex !important;
+              align-items: center !important;
               opacity: 1 !important;
               visibility: visible !important;
-              height: 40px !important;
-              width: auto !important;
-              object-fit: contain !important;
+              pointer-events: auto !important;
+              cursor: pointer !important;
             `;
+
+            // 로고 이미지도 강제 표시
+            const logoImg = this.$('#logo-img');
+            if (logoImg) {
+              logoImg.style.cssText = `
+                display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                height: 40px !important;
+                width: auto !important;
+                object-fit: contain !important;
+              `;
+            }
+            this.debug('✅ 로고 표시 완료');
           }
-          this.debug('✅ 로고 표시 완료');
         }
 
         console.log('[STORY-IMWEB-004] 헤더 플로팅 레이어 스타일 강제 적용 완료');

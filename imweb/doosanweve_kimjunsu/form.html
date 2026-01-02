@@ -5,7 +5,7 @@
 
   배포: https://100zoad-components.pages.dev
   고객사: 두산위브더제니스 센트럴천안 (김준수)
-  버전: 2.1.0 (로딩 순서 제어 추가)
+  버전: 2.2.0 (다중 인스턴스 지원)
 
   포함 컴포넌트:
   - ✅ 입력폼 (관심고객 등록)
@@ -14,6 +14,7 @@
   1. 아임웹 페이지 원하는 위치에 HTML 위젯 추가
   2. 이 파일 전체를 복사하여 붙여넣기
   3. 저장
+  4. 여러 위치에 폼을 넣고 싶으면 이 파일을 복사해서 여러 번 사용 가능
 
   주의: main.html이 먼저 로드되어야 합니다!
 
@@ -23,14 +24,35 @@
 <!-- Pretendard 폰트 (이미 main.html에서 로드됨, 중복 방지용) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 
-<!-- 입력폼 섹션 (컨테이너) -->
-<div id="form-section">
+<!-- 입력폼 섹션 (컨테이너) - 고유 ID 자동 생성 -->
+<div class="zoad-form-section" id="zoad-form-container-__UNIQUE_ID__">
   <!-- 컴포넌트가 동적으로 생성됨 -->
 </div>
 
 <!-- CONFIG 설정 및 컴포넌트 생성 -->
 <script>
 (function() {
+  // 고유 ID 생성 (타임스탬프 + 랜덤)
+  const uniqueId = 'form_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+  // 현재 스크립트 바로 위의 div 찾기
+  const scripts = document.getElementsByTagName('script');
+  const currentScript = scripts[scripts.length - 1];
+  let container = currentScript.previousElementSibling;
+
+  // 컨테이너가 zoad-form-section 클래스가 아니면 다시 찾기
+  while (container && !container.classList.contains('zoad-form-section')) {
+    container = container.previousElementSibling;
+  }
+
+  // 컨테이너에 고유 ID 부여 (아직 없으면)
+  if (container && container.id.includes('__UNIQUE_ID__')) {
+    container.id = 'zoad-form-container-' + uniqueId;
+  }
+
+  const containerId = container ? container.id : null;
+  console.log('📋 [form.html] 컨테이너 ID:', containerId);
+
   // CONFIG 병합 함수
   function mergeFormConfig() {
     // ZOAD_CONFIG가 없으면 초기화
@@ -42,68 +64,73 @@
       };
     }
 
-    // 입력폼 설정 추가/병합
-    window.ZOAD_CONFIG.form = {
-      enabled: true,
-      title: '관심고객 등록',
-      description: '간단한 정보를 입력해주시면 상담 전화를 드리겠습니다.',
-      displayMode: 'section', // 'popup', 'section', 'both'
-      fields: {
-        name: {
-          label: '이름',
-          placeholder: '홍길동',
-          required: true
+    // 입력폼 설정 추가/병합 (이미 있으면 건너뜀)
+    if (!window.ZOAD_CONFIG.form) {
+      window.ZOAD_CONFIG.form = {
+        enabled: true,
+        title: '관심고객 등록',
+        description: '간단한 정보를 입력해주시면 상담 전화를 드리겠습니다.',
+        displayMode: 'both', // 'popup', 'section', 'both' - 팝업도 지원하도록 변경
+        fields: {
+          name: {
+            label: '이름',
+            placeholder: '홍길동',
+            required: true
+          },
+          phone: {
+            label: '전화번호',
+            placeholder: '010-1234-5678',
+            required: true
+          }
         },
-        phone: {
-          label: '전화번호',
-          placeholder: '010-1234-5678',
-          required: true
+        airtable: {
+          workerUrl: 'https://100zoad-airtable-proxy.choiwseok.workers.dev/submit'
+        },
+        legal: {
+          termsText: '본 서비스 이용약관에 동의합니다.',
+          privacyText: '개인정보 수집 및 이용에 동의합니다. 수집항목: 이름, 연락처 / 수집목적: 상담 및 분양 안내 / 보유기간: 분양 완료 후 1년'
+        },
+        messages: {
+          success: '✓ 신청이 완료되었습니다!',
+          error: '제출 중 오류가 발생했습니다. 다시 시도해주세요.'
+        },
+        styles: {
+          primaryColor: '#003DA5',
+          bgColor: '#ffffff',
+          textColor: '#333333'
         }
-      },
-      airtable: {
-        workerUrl: 'https://100zoad-airtable-proxy.choiwseok.workers.dev/submit'
-      },
-      legal: {
-        termsText: '본 서비스 이용약관에 동의합니다.',
-        privacyText: '개인정보 수집 및 이용에 동의합니다. 수집항목: 이름, 연락처 / 수집목적: 상담 및 분양 안내 / 보유기간: 분양 완료 후 1년'
-      },
-      messages: {
-        success: '✓ 신청이 완료되었습니다!',
-        error: '제출 중 오류가 발생했습니다. 다시 시도해주세요.'
-      },
-      styles: {
-        primaryColor: '#003DA5',
-        bgColor: '#ffffff',
-        textColor: '#333333'
-      }
-    };
-
-    console.log('✅ [form.html] CONFIG 설정 완료');
+      };
+      console.log('✅ [form.html] CONFIG 설정 완료');
+    } else {
+      console.log('⏭️ [form.html] CONFIG 이미 존재 (병합 스킵)');
+    }
   }
 
   // 컴포넌트 생성 함수
   function createFormComponent() {
-    const container = document.getElementById('form-section');
-    if (!container) {
-      console.error('❌ [form.html] form-section 컨테이너를 찾을 수 없습니다');
+    // ID로 컨테이너 찾기
+    const targetContainer = containerId ? document.getElementById(containerId) : null;
+
+    if (!targetContainer) {
+      console.error('❌ [form.html] 컨테이너를 찾을 수 없습니다:', containerId);
       return;
     }
 
-    // 이미 생성된 경우 스킵
-    if (container.querySelector('zoad-form')) {
-      console.log('⏭️ [form.html] zoad-form이 이미 존재합니다');
+    // 이미 이 컨테이너에 생성된 경우 스킵
+    if (targetContainer.querySelector('zoad-form')) {
+      console.log('⏭️ [form.html] zoad-form이 이미 존재합니다 (컨테이너:', containerId, ')');
       return;
     }
 
     // 컴포넌트 생성
     const formElement = document.createElement('zoad-form');
-    container.appendChild(formElement);
-    console.log('✅ [form.html] zoad-form 컴포넌트 생성');
+    targetContainer.appendChild(formElement);
+    console.log('✅ [form.html] zoad-form 컴포넌트 생성 (컨테이너:', containerId, ')');
 
     // 렌더링 확인
     setTimeout(function() {
       if (formElement.shadowRoot) {
-        console.log('✅ [form.html] 입력폼 렌더링 완료');
+        console.log('✅ [form.html] 입력폼 렌더링 완료 (컨테이너:', containerId, ')');
       } else {
         console.warn('⚠️ [form.html] 입력폼 렌더링 실패 - shadowRoot 없음');
       }

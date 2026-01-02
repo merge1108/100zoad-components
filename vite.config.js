@@ -11,6 +11,9 @@ import path from 'path';
  */
 
 export default defineConfig({
+  // Cloudflare Pages 배포 URL (청크 파일 로드 경로)
+  base: 'https://100zoad-components.pages.dev/',
+
   // 개발 서버 설정
   server: {
     port: 3000,
