@@ -3,7 +3,7 @@ project_name: "100zoad"
 project_level: 3
 sprint_plan_path: "docs/sprint-plan-100zoad-2026-01-01.md"
 current_sprint: 3
-last_updated: "2026-01-02T21:00:00Z"
+last_updated: "2026-01-02T22:00:00Z"
 
 sprints:
   - sprint_number: 0
@@ -255,7 +255,7 @@ sprints:
     end_date: "2026-01-04"
     capacity_points: 20
     committed_points: 20
-    completed_points: 11
+    completed_points: 13
     status: "in_progress"
     goal: "성능 최적화, 크로스 브라우저 호환성, 폴백 시스템, 문서화 완료"
     stories:
@@ -305,10 +305,11 @@ sprints:
       - story_id: "STORY-029"
         title: "Config 예시 및 문서"
         points: 2
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-005"
         priority: "Must Have"
+        completed_date: "2026-01-02"
 
 # Velocity Tracking (업데이트 예정)
 velocity:

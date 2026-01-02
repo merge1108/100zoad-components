@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>예시 2: 멀티페이지 웹사이트 (풀 구성)</title>
+
+  <!--
+    ================================================
+    예시 2: 멀티페이지 웹사이트 (풀 구성)
+    ================================================
+
+    사용 시나리오:
+    - 여러 페이지로 구성된 웹사이트
+    - 모든 컴포넌트 활성화 (헤더, 푸터, 입력폼, 퀵메뉴, 모바일 내비게이터)
+    - 추가 입력 필드 사용 (주소, 관심평형, 방문 희망 일시)
+    - GTM/GA4 분석 도구 연동
+
+    특징:
+    - 완전한 구성의 복합 웹사이트
+    - 멀티페이지 네비게이션
+    - 상세한 리드 정보 수집
+    - 마케팅 분석 도구 연동
+  -->
+
+  <script>
+    window.CONFIG = {
+      // 1. 기본 정보
+      meta: {
+        siteName: '강남 센트럴 파크',
+        version: '1.0.0',
+        lastUpdated: '2026-01-01'
+      },
+
+      // 2. 헤더 (멀티페이지 설정)
+      header: {
+        logo: {
+          url: 'https://example.com/logo-gangnam.png',
+          alt: '강남 센트럴 파크'
+        },
+        pageType: 'multipage',  // 멀티페이지 모드
+        menu: [
+          { text: '홈', target: '/index.html' },
+          { text: '단지정보', target: '/about.html' },
+          { text: '입지환경', target: '/location.html' },
+          { text: '세대정보', target: '/plan.html' },
+          { text: '커뮤니티', target: '/community.html' },
+          { text: '분양안내', target: '/info.html' }
+        ],
+        specialMenu: {
+          text: '관심고객등록',
+          animation: 'glow',
+          target: '/form.html'
+        },
+        mobile: {
+          breakpoint: 768,
+          hamburgerPosition: 'right'
+        },
+        styles: {
+          bgColor: '#1a1a1a',
+          textColor: '#ffffff',
+          hoverColor: '#ffd700'
+        }
+      },
+
+      // 3. 푸터 (전체 정보)
+      footer: {
+        line1: {
+          siteName: '강남 센트럴 파크',
+          phone: '1588-0000'
+        },
+        line2: {
+          company: '100zoad 마케팅 대행사',
+          ceo: '김대표',
+          phone: '02-1234-5678',
+          businessNumber: '123-45-67890'
+        },
+        legal: {
+          termsUrl: 'https://example.com/terms',
+          privacyUrl: 'https://example.com/privacy',
+          openIn: 'newTab'
+        },
+        styles: {
+          bgColor: '#2a2a2a',
+          textColor: '#cccccc'
+        }
+      },
+
+      // 4. 입력폼 (추가 필드 포함)
+      form: {
+        displayMode: 'both',
+        fields: {
+          name: {
+            label: '성함',
+            placeholder: '예: 홍길동',
+            required: true
+          },
+          phone: {
+            label: '휴대폰 번호',
+            placeholder: '예: 010-1234-5678',
+            required: true
+          },
+          additional: [
+            {
+              type: 'text',
+              name: 'address',
+              label: '현재 거주지',
+              placeholder: '예: 서울시 강남구',
+              required: false
+            },
+            {
+              type: 'dropdown',
+              name: 'area',
+              label: '관심 평형',
+              options: ['59㎡', '84㎡', '114㎡', '기타'],
+              required: true
+            },
+            {
+              type: 'datetime',
+              name: 'visitDate',
+              label: '방문 희망 일시',
+              required: false
+            }
+          ]
+        },
+        legal: {
+          termsText: `
+            [이용약관]
+            제1조 (목적)
+            본 약관은 100zoad가 제공하는 분양 상담 서비스의 이용과 관련하여 회사와 회원 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
+            ... (실제 약관으로 교체)
+          `,
+          privacyText: `
+            [개인정보처리방침]
+            1. 수집하는 개인정보 항목
+            - 필수: 성함, 휴대폰 번호
+            - 선택: 현재 거주지, 관심 평형, 방문 희망 일시
+
+            2. 개인정보의 수집 및 이용 목적
+            - 분양 상담 및 안내
+            - 마케팅 활동 및 이벤트 안내
+
+            3. 개인정보의 보유 및 이용 기간
+            - 수집일로부터 3년
+            ... (실제 방침으로 교체)
+          `
+        },
+        messages: {
+          success: '✓ 관심고객 등록이 완료되었습니다!\n\n빠른 시일 내에 전문 상담사가 연락드리겠습니다.\n감사합니다.',
+          error: '⚠️ 제출 중 오류가 발생했습니다.\n\n네트워크 연결을 확인하시고\n잠시 후 다시 시도해주세요.'
+        },
+        airtable: {
+          workerUrl: 'https://gangnam-central-park.workers.dev/submit'
+        },
+        styles: {
+          bgColor: '#f8f9fa',
+          textColor: '#333333',
+          primaryColor: '#1a73e8',
+          borderColor: '#dee2e6',
+          errorColor: '#dc3545'
+        }
+      },
+
+      // 5. PC 퀵메뉴 (4개 버튼)
+      quickMenu: {
+        enabled: true,
+        position: {
+          right: '30px',
+          top: '50%'
+        },
+        buttons: [
+          {
+            text: '관심고객등록',
+            icon: '📝',
+            action: 'openForm',
+            color: '#1a73e8'
+          },
+          {
+            text: '전화상담',
+            icon: '📞',
+            action: 'call',
+            phone: '1588-0000',
+            color: '#28a745'
+          },
+          {
+            text: '카카오톡',
+            icon: '💬',
+            action: 'link',
+            url: 'https://pf.kakao.com/_yourID',
+            target: '_blank',
+            color: '#fee500'
+          },
+          {
+            text: '오시는 길',
+            icon: '📍',
+            action: 'link',
+            url: '/location.html',
+            target: '_self',
+            color: '#ff5722'
+          }
+        ]
+      },
+
+      // 6. 모바일 내비게이터 (3개 버튼)
+      mobileNav: {
+        enabled: true,
+        buttons: [
+          {
+            text: '상담신청',
+            icon: '📝',
+            action: 'openForm',
+            color: '#1a73e8'
+          },
+          {
+            text: '전화걸기',
+            icon: '📞',
+            action: 'call',
+            phone: '1588-0000',
+            color: '#28a745'
+          },
+          {
+            text: '카카오톡',
+            icon: '💬',
+            action: 'link',
+            url: 'https://pf.kakao.com/_yourID',
+            target: '_blank',
+            color: '#fee500'
+          }
+        ]
+      },
+
+      // 7. 반응형 설정
+      responsive: {
+        breakpoint: 768
+      },
+
+      // 8. 분석 도구 (GTM + GA4 + Google Ads)
+      analytics: {
+        gtmId: 'GTM-XXXXXXX',  // 실제 GTM ID로 교체
+        events: {
+          form_submit: 'form_submit',
+          call_click: 'call_click'
+        }
+      },
+
+      // 9. Graceful Degradation
+      fallback: {
+        enabled: true,
+        timeout: 3000
+      }
+    };
+  </script>
+
+  <!-- 컴포넌트 로드 -->
+  <script type="module">
+    const CLOUDFLARE_URL = 'https://100zoad-components.pages.dev';
+    const components = [
+      '/src/core/config-parser.js',
+      '/src/core/base-component.js',
+      '/src/components/header/header.js',
+      '/src/components/footer/footer.js',
+      '/src/components/form/form.js',
+      '/src/components/quickmenu/quickmenu.js',
+      '/src/components/mobile-nav/mobile-nav.js'
+    ];
+
+    components.forEach(component => {
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = `${CLOUDFLARE_URL}${component}`;
+      document.head.appendChild(script);
+    });
+  </script>
+
+  <!-- Google Tag Manager -->
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');
+  </script>
+</head>
+<body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <!-- 헤더 -->
+  <zoad-header></zoad-header>
+
+  <!-- 메인 콘텐츠 -->
+  <main>
+    <!-- 아임웹 페이지 내용 -->
+    <h1>강남 센트럴 파크</h1>
+    <p>아임웹에서 작성한 내용...</p>
+
+    <!-- 입력폼 섹션 (선택적으로 사용) -->
+    <section id="form-section">
+      <zoad-form mode="section"></zoad-form>
+    </section>
+  </main>
+
+  <!-- 푸터 -->
+  <zoad-footer></zoad-footer>
+
+  <!-- 퀵메뉴 -->
+  <zoad-quickmenu></zoad-quickmenu>
+
+  <!-- 모바일 내비게이터 -->
+  <zoad-mobile-nav></zoad-mobile-nav>
+
+  <!-- 입력폼 팝업 -->
+  <zoad-form mode="popup"></zoad-form>
+</body>
+</html>
