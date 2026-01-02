@@ -3,7 +3,7 @@ project_name: "100zoad"
 project_level: 3
 sprint_plan_path: "docs/sprint-plan-100zoad-2026-01-01.md"
 current_sprint: 2
-last_updated: "2026-01-02T18:00:00Z"
+last_updated: "2026-01-02T19:00:00Z"
 
 sprints:
   - sprint_number: 0
@@ -164,7 +164,7 @@ sprints:
     end_date: "2026-01-03"
     capacity_points: 25
     committed_points: 25
-    completed_points: 18
+    completed_points: 21
     status: "in_progress"
     goal: "동적 필드, 이벤트 추적, 반응형 디자인 완성하여 실전 배포 준비"
     stories:
@@ -225,10 +225,11 @@ sprints:
       - story_id: "STORY-021"
         title: "GTM/GA4 전환 이벤트 추적"
         points: 3
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-006"
         priority: "Must Have"
+        completed_date: "2026-01-02"
 
       - story_id: "STORY-023"
         title: "PC/모바일 반응형 전환"
