@@ -51,6 +51,13 @@ class FooterComponent extends BaseComponent {
     const companyPhone = line2.phone || '02-0000-0000';
     const businessNumber = line2.businessNumber || '000-00-00000';
 
+    // 법적 정보 링크
+    const legal = this.getConfigValue('legal', {});
+    const termsUrl = legal.termsUrl || '';
+    const privacyUrl = legal.privacyUrl || '';
+    const openIn = legal.openIn || 'newTab'; // "popup" | "newTab"
+    const showLegalLinks = termsUrl || privacyUrl;
+
     // 스타일 설정
     const bgColor = this.getConfigValue('styles.bgColor', '#f8f9fa');
     const textColor = this.getConfigValue('styles.textColor', '#666666');
@@ -199,6 +206,41 @@ class FooterComponent extends BaseComponent {
             content: '';
             margin: 0;
           }
+
+          .legal-links {
+            margin-top: 16px;
+            padding-top: 16px;
+          }
+
+          .legal-links a {
+            font-size: 13px;
+          }
+        }
+
+        /* 법적 정보 링크 섹션 */
+        .legal-links {
+          margin-top: 24px;
+          padding-top: 20px;
+          border-top: 1px solid ${borderColor};
+          text-align: center;
+        }
+
+        .legal-links a {
+          color: ${linkColor};
+          text-decoration: none;
+          font-size: ${fontSize};
+          font-weight: 500;
+        }
+
+        .legal-links a:hover {
+          text-decoration: underline;
+        }
+
+        .legal-links a:not(:last-child)::after {
+          content: ' | ';
+          margin: 0 12px;
+          color: ${textColor};
+          font-weight: normal;
         }
       </style>
 
@@ -230,6 +272,14 @@ class FooterComponent extends BaseComponent {
               </div>
             </div>
           </div>
+
+          <!-- 법적 정보 링크 -->
+          ${showLegalLinks ? `
+          <div class="legal-links" id="legal-links">
+            ${termsUrl ? `<a href="${termsUrl}" class="legal-link" data-type="terms" data-open-in="${openIn}"${openIn === 'newTab' ? ' target="_blank" rel="noopener noreferrer"' : ''}>이용약관</a>` : ''}
+            ${privacyUrl ? `<a href="${privacyUrl}" class="legal-link" data-type="privacy" data-open-in="${openIn}"${openIn === 'newTab' ? ' target="_blank" rel="noopener noreferrer"' : ''}>개인정보처리방침</a>` : ''}
+          </div>
+          ` : ''}
         </div>
       </footer>
     `;
@@ -239,7 +289,7 @@ class FooterComponent extends BaseComponent {
    * 이벤트 리스너 연결
    */
   attachEvents() {
-    this.debug('푸터 컴포넌트에는 별도 이벤트가 없습니다.');
+    this.debug('푸터 이벤트 리스너 연결 중...');
 
     // 전화번호 링크 클릭 이벤트 (GTM 추적용, 향후 구현)
     const phoneLinks = this.$$('.phone-link');
@@ -252,6 +302,56 @@ class FooterComponent extends BaseComponent {
         // this.trackPhoneClick(phone);
       });
     });
+
+    // 법적 정보 링크 클릭 이벤트
+    const legalLinks = this.$$('.legal-link');
+    legalLinks.forEach(link => {
+      link.addEventListener('click', (event) => {
+        const openIn = link.getAttribute('data-open-in');
+        const linkType = link.getAttribute('data-type');
+        const url = link.getAttribute('href');
+
+        this.debug(`법적 링크 클릭: ${linkType}, openIn: ${openIn}, url: ${url}`);
+
+        // popup 모드인 경우 기본 동작 방지하고 팝업 열기
+        if (openIn === 'popup') {
+          event.preventDefault();
+          this.openPopup(url, linkType);
+        }
+        // newTab 모드는 기본 동작(새 창)을 허용
+        // 하지만 target="_blank"가 없으므로 추가 필요
+
+        // TODO: STORY-021에서 GTM 이벤트 추적 추가
+        // this.trackLegalLinkClick(linkType);
+      });
+    });
+  }
+
+  /**
+   * 팝업 창 열기
+   *
+   * @param {string} url - 팝업에서 열 URL
+   * @param {string} type - 링크 타입 ('terms' | 'privacy')
+   */
+  openPopup(url, type) {
+    const windowName = type === 'terms' ? 'TermsPopup' : 'PrivacyPopup';
+    const windowFeatures = 'width=800,height=600,scrollbars=yes,resizable=yes';
+
+    try {
+      const popup = window.open(url, windowName, windowFeatures);
+
+      if (popup) {
+        popup.focus();
+        this.debug(`팝업 열기 성공: ${type}`);
+      } else {
+        // 팝업 차단된 경우 새 탭으로 폴백
+        this.debug(`팝업 차단됨. 새 탭으로 폴백: ${type}`);
+        window.open(url, '_blank');
+      }
+    } catch (error) {
+      this.debug(`팝업 열기 오류: ${error.message}. 새 탭으로 폴백`);
+      window.open(url, '_blank');
+    }
   }
 
   /**
