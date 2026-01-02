@@ -84,12 +84,19 @@ submitButton.style.backgroundColor = config.styles.primaryColor;
 
 ## 🛠️ Implementation Tasks
 
-1. **Form.html CSS 수정**
+### 아임웹 배포 파일 업데이트
+
+**대상 파일:**
+- `imweb/doosanweve_kimjunsu/form.html` - 폼 버튼 초기 상태 수정
+
+**작업 내용:**
+
+1. **form.html CSS 수정**
    - [ ] `.zoad-form-submit-button`에 `!important` 추가
    - [ ] background-color, color, cursor 모두 강제 적용
    - [ ] `:hover`, `:disabled` 상태별 스타일 명확히 분리
 
-2. **Form.html JavaScript 수정**
+2. **form.html JavaScript 수정**
    - [ ] 초기화 후 `disabled = false` 명시
    - [ ] `loading` 클래스 제거 확인
    - [ ] 버튼 색상 강제 설정

@@ -322,9 +322,14 @@ sprints:
     completed_points: 5
     status: "in_progress"
     goal: "아임웹 환경에서 폰트, 버튼, 메시지, 헤더 렌더링 이슈 해결"
+    deployment_site: "doosanweve_kimjunsu"
+    deployment_files:
+      - "imweb/doosanweve_kimjunsu/main.html"
+      - "imweb/doosanweve_kimjunsu/form.html"
+      - "imweb/doosanweve_kimjunsu/footer.html"
     stories:
       - story_id: "STORY-IMWEB-004"
-        title: "Header 배경색 및 메뉴 렌더링 수정"
+        title: "Header 배경색 및 메뉴 렌더링 수정 (가짜 헤더)"
         points: 5
         status: "completed"
         assigned_to: "merge"
@@ -332,6 +337,8 @@ sprints:
         priority: "Critical"
         dependencies: []
         completed_date: "2026-01-02"
+        deployment_files: ["imweb/doosanweve_kimjunsu/main.html"]
+        notes: "플로팅 레이어 방식으로 헤더 구현, z-index: 999999"
 
       - story_id: "STORY-IMWEB-001"
         title: "Pretendard 폰트 강제 적용"
@@ -341,6 +348,11 @@ sprints:
         epic: "EPIC-IMWEB"
         priority: "High"
         dependencies: []
+        deployment_files:
+          - "imweb/doosanweve_kimjunsu/main.html"
+          - "imweb/doosanweve_kimjunsu/form.html"
+          - "imweb/doosanweve_kimjunsu/footer.html"
+        notes: "3개 파일 모두 폰트 강제 적용 필요"
 
       - story_id: "STORY-IMWEB-002"
         title: "Form 버튼 초기 상태 수정"
@@ -350,6 +362,8 @@ sprints:
         epic: "EPIC-IMWEB"
         priority: "High"
         dependencies: []
+        deployment_files: ["imweb/doosanweve_kimjunsu/form.html"]
+        notes: "버튼 초기 상태 파란색, 활성화로 수정"
 
       - story_id: "STORY-IMWEB-003"
         title: "Form 성공 메시지 초기 상태 수정"
@@ -359,6 +373,8 @@ sprints:
         epic: "EPIC-IMWEB"
         priority: "High"
         dependencies: []
+        deployment_files: ["imweb/doosanweve_kimjunsu/form.html"]
+        notes: "성공 메시지 초기 숨김 처리"
 
 # Velocity Tracking (업데이트 예정)
 velocity:

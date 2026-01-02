@@ -82,12 +82,19 @@ errorAlert.style.display = 'none';
 
 ## 🛠️ Implementation Tasks
 
-1. **Form.html CSS 수정**
+### 아임웹 배포 파일 업데이트
+
+**대상 파일:**
+- `imweb/doosanweve_kimjunsu/form.html` - 폼 성공 메시지 초기 상태 수정
+
+**작업 내용:**
+
+1. **form.html CSS 수정**
    - [ ] `.zoad-form-success-message`에 `display: none !important`
    - [ ] `.zoad-form-success-message.show`에 `display: block !important`
    - [ ] `.zoad-form-error-alert` 동일하게 적용
 
-2. **Form.html JavaScript 수정**
+2. **form.html JavaScript 수정**
    - [ ] 초기화 직후 `.show` 클래스 제거
    - [ ] `display: none` 강제 설정
    - [ ] 제출 성공 시에만 `.show` 추가

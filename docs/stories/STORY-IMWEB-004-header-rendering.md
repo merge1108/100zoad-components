@@ -142,28 +142,40 @@ if (document.readyState === 'loading') {
 
 ## 🛠️ Implementation Tasks
 
+### 아임웹 배포 파일 업데이트
+
+**대상 파일:**
+- `imweb/doosanweve_kimjunsu/main.html` - 가짜 헤더(플로팅 레이어) 방식으로 구현
+
+**전략:**
+- 아임웹의 기존 헤더와 싸우지 말고, 완전히 독립적인 플로팅 레이어로 헤더 구현
+- z-index: 999999로 최상위 레이어 보장
+- 모든 스타일을 JavaScript로 강제 적용
+
+**작업 내용:**
+
 ### Phase 1: CSS 강화
-- [ ] 모든 헤더 관련 CSS에 `!important` 추가
-- [ ] `opacity: 1`, `visibility: visible` 명시
-- [ ] `z-index: 9999` 설정
-- [ ] `display` 속성 명시 (flex, block 등)
+- [x] 모든 헤더 관련 CSS에 `!important` 추가 ✓
+- [x] `opacity: 1`, `visibility: visible` 명시 ✓
+- [x] `z-index: 999999` 설정 ✓
+- [x] `display` 속성 명시 (flex, block 등) ✓
 
-### Phase 2: JavaScript 디버깅
-- [ ] `console.log`로 container 확인
-- [ ] `console.log`로 config 확인
-- [ ] DOMContentLoaded 이벤트 추가
-- [ ] 렌더링 후 스타일 강제 적용
+### Phase 2: JavaScript 초기화 강화
+- [x] `forceHeaderStyles()` 메서드 추가 ✓
+- [x] 플로팅 레이어 방식으로 헤더 독립화 ✓
+- [x] 렌더링 후 스타일 강제 적용 ✓
+- [x] 특수 메뉴(관심고객등록) 버튼 배경 강제 적용 ✓
 
-### Phase 3: 검증
-- [ ] 브라우저 콘솔에서 에러 확인
-- [ ] Elements 탭에서 실제 렌더링된 HTML 확인
-- [ ] Computed 탭에서 최종 CSS 값 확인
-- [ ] Network 탭에서 리소스 로딩 확인
+### Phase 3: 아임웹 배포 파일 생성
+- [ ] `main.html`에 가짜 헤더 적용
+- [ ] 빌드된 헤더 컴포넌트 통합
+- [ ] z-index, pointer-events 검증
 
 ### Phase 4: 아임웹 환경 테스트
 - [ ] 아임웹에 배포
-- [ ] 실제 환경에서 테스트
-- [ ] 다른 페이지 요소와 충돌 확인
+- [ ] 헤더 배경색 흰색 확인
+- [ ] 메뉴 렌더링 확인
+- [ ] 관심고객등록 버튼 배경 확인
 - [ ] 모바일/PC 모두 테스트
 
 ---

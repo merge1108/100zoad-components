@@ -72,17 +72,26 @@
 
 ## 🛠️ Implementation Tasks
 
-1. **Header.html**
+### 아임웹 배포 파일 업데이트
+
+**대상 파일:**
+- `imweb/doosanweve_kimjunsu/main.html` - 헤더 폰트 적용
+- `imweb/doosanweve_kimjunsu/form.html` - 폼 폰트 적용
+- `imweb/doosanweve_kimjunsu/footer.html` - 푸터 폰트 적용
+
+**작업 내용:**
+
+1. **main.html (Header 부분)**
    - [ ] `@import` 제거, `<link>` 태그로 변경
    - [ ] 모든 선택자에 `!important` 추가
    - [ ] font-weight 검증 (300, 500, 700만 사용)
 
-2. **Footer.html**
+2. **footer.html**
    - [ ] `@import` 제거, `<link>` 태그로 변경
    - [ ] 모든 선택자에 `!important` 추가
    - [ ] font-weight 검증
 
-3. **Form.html**
+3. **form.html**
    - [ ] `@import` 제거, `<link>` 태그로 변경
    - [ ] 모든 선택자에 `!important` 추가
    - [ ] font-weight 검증
