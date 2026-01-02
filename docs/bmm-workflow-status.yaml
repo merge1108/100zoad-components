@@ -7,7 +7,7 @@ project_type: "web-app"
 project_level: 3
 communication_language: "korean"
 output_language: "korean"
-last_updated: "2026-01-01T15:00:00Z"
+last_updated: "2026-01-02T23:30:00Z"
 
 # Workflow Status Tracking
 # Status values:
@@ -27,7 +27,7 @@ workflow_status:
 
   - name: brainstorm-project
     phase: 1
-    status: "optional"
+    status: "docs/brainstorming-template-design-deployment-2026-01-02.md"
     description: "Structured brainstorming session"
 
   - name: research
