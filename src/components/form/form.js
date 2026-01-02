@@ -12,6 +12,7 @@
  */
 
 import { BaseComponent } from '../../core/base-component.js';
+import { trackFormSubmit } from '../../utils/analytics.js';
 
 /**
  * Form 웹 컴포넌트
@@ -1022,6 +1023,10 @@ class FormComponent extends BaseComponent {
       if (response.ok && result.success) {
         // 성공
         this.debug('제출 성공:', result);
+
+        // GTM/GA4 전환 이벤트 추적 (STORY-021)
+        await trackFormSubmit(this.formData, this.config);
+
         this.setSubmitState('success', prefix);
         this.resetForm(prefix);
       } else {

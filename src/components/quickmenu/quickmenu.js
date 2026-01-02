@@ -13,6 +13,7 @@
  */
 
 import BaseComponent from '../../core/base-component.js';
+import { trackCallClick } from '../../utils/analytics.js';
 
 /**
  * 퀵메뉴 웹 컴포넌트
@@ -302,6 +303,9 @@ export class QuickMenuComponent extends BaseComponent {
     }
 
     this.debug('전화걸기:', phone);
+
+    // GTM/GA4 전환 이벤트 추적 (STORY-021)
+    trackCallClick(phone, 'quickmenu', this.config);
 
     // 모바일: tel: 링크로 직접 전화 앱 실행
     // PC: alert 또는 전화번호 복사
