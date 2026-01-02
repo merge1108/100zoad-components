@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STORY-012: 추가 필드 테스트</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
+
+    .test-header {
+      background-color: #007bff;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+
+    .test-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 24px;
+    }
+
+    .test-header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .test-section {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+
+    .test-section h2 {
+      margin: 0 0 20px 0;
+      font-size: 20px;
+      color: #333;
+    }
+
+    .test-info {
+      background-color: #e7f3ff;
+      border-left: 4px solid #007bff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+
+    .test-info h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      color: #007bff;
+    }
+
+    .test-info ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .test-info li {
+      margin-bottom: 5px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin-right: 10px;
+    }
+
+    .button:hover {
+      background-color: #218838;
+    }
+
+    .button.secondary {
+      background-color: #6c757d;
+    }
+
+    .button.secondary:hover {
+      background-color: #5a6268;
+    }
+
+    .note {
+      background-color: #fff3cd;
+      border-left: 4px solid: #ffc107;
+      padding: 12px;
+      margin-top: 20px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-header">
+    <h1>🧪 STORY-012 테스트: 선택 필드 동적 구성</h1>
+    <p>Form Component의 추가 동적 필드 기능 테스트</p>
+  </div>
+
+  <div class="test-section">
+    <h2>테스트 시나리오</h2>
+    <div class="test-info">
+      <h3>구현된 기능</h3>
+      <ul>
+        <li>✓ 텍스트 필드 (type: text)</li>
+        <li>✓ 드롭다운 필드 (type: dropdown)</li>
+        <li>✓ 날짜+시간 세트 필드 (type: datetime)</li>
+        <li>✓ 각 필드별 필수/선택 설정</li>
+        <li>✓ Config에서 동적으로 추가/제거</li>
+      </ul>
+    </div>
+
+    <div class="test-info">
+      <h3>Acceptance Criteria 검증</h3>
+      <ul>
+        <li>AC1: 지원 필드 타입 (text, dropdown, datetime) - ✓</li>
+        <li>AC2: Config에서 필드 추가/제거 - ✓</li>
+        <li>AC3: 각 필드별 필수/선택 설정 - ✓</li>
+        <li>AC4: 드롭다운 옵션 config로 설정 - ✓</li>
+        <li>AC5: 날짜+시간은 하나의 세트로 표시 - ✓</li>
+      </ul>
+    </div>
+
+    <button class="button" onclick="window.openZoadForm()">입력폼 팝업 열기</button>
+    <button class="button secondary" onclick="window.scrollTo({top: document.getElementById('form-section').offsetTop, behavior: 'smooth'})">섹션 모드로 이동</button>
+
+    <div class="note">
+      <strong>주의:</strong> 이 테스트는 Cloudflare Worker URL이 실제로 설정되어 있지 않으므로 제출 시 네트워크 오류가 발생합니다. 폼 검증 및 UI만 테스트하세요.
+    </div>
+  </div>
+
+  <!-- 섹션 모드 폼 -->
+  <div id="form-section" class="test-section">
+    <h2>섹션 모드 입력폼</h2>
+    <zoad-form></zoad-form>
+  </div>
+
+  <!-- Config 설정 -->
+  <script>
+    window.CONFIG = {
+      meta: {
+        siteName: 'STORY-012 테스트',
+        version: '1.0.0',
+        lastUpdated: '2026-01-02',
+        debug: true  // 디버그 모드 활성화
+      },
+      form: {
+        displayMode: 'both',  // 섹션과 팝업 둘 다 지원
+        title: '관심고객 등록',
+        description: '간단한 정보를 입력해주시면 상담 전화를 드리겠습니다.',
+        submitButtonText: '신청하기',
+        fields: {
+          name: {
+            label: '이름',
+            placeholder: '홍길동',
+            required: true
+          },
+          phone: {
+            label: '전화번호',
+            placeholder: '010-0000-0000',
+            required: true
+          },
+          // 추가 동적 필드 (STORY-012)
+          additional: [
+            {
+              type: 'text',
+              name: 'address',
+              label: '주소',
+              placeholder: '서울시 강남구...',
+              required: false
+            },
+            {
+              type: 'text',
+              name: 'visitors',
+              label: '방문 인원',
+              placeholder: '예: 2명',
+              required: false
+            },
+            {
+              type: 'dropdown',
+              name: 'interest_type',
+              label: '관심 평형',
+              options: ['59㎡ (18평)', '84㎡ (25평)', '100㎡ (30평)', '120㎡ (36평)'],
+              required: true
+            },
+            {
+              type: 'dropdown',
+              name: 'loan',
+              label: '대출 희망 여부',
+              options: ['예', '아니오', '상담 필요'],
+              required: false
+            },
+            {
+              type: 'datetime',
+              name: 'visit_datetime',
+              label: '방문 희망 일시',
+              required: true
+            }
+          ]
+        },
+        legal: {
+          termsTitle: '이용약관',
+          termsText: `
+제1조 (목적)
+본 약관은 회사가 제공하는 서비스의 이용과 관련하여 회사와 이용자의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
+
+제2조 (정의)
+"서비스"란 회사가 제공하는 상담 신청 및 정보 제공 서비스를 의미합니다.
+"이용자"란 본 약관에 따라 회사가 제공하는 서비스를 이용하는 고객을 의미합니다.
+          `,
+          privacyTitle: '개인정보처리방침',
+          privacyText: `
+1. 개인정보의 수집 및 이용 목적
+회사는 수집한 개인정보를 다음의 목적을 위해 활용합니다.
+- 상담 신청 및 서비스 제공
+- 고객 문의 및 불만 처리
+
+2. 수집하는 개인정보의 항목
+회사는 상담 신청을 위해 아래와 같은 개인정보를 수집하고 있습니다.
+- 필수항목: 이름, 전화번호
+- 선택항목: 주소, 방문 인원, 관심 평형, 방문 희망 일시
+
+3. 개인정보의 보유 및 이용기간
+회사는 개인정보 수집 및 이용목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다.
+단, 관계법령의 규정에 의하여 보존할 필요가 있는 경우 일정기간 동안 개인정보를 보관합니다.
+          `
+        },
+        messages: {
+          success: '✓ 신청이 완료되었습니다! 곧 연락드리겠습니다.',
+          error: '제출 중 오류가 발생했습니다. 다시 시도해주세요.'
+        },
+        airtable: {
+          workerUrl: 'https://not-configured.workers.dev/submit'  // 테스트용 (실제로는 작동하지 않음)
+        },
+        styles: {
+          bgColor: '#ffffff',
+          textColor: '#333333',
+          primaryColor: '#007bff',
+          borderColor: '#dddddd',
+          errorColor: '#dc3545',
+          inputBgColor: '#ffffff',
+          inputDisabledBgColor: '#f5f5f5',
+          buttonTextColor: '#ffffff',
+          buttonHoverColor: '#0056b3',
+          buttonDisabledColor: '#cccccc',
+          descriptionColor: '#666666',
+          successBgColor: '#d4edda',
+          successTextColor: '#155724',
+          successBorderColor: '#c3e6cb',
+          errorAlertBgColor: '#f8d7da',
+          errorAlertTextColor: '#721c24',
+          errorAlertBorderColor: '#f5c6cb'
+        }
+      }
+    };
+  </script>
+
+  <!-- Form Component 로드 -->
+  <script type="module">
+    import './src/components/form/form.js';
+
+    console.log('✅ Form Component 로드 완료');
+    console.log('📋 Config 확인:', window.CONFIG);
+  </script>
+</body>
+</html>

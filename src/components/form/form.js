@@ -243,6 +243,71 @@ class FormComponent extends BaseComponent {
           box-shadow: 0 0 0 3px ${errorColor}1a;
         }
 
+        /* Select (Dropdown) 스타일 */
+        .form-select {
+          width: 100%;
+          padding: 12px 16px;
+          font-size: 16px;
+          border: 2px solid ${borderColor};
+          border-radius: 8px;
+          background-color: ${inputBgColor};
+          color: ${textColor};
+          transition: all 0.2s;
+          outline: none;
+          cursor: pointer;
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23333' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 16px center;
+          background-size: 12px;
+          padding-right: 40px;
+        }
+
+        .form-select:focus {
+          border-color: ${primaryColor};
+          box-shadow: 0 0 0 3px ${primaryColor}1a;
+        }
+
+        .form-select:disabled {
+          background-color: ${inputDisabledBgColor};
+          cursor: not-allowed;
+        }
+
+        .form-select.error {
+          border-color: ${errorColor};
+        }
+
+        .form-select.error:focus {
+          box-shadow: 0 0 0 3px ${errorColor}1a;
+        }
+
+        /* Datetime 필드 스타일 */
+        .datetime-group .datetime-inputs {
+          display: flex;
+          gap: 12px;
+        }
+
+        .datetime-group .datetime-date {
+          flex: 1.5;
+        }
+
+        .datetime-group .datetime-time {
+          flex: 1;
+        }
+
+        @media (max-width: 768px) {
+          .datetime-group .datetime-inputs {
+            flex-direction: column;
+            gap: 8px;
+          }
+
+          .datetime-group .datetime-date,
+          .datetime-group .datetime-time {
+            width: 100%;
+            flex: none;
+          }
+        }
+
         .error-message {
           display: none;
           font-size: 13px;
@@ -640,6 +705,9 @@ class FormComponent extends BaseComponent {
           </div>
         </div>
 
+        <!-- 추가 선택 필드 (동적 구성) -->
+        ${this.renderAdditionalFields(idPrefix)}
+
         <!-- 법적 동의 체크박스 -->
         <div class="form-group legal-consent">
           <div class="checkbox-group">
@@ -819,6 +887,38 @@ class FormComponent extends BaseComponent {
     if (modalOverlay) {
       modalOverlay.addEventListener('click', () => {
         this.closeLegalModal(prefix);
+      });
+    }
+
+    // 추가 선택 필드 이벤트 리스너 연결
+    const additionalFields = this.getConfigValue('fields.additional', []);
+    if (additionalFields && additionalFields.length > 0) {
+      additionalFields.forEach((field, index) => {
+        const fieldId = `${pfx}additional-${field.name || index}`;
+
+        if (field.type === 'text' || field.type === 'dropdown') {
+          const input = this.$(`#${fieldId}`);
+          if (input) {
+            input.addEventListener('input', () => {
+              this.clearFieldError(fieldId);
+            });
+          }
+        } else if (field.type === 'datetime') {
+          const dateInput = this.$(`#${fieldId}-date`);
+          const timeInput = this.$(`#${fieldId}-time`);
+
+          if (dateInput) {
+            dateInput.addEventListener('input', () => {
+              this.clearFieldError(fieldId);
+            });
+          }
+
+          if (timeInput) {
+            timeInput.addEventListener('input', () => {
+              this.clearFieldError(fieldId);
+            });
+          }
+        }
       });
     }
 
@@ -1070,6 +1170,170 @@ class FormComponent extends BaseComponent {
   }
 
   /**
+   * 추가 선택 필드 렌더링
+   * Config의 fields.additional 배열을 읽어서 동적으로 필드 생성
+   *
+   * @param {string} idPrefix - ID prefix ('section' 또는 'popup')
+   * @returns {string} 추가 필드 HTML
+   */
+  renderAdditionalFields(idPrefix) {
+    // Config에서 추가 필드 배열 가져오기
+    const additionalFields = this.getConfigValue('fields.additional', []);
+
+    if (!additionalFields || additionalFields.length === 0) {
+      this.debug('추가 선택 필드가 없습니다.');
+      return '';
+    }
+
+    this.debug(`추가 선택 필드 ${additionalFields.length}개 렌더링`);
+
+    // 각 필드를 타입에 따라 렌더링
+    const fieldsHTML = additionalFields.map((field, index) => {
+      switch (field.type) {
+        case 'text':
+          return this.renderTextField(field, idPrefix, index);
+        case 'dropdown':
+          return this.renderDropdownField(field, idPrefix, index);
+        case 'datetime':
+          return this.renderDatetimeField(field, idPrefix, index);
+        default:
+          console.warn(`[FormComponent] 지원하지 않는 필드 타입: ${field.type}`);
+          return '';
+      }
+    }).join('\n');
+
+    return fieldsHTML;
+  }
+
+  /**
+   * 텍스트 필드 렌더링
+   *
+   * @param {Object} field - 필드 설정
+   * @param {string} idPrefix - ID prefix
+   * @param {number} index - 필드 인덱스
+   * @returns {string} 텍스트 필드 HTML
+   */
+  renderTextField(field, idPrefix, index) {
+    const pfx = idPrefix ? `${idPrefix}-` : '';
+    const fieldId = `${pfx}additional-${field.name || index}`;
+    const label = field.label || '입력';
+    const placeholder = field.placeholder || '';
+    const required = field.required || false;
+
+    return `
+      <div class="form-group">
+        <label for="${fieldId}" class="form-label${required ? ' required' : ''}">
+          ${label}
+        </label>
+        <input
+          type="text"
+          id="${fieldId}"
+          name="${field.name}"
+          class="form-input"
+          placeholder="${placeholder}"
+          ${required ? 'required' : ''}
+          data-field-type="text"
+          data-field-label="${label}"
+        />
+        <div class="error-message" id="${fieldId}-error">
+          ${label}을(를) 입력해주세요.
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * 드롭다운 필드 렌더링
+   *
+   * @param {Object} field - 필드 설정
+   * @param {string} idPrefix - ID prefix
+   * @param {number} index - 필드 인덱스
+   * @returns {string} 드롭다운 필드 HTML
+   */
+  renderDropdownField(field, idPrefix, index) {
+    const pfx = idPrefix ? `${idPrefix}-` : '';
+    const fieldId = `${pfx}additional-${field.name || index}`;
+    const label = field.label || '선택';
+    const required = field.required || false;
+    const options = field.options || [];
+
+    // 옵션 HTML 생성
+    const optionsHTML = options.map(option => {
+      return `<option value="${option}">${option}</option>`;
+    }).join('\n');
+
+    return `
+      <div class="form-group">
+        <label for="${fieldId}" class="form-label${required ? ' required' : ''}">
+          ${label}
+        </label>
+        <select
+          id="${fieldId}"
+          name="${field.name}"
+          class="form-select"
+          ${required ? 'required' : ''}
+          data-field-type="dropdown"
+          data-field-label="${label}"
+        >
+          <option value="">선택해주세요</option>
+          ${optionsHTML}
+        </select>
+        <div class="error-message" id="${fieldId}-error">
+          ${label}을(를) 선택해주세요.
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * 날짜+시간 세트 필드 렌더링
+   *
+   * @param {Object} field - 필드 설정
+   * @param {string} idPrefix - ID prefix
+   * @param {number} index - 필드 인덱스
+   * @returns {string} 날짜+시간 필드 HTML
+   */
+  renderDatetimeField(field, idPrefix, index) {
+    const pfx = idPrefix ? `${idPrefix}-` : '';
+    const fieldId = `${pfx}additional-${field.name || index}`;
+    const label = field.label || '날짜 및 시간';
+    const required = field.required || false;
+
+    return `
+      <div class="form-group datetime-group">
+        <label class="form-label${required ? ' required' : ''}">
+          ${label}
+        </label>
+        <div class="datetime-inputs">
+          <input
+            type="date"
+            id="${fieldId}-date"
+            name="${field.name}-date"
+            class="form-input datetime-date"
+            ${required ? 'required' : ''}
+            data-field-type="datetime"
+            data-field-label="${label}"
+            data-datetime-part="date"
+          />
+          <input
+            type="time"
+            id="${fieldId}-time"
+            name="${field.name}-time"
+            class="form-input datetime-time"
+            ${required ? 'required' : ''}
+            data-field-type="datetime"
+            data-field-label="${label}"
+            data-datetime-part="time"
+          />
+        </div>
+        <div class="error-message" id="${fieldId}-error">
+          ${label}을(를) 입력해주세요.
+        </div>
+      </div>
+    `;
+  }
+
+  /**
    * 폼 검증
    * 필수 필드가 모두 입력되었는지 확인합니다.
    *
@@ -1119,6 +1383,55 @@ class FormComponent extends BaseComponent {
         this.showFieldError(`${pfx}legal`, '필수 동의 항목을 모두 체크해주세요.');
         isValid = false;
       }
+    }
+
+    // 추가 선택 필드 검증
+    const additionalFields = this.getConfigValue('fields.additional', []);
+    if (additionalFields && additionalFields.length > 0) {
+      additionalFields.forEach((field, index) => {
+        // 필수 필드가 아니면 검증 스킵
+        if (!field.required) {
+          return;
+        }
+
+        const fieldId = `${pfx}additional-${field.name || index}`;
+
+        if (field.type === 'text') {
+          // 텍스트 필드 검증
+          const input = this.$(`#${fieldId}`);
+          if (input) {
+            const value = input.value.trim();
+            if (!value) {
+              this.showFieldError(fieldId, `${field.label}을(를) 입력해주세요.`);
+              isValid = false;
+            }
+          }
+        } else if (field.type === 'dropdown') {
+          // 드롭다운 검증
+          const select = this.$(`#${fieldId}`);
+          if (select) {
+            const value = select.value;
+            if (!value) {
+              this.showFieldError(fieldId, `${field.label}을(를) 선택해주세요.`);
+              isValid = false;
+            }
+          }
+        } else if (field.type === 'datetime') {
+          // 날짜+시간 검증
+          const dateInput = this.$(`#${fieldId}-date`);
+          const timeInput = this.$(`#${fieldId}-time`);
+
+          if (dateInput && timeInput) {
+            const dateValue = dateInput.value.trim();
+            const timeValue = timeInput.value.trim();
+
+            if (!dateValue || !timeValue) {
+              this.showFieldError(fieldId, `${field.label}을(를) 입력해주세요.`);
+              isValid = false;
+            }
+          }
+        }
+      });
     }
 
     return isValid;
@@ -1218,6 +1531,58 @@ class FormComponent extends BaseComponent {
       // 유입 경로 (향후 UTM 파라미터에서 추출 가능)
       'leadSource': this.getLeadSource()
     };
+
+    // 추가 선택 필드 수집 (Inquiry_Container에 JSON 형태로 저장)
+    const additionalFields = this.getConfigValue('fields.additional', []);
+    const inquiryContainer = {};
+
+    if (additionalFields && additionalFields.length > 0) {
+      additionalFields.forEach((field, index) => {
+        const fieldId = `${pfx}additional-${field.name || index}`;
+        const fieldName = field.label || field.name || `필드${index + 1}`;
+
+        if (field.type === 'text') {
+          // 텍스트 필드
+          const input = this.$(`#${fieldId}`);
+          if (input) {
+            const value = input.value.trim();
+            if (value) {
+              inquiryContainer[fieldName] = value;
+            }
+          }
+        } else if (field.type === 'dropdown') {
+          // 드롭다운 필드
+          const select = this.$(`#${fieldId}`);
+          if (select) {
+            const value = select.value;
+            if (value) {
+              inquiryContainer[fieldName] = value;
+            }
+          }
+        } else if (field.type === 'datetime') {
+          // 날짜+시간 필드 (세트로 결합)
+          const dateInput = this.$(`#${fieldId}-date`);
+          const timeInput = this.$(`#${fieldId}-time`);
+
+          if (dateInput && timeInput) {
+            const dateValue = dateInput.value.trim();
+            const timeValue = timeInput.value.trim();
+
+            if (dateValue || timeValue) {
+              // "2026-01-15 14:30" 형식으로 결합
+              const combinedValue = `${dateValue} ${timeValue}`.trim();
+              inquiryContainer[fieldName] = combinedValue;
+            }
+          }
+        }
+      });
+    }
+
+    // Inquiry_Container가 비어있지 않으면 formData에 추가
+    if (Object.keys(inquiryContainer).length > 0) {
+      this.formData['Inquiry_Container'] = JSON.stringify(inquiryContainer);
+      this.debug('Inquiry_Container:', inquiryContainer);
+    }
 
     this.debug('수집된 폼 데이터:', this.formData);
   }
