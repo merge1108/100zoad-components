@@ -12,6 +12,12 @@
  */
 
 import { parseConfig, isComponentEnabled } from './config-parser.js';
+import {
+  smoothScrollTo,
+  getScrollPosition,
+  initPolyfills,
+  showCompatibilityWarning
+} from '../utils/browser-compatibility.js';
 
 /**
  * 베이스 웹 컴포넌트 클래스
@@ -77,12 +83,6 @@ export class BaseComponent extends HTMLElement {
     this.componentConfig = null;
 
     /**
-     * Shadow Root 참조
-     * @type {ShadowRoot|null}
-     */
-    this.shadowRoot = null;
-
-    /**
      * 컴포넌트 로딩 상태
      * @type {'loading'|'ready'|'error'}
      */
@@ -103,6 +103,13 @@ export class BaseComponent extends HTMLElement {
    */
   connectedCallback() {
     try {
+      // 0. 브라우저 호환성 체크 및 폴리필 로드 (최초 1회만)
+      if (!window.__ZOAD_POLYFILLS_LOADED__) {
+        initPolyfills();
+        showCompatibilityWarning();
+        window.__ZOAD_POLYFILLS_LOADED__ = true;
+      }
+
       // 1. Config 로드
       this.loadConfig();
 
@@ -147,21 +154,47 @@ export class BaseComponent extends HTMLElement {
 
   /**
    * Config 로드
-   * Window.CONFIG에서 전역 설정과 컴포넌트별 설정을 로드합니다.
+   * 위젯 모드와 통합 모드를 모두 지원합니다.
+   *
+   * 위젯 모드 (아임웹 코드위젯):
+   *   - window.FORM_CONFIG, window.HEADER_CONFIG 등 개별 Config 사용
+   *   - window.ZOAD_WIDGET_MODE로 위젯 유형 확인
+   *
+   * 통합 모드 (개발/테스트):
+   *   - window.CONFIG에서 모든 컴포넌트 Config 로드
    *
    * @throws {Error} Config 파싱 실패 시
    * @private
    */
   loadConfig() {
     try {
-      // 전역 Config 파싱
-      this.config = parseConfig();
+      // 위젯 모드 확인: window.{COMPONENT}_CONFIG 형태의 개별 Config
+      const widgetConfigName = `${this.componentName.toUpperCase()}_CONFIG`;
+      const widgetConfig = window[widgetConfigName];
 
-      // 컴포넌트별 Config 추출
-      this.componentConfig = this.config[this.componentName] || null;
+      if (widgetConfig) {
+        // 위젯 모드: 개별 Config 사용
+        console.log(`📦 [${this.componentName}] 위젯 모드 - ${widgetConfigName} 로드`);
 
-      if (!this.componentConfig) {
-        console.warn(`⚠️ [${this.componentName}] Config가 정의되지 않았습니다.`);
+        // 위젯 Config를 componentConfig로 직접 사용
+        this.componentConfig = widgetConfig;
+
+        // meta 정보가 있으면 전역 config로 설정
+        this.config = {
+          meta: widgetConfig.meta || { siteName: '100zoad' },
+          debug: widgetConfig.meta?.debug || widgetConfig.debug || false,
+          [this.componentName]: widgetConfig
+        };
+      } else {
+        // 통합 모드: window.CONFIG 사용
+        this.config = parseConfig();
+
+        // 컴포넌트별 Config 추출
+        this.componentConfig = this.config[this.componentName] || null;
+
+        if (!this.componentConfig) {
+          console.warn(`⚠️ [${this.componentName}] Config가 정의되지 않았습니다.`);
+        }
       }
     } catch (error) {
       throw new Error(`Config 로드 실패: ${error.message}`);
@@ -185,8 +218,9 @@ export class BaseComponent extends HTMLElement {
    * @private
    */
   initShadowDOM() {
+    // attachShadow()는 this.shadowRoot를 자동으로 설정합니다
     if (!this.shadowRoot) {
-      this.shadowRoot = this.attachShadow({
+      this.attachShadow({
         mode: this.options.shadowMode
       });
 
@@ -432,6 +466,27 @@ export class BaseComponent extends HTMLElement {
     if (this.isDebugMode()) {
       console.log(`[DEBUG][${this.componentName}]`, ...args);
     }
+  }
+
+  /**
+   * 헬퍼 메서드: 크로스 브라우저 호환 부드러운 스크롤
+   *
+   * @param {number} top - 스크롤할 위치
+   * @param {string} behavior - 스크롤 동작 ('smooth' | 'auto')
+   * @protected
+   */
+  smoothScrollTo(top, behavior = 'smooth') {
+    smoothScrollTo(top, behavior);
+  }
+
+  /**
+   * 헬퍼 메서드: 크로스 브라우저 호환 스크롤 위치 가져오기
+   *
+   * @returns {number} 현재 스크롤 위치
+   * @protected
+   */
+  getScrollPosition() {
+    return getScrollPosition();
   }
 }
 

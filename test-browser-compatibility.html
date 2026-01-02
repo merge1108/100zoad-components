@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>100zoad - 크로스 브라우저 호환성 테스트</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f5f5f5;
+    }
+
+    .test-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .test-header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .test-header p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .browser-info {
+      background: white;
+      margin: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .browser-info h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #667eea;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .info-item {
+      background: #f8f9fa;
+      padding: 12px 15px;
+      border-radius: 6px;
+      border-left: 3px solid #667eea;
+    }
+
+    .info-item strong {
+      display: block;
+      color: #495057;
+      font-size: 12px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .info-item span {
+      font-size: 16px;
+      color: #212529;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .status.supported {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .status.not-supported {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .test-section {
+      margin: 20px;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .test-section h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .test-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #5568d3;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+    }
+
+    .test-result {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+
+    .test-result.success {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+      color: #155724;
+    }
+
+    .test-result.error {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+      color: #721c24;
+    }
+
+    /* 테스트 섹션 스타일 */
+    #test-section-1,
+    #test-section-2,
+    #test-section-3 {
+      min-height: 400px;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    #test-section-1 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    #test-section-2 {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+
+    #test-section-3 {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+    }
+
+    .checklist {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .checklist h3 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .checklist-item {
+      padding: 10px;
+      border-bottom: 1px solid #e9ecef;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .checklist-item:last-child {
+      border-bottom: none;
+    }
+
+    .checklist-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .test-header h1 {
+        font-size: 24px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .test-section {
+        margin: 10px;
+        padding: 20px;
+      }
+
+      .test-controls {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 테스트 헤더 -->
+  <div class="test-header">
+    <h1>🧪 100zoad 크로스 브라우저 호환성 테스트</h1>
+    <p>STORY-024: 모든 브라우저에서 동일한 경험 제공</p>
+  </div>
+
+  <!-- 브라우저 정보 -->
+  <div class="browser-info">
+    <h2>📊 현재 브라우저 정보</h2>
+    <div class="info-grid" id="browser-info-grid">
+      <!-- JavaScript로 동적 생성 -->
+    </div>
+  </div>
+
+  <!-- Web Components 지원 정보 -->
+  <div class="browser-info">
+    <h2>🔧 Web Components 지원 여부</h2>
+    <div class="info-grid" id="web-components-support">
+      <!-- JavaScript로 동적 생성 -->
+    </div>
+  </div>
+
+  <!-- 기능 테스트 섹션 -->
+  <div class="test-section">
+    <h2>✅ 기능 테스트</h2>
+
+    <div class="test-controls">
+      <button class="btn btn-primary" onclick="testSmoothScroll()">부드러운 스크롤 테스트</button>
+      <button class="btn btn-primary" onclick="testScrollPosition()">스크롤 위치 감지 테스트</button>
+      <button class="btn btn-success" onclick="scrollToSection('test-section-1')">섹션 1로 이동</button>
+      <button class="btn btn-success" onclick="scrollToSection('test-section-2')">섹션 2로 이동</button>
+      <button class="btn btn-success" onclick="scrollToSection('test-section-3')">섹션 3로 이동</button>
+      <button class="btn btn-secondary" onclick="scrollToTop()">맨 위로</button>
+    </div>
+
+    <div id="test-results"></div>
+  </div>
+
+  <!-- 100zoad 컴포넌트 테스트 -->
+  <div class="test-section">
+    <h2>🧩 100zoad 웹 컴포넌트</h2>
+    <p style="margin-bottom: 20px; color: #666;">
+      아래에서 헤더, 푸터, 입력폼, 퀵메뉴, 모바일 내비게이터 컴포넌트를 확인할 수 있습니다.
+    </p>
+
+    <!-- 컴포넌트 로드 여부 -->
+    <div id="component-status"></div>
+  </div>
+
+  <!-- 테스트 섹션 1 -->
+  <div id="test-section-1">
+    <h2 style="font-size: 48px; margin-bottom: 20px;">테스트 섹션 1</h2>
+    <p style="font-size: 20px;">부드러운 스크롤 애니메이션이 작동하는지 확인하세요</p>
+  </div>
+
+  <!-- 테스트 섹션 2 -->
+  <div id="test-section-2">
+    <h2 style="font-size: 48px; margin-bottom: 20px;">테스트 섹션 2</h2>
+    <p style="font-size: 20px;">크로스 브라우저 호환성 검증 중</p>
+  </div>
+
+  <!-- 테스트 섹션 3 -->
+  <div id="test-section-3">
+    <h2 style="font-size: 48px; margin-bottom: 20px;">테스트 섹션 3</h2>
+    <p style="font-size: 20px;">모든 기능이 정상 작동합니다</p>
+  </div>
+
+  <!-- 체크리스트 -->
+  <div class="test-section">
+    <div class="checklist">
+      <h3>📝 브라우저별 테스트 체크리스트</h3>
+      <div class="checklist-item">
+        <input type="checkbox" id="chrome-test">
+        <label for="chrome-test">Chrome (최신 2개 버전) - 모든 기능 작동</label>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="firefox-test">
+        <label for="firefox-test">Firefox (최신 2개 버전) - 모든 기능 작동</label>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="safari-test">
+        <label for="safari-test">Safari (최신 2개 버전) - 모든 기능 작동</label>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="edge-test">
+        <label for="edge-test">Edge (최신 2개 버전) - 모든 기능 작동</label>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="ios-safari-test">
+        <label for="ios-safari-test">iOS Safari (모바일) - 모든 기능 작동</label>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="chrome-mobile-test">
+        <label for="chrome-mobile-test">Chrome Mobile (모바일) - 모든 기능 작동</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 웹 컴포넌트 삽입 위치 -->
+  <zoad-header></zoad-header>
+  <zoad-footer></zoad-footer>
+  <zoad-form></zoad-form>
+  <zoad-quickmenu></zoad-quickmenu>
+  <zoad-mobile-nav></zoad-mobile-nav>
+
+  <!-- Config -->
+  <script>
+    // Window.CONFIG 설정
+    window.CONFIG = {
+      meta: {
+        siteName: '100zoad 테스트',
+        debug: true
+      },
+      debug: true,
+      header: {
+        enabled: true,
+        pageType: 'onepage',
+        logo: {
+          url: '',
+          alt: '100zoad'
+        },
+        menu: [
+          { text: '섹션 1', target: '#test-section-1' },
+          { text: '섹션 2', target: '#test-section-2' },
+          { text: '섹션 3', target: '#test-section-3' }
+        ],
+        specialMenu: {
+          text: '관심고객등록',
+          target: '#form-section',
+          animation: 'pulse'
+        },
+        styles: {
+          bgColor: '#ffffff',
+          textColor: '#333333',
+          hoverColor: '#667eea'
+        }
+      },
+      footer: {
+        enabled: true
+      },
+      form: {
+        enabled: false
+      },
+      quickmenu: {
+        enabled: false
+      },
+      mobilenav: {
+        enabled: false
+      }
+    };
+  </script>
+
+  <!-- 브라우저 호환성 유틸리티 로드 -->
+  <script type="module">
+    import {
+      detectBrowser,
+      checkWebComponentsSupport,
+      generateCompatibilityReport,
+      smoothScrollTo,
+      getScrollPosition
+    } from './src/utils/browser-compatibility.js';
+
+    // 브라우저 정보 표시
+    const browser = detectBrowser();
+    const support = checkWebComponentsSupport();
+    const report = generateCompatibilityReport();
+
+    const browserInfoGrid = document.getElementById('browser-info-grid');
+    browserInfoGrid.innerHTML = `
+      <div class="info-item">
+        <strong>브라우저</strong>
+        <span>${browser.name} ${browser.version}</span>
+      </div>
+      <div class="info-item">
+        <strong>플랫폼</strong>
+        <span>${browser.isMobile ? '모바일' : '데스크톱'}</span>
+      </div>
+      <div class="info-item">
+        <strong>User Agent</strong>
+        <span style="font-size: 12px; word-break: break-all;">${navigator.userAgent}</span>
+      </div>
+    `;
+
+    const webComponentsSupport = document.getElementById('web-components-support');
+    webComponentsSupport.innerHTML = `
+      <div class="info-item">
+        <strong>Custom Elements</strong>
+        <span class="status ${support.customElements ? 'supported' : 'not-supported'}">
+          ${support.customElements ? '✓ 지원' : '✗ 미지원'}
+        </span>
+      </div>
+      <div class="info-item">
+        <strong>Shadow DOM</strong>
+        <span class="status ${support.shadowDOM ? 'supported' : 'not-supported'}">
+          ${support.shadowDOM ? '✓ 지원' : '✗ 미지원'}
+        </span>
+      </div>
+      <div class="info-item">
+        <strong>Smooth Scroll</strong>
+        <span class="status ${report.smoothScroll ? 'supported' : 'not-supported'}">
+          ${report.smoothScroll ? '✓ 지원' : '✗ 폴리필 사용'}
+        </span>
+      </div>
+      <div class="info-item">
+        <strong>CSS Grid</strong>
+        <span class="status ${report.cssGrid ? 'supported' : 'not-supported'}">
+          ${report.cssGrid ? '✓ 지원' : '✗ 미지원'}
+        </span>
+      </div>
+      <div class="info-item">
+        <strong>CSS Flexbox</strong>
+        <span class="status ${report.cssFlexbox ? 'supported' : 'not-supported'}">
+          ${report.cssFlexbox ? '✓ 지원' : '✗ 미지원'}
+        </span>
+      </div>
+      <div class="info-item">
+        <strong>Fetch API</strong>
+        <span class="status ${report.fetch ? 'supported' : 'not-supported'}">
+          ${report.fetch ? '✓ 지원' : '✗ 미지원'}
+        </span>
+      </div>
+    `;
+
+    // 전역 함수로 노출
+    window.testSmoothScroll = function() {
+      const resultsDiv = document.getElementById('test-results');
+      resultsDiv.innerHTML = '<div class="test-result">부드러운 스크롤 테스트 시작...</div>';
+
+      smoothScrollTo(1000, 'smooth');
+
+      setTimeout(() => {
+        resultsDiv.innerHTML = '<div class="test-result success">✓ 부드러운 스크롤 완료! (폴리필 사용 여부: ' + (!report.smoothScroll ? '예' : '아니오') + ')</div>';
+      }, 1000);
+    };
+
+    window.testScrollPosition = function() {
+      const position = getScrollPosition();
+      const resultsDiv = document.getElementById('test-results');
+      resultsDiv.innerHTML = `<div class="test-result success">✓ 현재 스크롤 위치: ${position}px</div>`;
+    };
+
+    window.scrollToSection = function(sectionId) {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        const targetPosition = section.getBoundingClientRect().top + getScrollPosition();
+        smoothScrollTo(targetPosition, 'smooth');
+      }
+    };
+
+    window.scrollToTop = function() {
+      smoothScrollTo(0, 'smooth');
+    };
+
+    // 컴포넌트 로드 상태 확인
+    setTimeout(() => {
+      const componentStatus = document.getElementById('component-status');
+      const header = document.querySelector('zoad-header');
+
+      if (header && header.shadowRoot) {
+        componentStatus.innerHTML = '<div class="test-result success">✓ 웹 컴포넌트가 성공적으로 로드되었습니다!</div>';
+      } else {
+        componentStatus.innerHTML = '<div class="test-result error">✗ 웹 컴포넌트 로드 실패. 브라우저 호환성을 확인하세요.</div>';
+      }
+    }, 1000);
+  </script>
+
+  <!-- 컴포넌트 로드 -->
+  <script type="module" src="./src/components/header/header.js"></script>
+  <script type="module" src="./src/components/footer/footer.js"></script>
+  <script type="module" src="./src/components/form/form.js"></script>
+  <script type="module" src="./src/components/quickmenu/quickmenu.js"></script>
+  <script type="module" src="./src/components/mobile-nav/mobile-nav.js"></script>
+</body>
+</html>

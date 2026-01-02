@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Worker 테스트</title>
+</head>
+<body>
+  <h1>Cloudflare Worker 테스트</h1>
+  <button id="testBtn">테스트 전송</button>
+  <pre id="result"></pre>
+
+  <script>
+    document.getElementById('testBtn').addEventListener('click', async () => {
+      const resultEl = document.getElementById('result');
+      resultEl.textContent = '전송 중...';
+
+      try {
+        const response = await fetch('https://100zoad-airtable-proxy.choiwseok.workers.dev/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            "이름": "테스트",
+            "전화번호": "010-1232-4444",
+            "siteName": "강남 센트럴 파크",
+            "leadSource": "google-ads",
+            "주소": "서울시 강남구",
+            "방문희망시간": "오전",
+            "관심평형": "84㎡"
+          })
+        });
+
+        const data = await response.json();
+        resultEl.textContent = JSON.stringify(data, null, 2);
+
+        if (data.success) {
+          alert('✅ 성공! Airtable을 확인하세요.');
+        } else {
+          alert('❌ 실패: ' + JSON.stringify(data.errors || data.error));
+        }
+      } catch (error) {
+        resultEl.textContent = '오류: ' + error.message;
+        alert('❌ 오류: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>

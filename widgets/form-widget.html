@@ -1,0 +1,164 @@
+<!--
+  100zoad Form Widget
+  아임웹 코드위젯용 입력폼 컴포넌트
+
+  사용법:
+  1. 이 파일 전체를 아임웹 코드위젯에 복사
+  2. 아래 CONFIG 섹션에서 현장에 맞게 설정 수정
+  3. workerUrl은 Cloudflare Worker URL로 변경 필수
+-->
+
+<!-- ========================================
+     CONFIG 설정 (현장별로 수정하세요)
+======================================== -->
+<script>
+window.FORM_CONFIG = {
+  // ═══════════════════════════════════════
+  // 기본 정보
+  // ═══════════════════════════════════════
+  meta: {
+    siteName: "강남 센트럴 파크",    // 현장명 (Airtable 저장용)
+    debug: false                      // true: 콘솔 디버그 로그 출력
+  },
+
+  // ═══════════════════════════════════════
+  // 폼 텍스트 설정
+  // ═══════════════════════════════════════
+  title: "관심고객 등록",              // 폼 상단 타이틀
+  description: "간단한 정보를 입력해주시면 상담 전화를 드리겠습니다.",  // 폼 설명
+  submitButtonText: "신청하기",        // 제출 버튼 텍스트
+
+  // ═══════════════════════════════════════
+  // 필드 설정
+  // ═══════════════════════════════════════
+  fields: {
+    name: {
+      label: "이름",                   // 필드 라벨
+      placeholder: "홍길동",           // 입력 힌트
+      required: true                   // 필수 여부
+    },
+    phone: {
+      label: "전화번호",
+      placeholder: "010-0000-0000",
+      required: true
+    }
+    // 추가 필드는 STORY-012에서 구현 예정
+  },
+
+  // ═══════════════════════════════════════
+  // 메시지 설정
+  // ═══════════════════════════════════════
+  messages: {
+    success: "✓ 신청이 완료되었습니다!",           // 성공 메시지
+    error: "제출 중 오류가 발생했습니다. 다시 시도해주세요."  // 오류 메시지
+  },
+
+  // ═══════════════════════════════════════
+  // Airtable 연동 (필수!)
+  // ═══════════════════════════════════════
+  airtable: {
+    workerUrl: "https://your-worker.workers.dev/submit"  // ⚠️ 반드시 수정!
+  },
+
+  // ═══════════════════════════════════════
+  // 스타일 설정 (선택사항)
+  // ═══════════════════════════════════════
+  styles: {
+    // 기본 색상
+    bgColor: "#ffffff",                // 폼 배경색
+    textColor: "#333333",              // 텍스트 색상
+    primaryColor: "#007bff",           // 주요 색상 (버튼 등)
+    borderColor: "#dddddd",            // 테두리 색상
+    errorColor: "#dc3545",             // 오류 색상
+
+    // 입력 필드
+    inputBgColor: "#ffffff",           // 입력 필드 배경
+    inputDisabledBgColor: "#f5f5f5",   // 비활성 입력 필드 배경
+
+    // 버튼
+    buttonTextColor: "#ffffff",        // 버튼 텍스트 색상
+    buttonHoverColor: "#0056b3",       // 버튼 호버 색상
+    buttonDisabledColor: "#cccccc",    // 비활성 버튼 색상
+
+    // 설명 텍스트
+    descriptionColor: "#666666",       // 설명 텍스트 색상
+
+    // 성공 알림
+    successBgColor: "#d4edda",
+    successTextColor: "#155724",
+    successBorderColor: "#c3e6cb",
+
+    // 오류 알림
+    errorAlertBgColor: "#f8d7da",
+    errorAlertTextColor: "#721c24",
+    errorAlertBorderColor: "#f5c6cb"
+  },
+
+  // ═══════════════════════════════════════
+  // 폴백 설정 (컴포넌트 로딩 실패 시)
+  // ═══════════════════════════════════════
+  fallback: {
+    phone: "1588-0000",                // 폴백 전화번호
+    title: "⚠️ 입력폼을 불러올 수 없습니다",
+    description: "전화로 상담 신청해주세요",
+    styles: {
+      bgColor: "#fff3cd",
+      borderColor: "#ffc107",
+      textColor: "#856404",
+      linkColor: "#007bff"
+    }
+  }
+};
+
+// 위젯 모드 플래그 설정
+window.ZOAD_WIDGET_MODE = 'form';
+</script>
+
+<!-- ========================================
+     컴포넌트 로드 (수정 불필요)
+======================================== -->
+<script type="module">
+  // Cloudflare Pages에서 컴포넌트 스크립트 로드
+  // 배포 후 URL을 실제 Cloudflare Pages URL로 변경하세요
+  const COMPONENT_BASE_URL = 'https://100zoad.pages.dev';
+
+  // 개발 환경 감지
+  const isDev = window.location.hostname === 'localhost' ||
+                window.location.hostname === '127.0.0.1';
+
+  const baseUrl = isDev ? '' : COMPONENT_BASE_URL;
+
+  // Form 컴포넌트 로드
+  import(`${baseUrl}/src/components/form/form.js`)
+    .then(() => {
+      console.log('✅ Form 컴포넌트 로드 완료');
+    })
+    .catch((error) => {
+      console.error('❌ Form 컴포넌트 로드 실패:', error);
+      // 폴백 표시
+      const container = document.getElementById('zoad-form-container');
+      if (container) {
+        const config = window.FORM_CONFIG || {};
+        const fallback = config.fallback || {};
+        const phone = fallback.phone || '1588-0000';
+        container.innerHTML = `
+          <div style="padding: 20px; background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; text-align: center;">
+            <p style="font-weight: bold; margin-bottom: 10px;">⚠️ 입력폼을 불러올 수 없습니다</p>
+            <p>전화로 상담 신청해주세요</p>
+            <p style="font-size: 24px; font-weight: bold; color: #007bff;">
+              <a href="tel:${phone.replace(/[^0-9]/g, '')}" style="color: inherit; text-decoration: none;">
+                ☎ ${phone}
+              </a>
+            </p>
+          </div>
+        `;
+      }
+    });
+</script>
+
+<!-- ========================================
+     컴포넌트 표시 영역
+======================================== -->
+<div id="zoad-form-container">
+  <zoad-form></zoad-form>
+</div>

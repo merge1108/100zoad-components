@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shadow DOM 스타일 격리 테스트 - STORY-002</title>
+
+  <style>
+    /* 외부 스타일 (아임웹 기본 스타일 시뮬레이션) */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      background-color: #e9ecef;
+      padding: 20px;
+    }
+
+    .page-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: bold;
+      color: #343a40;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .page-subtitle {
+      font-size: 16px;
+      color: #6c757d;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .section {
+      margin: 30px 0;
+      padding: 20px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #495057;
+      margin-bottom: 15px;
+    }
+
+    /*
+      ⚠️ 중요: 아래 스타일들은 Shadow DOM 내부와 동일한 클래스명을 사용합니다.
+      Shadow DOM이 제대로 격리되어 있다면, 이 스타일들은 Shadow DOM 내부에 영향을 주지 않아야 합니다.
+    */
+
+    /* 외부 스타일 1: .external-style (빨간색) */
+    .external-style {
+      color: red !important;
+      font-weight: bold;
+      padding: 10px;
+      background-color: #f8d7da !important;
+      border: 2px solid #f5c6cb;
+      border-radius: 4px;
+    }
+
+    /* 외부 스타일 2: .internal-only (주황색) */
+    .internal-only {
+      color: orange !important;
+      font-weight: bold;
+      padding: 10px;
+      background-color: #fff3cd !important;
+      border: 2px solid #ffc107;
+      border-radius: 4px;
+    }
+
+    /* 외부 버튼 스타일 (Shadow DOM 내부 버튼과 충돌 테스트) */
+    .test-button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #dc3545 !important;
+      color: white !important;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* 체크 결과 표시 */
+    .check-result {
+      margin-top: 10px;
+      padding: 15px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .check-result.pass {
+      background-color: #d4edda;
+      color: #155724;
+      border: 2px solid #c3e6cb;
+    }
+
+    .check-result.fail {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 2px solid #f5c6cb;
+    }
+
+    code {
+      background-color: #e9ecef;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+
+    /* Config 객체 표시 */
+    .config-box {
+      background-color: #343a40;
+      color: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <h1 class="page-title">🔬 Shadow DOM 스타일 격리 테스트</h1>
+    <p class="page-subtitle">
+      STORY-002: Shadow DOM 스타일 격리 시스템 검증<br>
+      아임웹 기본 스타일과 100zoad 컴포넌트 스타일이 충돌 없이 격리되는지 확인
+    </p>
+
+    <!-- Config 정의 -->
+    <script>
+      // Window.CONFIG 전역 객체 정의
+      window.CONFIG = {
+        meta: {
+          siteName: "Shadow DOM 테스트 프로젝트",
+          version: "1.0.0",
+          lastUpdated: "2026-01-01"
+        },
+        debug: true,
+        shadowTest: {
+          enabled: true
+        }
+      };
+    </script>
+
+    <!-- 섹션 1: 외부 스타일 예시 (아임웹 기본 스타일 시뮬레이션) -->
+    <div class="section">
+      <div class="section-title">📌 외부 스타일 (아임웹 기본 스타일 시뮬레이션)</div>
+      <p style="margin-bottom: 15px;">
+        아래는 <strong>외부 페이지</strong>에 정의된 스타일들입니다.
+        Shadow DOM 컴포넌트 내부에는 영향을 주지 않아야 합니다.
+      </p>
+
+      <div style="margin: 10px 0;">
+        <strong>외부 스타일 1:</strong> <code>.external-style</code> - 빨간색 배경
+        <div class="external-style" style="margin-top: 10px;">
+          ✅ 이 텍스트는 빨간색 배경이어야 합니다 (외부 스타일 적용됨)
+        </div>
+      </div>
+
+      <div style="margin: 10px 0;">
+        <strong>외부 스타일 2:</strong> <code>.internal-only</code> - 주황색 배경
+        <div class="internal-only" style="margin-top: 10px;">
+          ✅ 이 텍스트는 주황색 배경이어야 합니다 (외부 스타일 적용됨)
+        </div>
+      </div>
+    </div>
+
+    <!-- 섹션 2: Shadow DOM 컴포넌트 -->
+    <div class="section">
+      <div class="section-title">🔒 Shadow DOM 컴포넌트 (스타일 격리 영역)</div>
+      <p style="margin-bottom: 15px;">
+        아래 컴포넌트는 <strong>Shadow DOM</strong>을 사용하여 완전히 격리되어 있습니다.
+        위의 외부 스타일과 동일한 클래스명을 사용하지만, 서로 영향을 주지 않아야 합니다.
+      </p>
+
+      <!-- Shadow DOM 테스트 컴포넌트 -->
+      <zoad-shadow-test></zoad-shadow-test>
+    </div>
+
+    <!-- 섹션 3: 검증 결과 -->
+    <div class="section">
+      <div class="section-title">✅ Acceptance Criteria 검증 결과</div>
+
+      <div class="check-result pass" id="ac-1">
+        <strong>AC-1:</strong> 모든 웹 컴포넌트 Shadow DOM 사용 →
+        <span id="ac-1-result">검증 중...</span>
+      </div>
+
+      <div class="check-result pass" id="ac-2" style="margin-top: 10px;">
+        <strong>AC-2:</strong> 컴포넌트 내부 스타일이 외부에 영향받지 않음 →
+        <span id="ac-2-result">수동 확인 필요 (위 컴포넌트 참조)</span>
+      </div>
+
+      <div class="check-result pass" id="ac-3" style="margin-top: 10px;">
+        <strong>AC-3:</strong> 외부 스타일이 컴포넌트에 영향 주지 않음 →
+        <span id="ac-3-result">수동 확인 필요 (위 컴포넌트 참조)</span>
+      </div>
+
+      <div class="check-result pass" id="ac-4" style="margin-top: 10px;">
+        <strong>AC-4:</strong> Chrome, Firefox, Safari, Edge에서 검증 →
+        <span id="ac-4-result">브라우저 정보 확인 (위 컴포넌트 참조)</span>
+      </div>
+    </div>
+
+    <!-- 섹션 4: 사용 방법 -->
+    <div class="section">
+      <div class="section-title">📖 테스트 방법</div>
+      <ol style="padding-left: 20px; line-height: 2;">
+        <li><strong>외부 스타일 확인:</strong> "외부 스타일" 섹션의 텍스트가 빨간색/주황색 배경인지 확인</li>
+        <li><strong>Shadow DOM 스타일 확인:</strong> Shadow DOM 컴포넌트 내부의 "테스트 1"이 녹색 배경인지 확인</li>
+        <li><strong>격리 검증:</strong> 같은 클래스명(<code>.external-style</code>)이지만 색상이 다르면 격리 성공</li>
+        <li><strong>이벤트 테스트:</strong> Shadow DOM 컴포넌트의 버튼을 클릭하여 이벤트가 정상 작동하는지 확인</li>
+        <li><strong>브라우저 호환성:</strong> 다른 브라우저(Chrome, Firefox, Safari, Edge)에서도 테스트</li>
+      </ol>
+    </div>
+
+    <!-- 섹션 5: Window.CONFIG 표시 -->
+    <div class="section">
+      <div class="section-title">⚙️ Window.CONFIG</div>
+      <div class="config-box" id="config-display">로드 중...</div>
+    </div>
+  </div>
+
+  <!-- 컴포넌트 스크립트 로드 -->
+  <script type="module">
+    import './src/components/test/shadow-dom-test.js';
+
+    // AC-1 검증: Shadow DOM 사용 확인
+    setTimeout(() => {
+      const testComponent = document.querySelector('zoad-shadow-test');
+      const ac1Result = document.getElementById('ac-1-result');
+      const ac1Box = document.getElementById('ac-1');
+
+      if (testComponent && testComponent.shadowRoot) {
+        ac1Result.textContent = '✅ PASS (shadowRoot 존재)';
+        ac1Box.className = 'check-result pass';
+      } else {
+        ac1Result.textContent = '❌ FAIL (shadowRoot 없음)';
+        ac1Box.className = 'check-result fail';
+      }
+
+      // Config 표시
+      document.getElementById('config-display').textContent = JSON.stringify(window.CONFIG, null, 2);
+    }, 500);
+  </script>
+</body>
+</html>

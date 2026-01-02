@@ -706,7 +706,8 @@ class HeaderComponent extends BaseComponent {
    * 스크롤 위치에 따라 헤더 스타일 변경
    */
   handleScroll() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    // 크로스 브라우저 호환 스크롤 위치 가져오기
+    const scrollTop = this.getScrollPosition();
     const header = this.$('#header');
 
     if (!header) return;
@@ -773,12 +774,11 @@ class HeaderComponent extends BaseComponent {
 
     // 헤더 높이만큼 오프셋 적용 (헤더가 섹션을 가리지 않도록)
     const headerHeight = this.$('#header')?.offsetHeight || 70;
-    const targetPosition = section.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+    const currentScrollPos = this.getScrollPosition();
+    const targetPosition = section.getBoundingClientRect().top + currentScrollPos - headerHeight;
 
-    window.scrollTo({
-      top: targetPosition,
-      behavior: 'smooth'
-    });
+    // 크로스 브라우저 호환 부드러운 스크롤
+    this.smoothScrollTo(targetPosition, 'smooth');
 
     this.debug(`섹션으로 스크롤: ${section.id || section.className}`);
   }
@@ -792,10 +792,8 @@ class HeaderComponent extends BaseComponent {
   handleLogoClick(event) {
     event.preventDefault();
 
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    // 크로스 브라우저 호환 부드러운 스크롤
+    this.smoothScrollTo(0, 'smooth');
 
     this.debug('로고 클릭: 페이지 최상단으로 스크롤');
   }
