@@ -13,6 +13,9 @@
   ================================================
 -->
 
+<!-- Pretendard 폰트 (아임웹 CSS보다 먼저 로드) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
 <div class="zoad-form-container-wrapper"></div>
 
 <script>
@@ -121,10 +124,16 @@ window.ZOAD_FORM_CONFIG = {
   // HTML 생성
   const formHTML = `
     <style>
-      @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-
-      .${uniqueId} {
-        font-family: "Pretendard", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      /* Pretendard 폰트 강제 적용 (아임웹 CSS 오버라이드) */
+      .zoad-form-container-wrapper,
+      .zoad-form-container-wrapper *,
+      .zoad-form-container-wrapper *::before,
+      .zoad-form-container-wrapper *::after,
+      .${uniqueId},
+      .${uniqueId} *,
+      .${uniqueId} *::before,
+      .${uniqueId} *::after {
+        font-family: "Pretendard", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
       }
 
       .${uniqueId} .zoad-form-container {
@@ -233,29 +242,31 @@ window.ZOAD_FORM_CONFIG = {
       }
 
       .${uniqueId} .zoad-form-submit-button {
-        width: 100%;
-        padding: 14px 24px;
-        font-size: 16px;
-        font-weight: 700;
-        color: #ffffff;
-        background-color: ${config.styles.primaryColor};
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s;
-        margin-top: 24px;
+        width: 100% !important;
+        padding: 14px 24px !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        color: #ffffff !important;
+        background-color: ${config.styles.primaryColor} !important;
+        border: none !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        transition: all 0.2s !important;
+        margin-top: 24px !important;
+        opacity: 1 !important;
       }
 
       .${uniqueId} .zoad-form-submit-button:hover:not(:disabled) {
-        background-color: #002380;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px ${config.styles.primaryColor}4d;
+        background-color: #002380 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px ${config.styles.primaryColor}4d !important;
       }
 
       .${uniqueId} .zoad-form-submit-button:disabled {
-        background-color: #cccccc;
-        cursor: not-allowed;
-        transform: none;
+        background-color: #cccccc !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        opacity: 0.7 !important;
       }
 
       .${uniqueId} .zoad-form-submit-button.loading {
@@ -284,7 +295,7 @@ window.ZOAD_FORM_CONFIG = {
 
       .${uniqueId} .zoad-form-success-message,
       .${uniqueId} .zoad-form-error-alert {
-        display: none;
+        display: none !important;
         padding: 16px;
         border-radius: 8px;
         margin-top: 16px;
@@ -306,7 +317,7 @@ window.ZOAD_FORM_CONFIG = {
 
       .${uniqueId} .zoad-form-success-message.show,
       .${uniqueId} .zoad-form-error-alert.show {
-        display: block;
+        display: block !important;
       }
 
       @media (max-width: 768px) {
@@ -412,6 +423,23 @@ window.ZOAD_FORM_CONFIG = {
   const successMessage = container.querySelector('.success-message');
   const errorAlert = container.querySelector('.error-alert');
 
+  // ====================================
+  // 버튼 초기 상태 명시적 설정 (아임웹 CSS 오버라이드)
+  // ====================================
+  submitButton.disabled = false;
+  submitButton.classList.remove('loading');
+  submitButton.style.backgroundColor = config.styles.primaryColor;
+  submitButton.style.color = '#ffffff';
+  submitButton.style.cursor = 'pointer';
+
+  // ====================================
+  // 성공/오류 메시지 초기 상태 강제 숨김 (아임웹 CSS 오버라이드)
+  // ====================================
+  successMessage.classList.remove('show');
+  successMessage.style.display = 'none';
+  errorAlert.classList.remove('show');
+  errorAlert.style.display = 'none';
+
   // 전화번호 실시간 포맷팅
   phoneInput.addEventListener('input', function(e) {
     let value = e.target.value.replace(/[^0-9]/g, '');
@@ -476,26 +504,32 @@ window.ZOAD_FORM_CONFIG = {
 
       if (response.ok && result.success) {
         // 성공
+        successMessage.style.display = 'block';
         successMessage.classList.add('show');
         form.reset();
 
         setTimeout(() => {
           successMessage.classList.remove('show');
+          successMessage.style.display = 'none';
         }, 3000);
       } else {
         // 실패
+        errorAlert.style.display = 'block';
         errorAlert.classList.add('show');
 
         setTimeout(() => {
           errorAlert.classList.remove('show');
+          errorAlert.style.display = 'none';
         }, 5000);
       }
     } catch (error) {
       console.error('제출 오류:', error);
+      errorAlert.style.display = 'block';
       errorAlert.classList.add('show');
 
       setTimeout(() => {
         errorAlert.classList.remove('show');
+        errorAlert.style.display = 'none';
       }, 5000);
     } finally {
       submitButton.classList.remove('loading');

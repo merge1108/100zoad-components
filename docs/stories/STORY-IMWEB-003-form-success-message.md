@@ -1,6 +1,6 @@
 # STORY-IMWEB-003: Form 성공 메시지 초기 상태 수정
 
-**Status**: Pending
+**Status**: Completed
 **Priority**: High
 **Sprint**: Sprint 2
 **Story Points**: 2
@@ -17,11 +17,11 @@
 
 ## 🎯 Acceptance Criteria
 
-- [ ] **AC1**: 페이지 로드 시 성공 메시지가 숨겨져 있음
-- [ ] **AC2**: 폼 제출 성공 시에만 녹색 박스로 "✓ 신청이 완료되었습니다!" 표시
-- [ ] **AC3**: 3초 후 자동으로 사라짐
-- [ ] **AC4**: 오류 메시지도 동일하게 초기에는 숨겨져 있음
-- [ ] **AC5**: 여러 폼이 있어도 각각 독립적으로 작동함
+- [x] **AC1**: 페이지 로드 시 성공 메시지가 숨겨져 있음
+- [x] **AC2**: 폼 제출 성공 시에만 녹색 박스로 "✓ 신청이 완료되었습니다!" 표시
+- [x] **AC3**: 3초 후 자동으로 사라짐
+- [x] **AC4**: 오류 메시지도 동일하게 초기에는 숨겨져 있음
+- [x] **AC5**: 여러 폼이 있어도 각각 독립적으로 작동함
 
 ---
 
@@ -90,20 +90,20 @@ errorAlert.style.display = 'none';
 **작업 내용:**
 
 1. **form.html CSS 수정**
-   - [ ] `.zoad-form-success-message`에 `display: none !important`
-   - [ ] `.zoad-form-success-message.show`에 `display: block !important`
-   - [ ] `.zoad-form-error-alert` 동일하게 적용
+   - [x] `.zoad-form-success-message`에 `display: none !important`
+   - [x] `.zoad-form-success-message.show`에 `display: block !important`
+   - [x] `.zoad-form-error-alert` 동일하게 적용
 
 2. **form.html JavaScript 수정**
-   - [ ] 초기화 직후 `.show` 클래스 제거
-   - [ ] `display: none` 강제 설정
-   - [ ] 제출 성공 시에만 `.show` 추가
+   - [x] 초기화 직후 `.show` 클래스 제거
+   - [x] `display: none` 강제 설정
+   - [x] 제출 성공 시에만 `.show` 추가 + `style.display = 'block'`
 
 3. **검증**
-   - [ ] 페이지 로드 시 메시지 숨겨짐
-   - [ ] 제출 성공 시 메시지 표시
-   - [ ] 3초 후 자동 사라짐
-   - [ ] 오류 시 오류 메시지만 표시
+   - [x] 페이지 로드 시 메시지 숨겨짐
+   - [x] 제출 성공 시 메시지 표시
+   - [x] 3초 후 자동 사라짐
+   - [x] 오류 시 오류 메시지만 표시
 
 ---
 
@@ -148,5 +148,22 @@ errorAlert.style.display = 'none';
 ## 📅 Timeline
 
 - **Created**: 2026-01-02
-- **Started**: TBD
-- **Completed**: TBD
+- **Started**: 2026-01-02
+- **Completed**: 2026-01-02
+
+---
+
+## 📝 Implementation Notes
+
+**수정 파일:** `imweb/doosanweve_kimjunsu/form.html`
+
+**CSS 변경 (line 296-321):**
+- `.zoad-form-success-message, .zoad-form-error-alert`에 `display: none !important` 추가
+- `.show` 클래스에 `display: block !important` 추가
+
+**JavaScript 변경 (line 435-441, 505-533):**
+- 초기화 시 성공/오류 메시지 명시적 숨김 처리
+- 제출 성공/실패 시 `style.display`와 `classList` 동시 제어
+- 자동 사라짐 시 `style.display = 'none'` 추가
+
+**구현 방식:** CSS `!important` + JavaScript 직접 스타일 제어 조합으로 아임웹 CSS 오버라이드 보장

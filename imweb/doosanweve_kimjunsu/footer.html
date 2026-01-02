@@ -11,6 +11,9 @@
   ================================================
 -->
 
+<!-- Pretendard 폰트 (아임웹 CSS보다 먼저 로드) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
 <div id="zoad-footer-container"></div>
 
 <script>
@@ -64,10 +67,14 @@ window.ZOAD_FOOTER_CONFIG = {
   // HTML 생성
   const footerHTML = `
     <style>
-      @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-
-      #zoad-footer {
-        font-family: "Pretendard", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      /* Pretendard 폰트 강제 적용 (아임웹 CSS 오버라이드) */
+      #zoad-footer-container,
+      #zoad-footer-container *,
+      #zoad-footer-container *::before,
+      #zoad-footer-container *::after,
+      .zoad-footer,
+      .zoad-footer * {
+        font-family: "Pretendard", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
       }
 
       .zoad-footer {
@@ -148,7 +155,7 @@ window.ZOAD_FOOTER_CONFIG = {
         content: ' | ';
         margin: 0 12px;
         color: ${config.styles.textColor};
-        font-weight: normal;
+        font-weight: 300;
       }
 
       /* PC 화면: 2단 가로 레이아웃 */

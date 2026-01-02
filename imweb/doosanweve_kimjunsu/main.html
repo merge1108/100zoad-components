@@ -11,6 +11,9 @@
   ================================================
 -->
 
+<!-- Pretendard 폰트 (아임웹 CSS보다 먼저 로드) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
 <div id="zoad-header-container"></div>
 
 <script>
@@ -62,10 +65,16 @@ window.ZOAD_HEADER_CONFIG = {
   // HTML 생성
   const headerHTML = `
     <style>
-      @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-
-      #zoad-header {
-        font-family: "Pretendard", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      /* Pretendard 폰트 강제 적용 (아임웹 CSS 오버라이드) */
+      #zoad-header-container,
+      #zoad-header-container *,
+      #zoad-header-container *::before,
+      #zoad-header-container *::after,
+      .zoad-header,
+      .zoad-header *,
+      .zoad-mobile-menu,
+      .zoad-mobile-menu * {
+        font-family: "Pretendard", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
       }
 
       .zoad-header-spacer {

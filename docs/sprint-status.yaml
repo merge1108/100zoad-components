@@ -3,7 +3,7 @@ project_name: "100zoad"
 project_level: 3
 sprint_plan_path: "docs/sprint-plan-100zoad-2026-01-01.md"
 current_sprint: 4
-last_updated: "2026-01-02T23:30:00Z"
+last_updated: "2026-01-02T23:45:00Z"
 
 sprints:
   - sprint_number: 0
@@ -319,8 +319,8 @@ sprints:
     end_date: "2026-01-03"
     capacity_points: 12
     committed_points: 12
-    completed_points: 5
-    status: "in_progress"
+    completed_points: 12
+    status: "completed"
     goal: "아임웹 환경에서 폰트, 버튼, 메시지, 헤더 렌더링 이슈 해결"
     deployment_site: "doosanweve_kimjunsu"
     deployment_files:
@@ -343,47 +343,50 @@ sprints:
       - story_id: "STORY-IMWEB-001"
         title: "Pretendard 폰트 강제 적용"
         points: 3
-        status: "pending"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-IMWEB"
         priority: "High"
         dependencies: []
+        completed_date: "2026-01-02"
         deployment_files:
           - "imweb/doosanweve_kimjunsu/main.html"
           - "imweb/doosanweve_kimjunsu/form.html"
           - "imweb/doosanweve_kimjunsu/footer.html"
-        notes: "3개 파일 모두 폰트 강제 적용 필요"
+        notes: "<link> 태그 + !important 강제 적용 완료"
 
       - story_id: "STORY-IMWEB-002"
         title: "Form 버튼 초기 상태 수정"
         points: 2
-        status: "pending"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-IMWEB"
         priority: "High"
         dependencies: []
+        completed_date: "2026-01-02"
         deployment_files: ["imweb/doosanweve_kimjunsu/form.html"]
-        notes: "버튼 초기 상태 파란색, 활성화로 수정"
+        notes: "CSS !important + JS 초기화로 버튼 상태 강제 적용"
 
       - story_id: "STORY-IMWEB-003"
         title: "Form 성공 메시지 초기 상태 수정"
         points: 2
-        status: "pending"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-IMWEB"
         priority: "High"
         dependencies: []
+        completed_date: "2026-01-02"
         deployment_files: ["imweb/doosanweve_kimjunsu/form.html"]
-        notes: "성공 메시지 초기 숨김 처리"
+        notes: "CSS !important + JS 초기화로 성공/오류 메시지 숨김 처리 완료"
 
-# Velocity Tracking (업데이트 예정)
+# Velocity Tracking
 velocity:
   sprint_0: 22  # MVP 완료
   sprint_1: 22  # 사용자 경험 완성
   sprint_2: 25  # 기능 확장 및 마케팅 연동
   sprint_3: 16  # 최적화 및 문서화 (진행중)
-  sprint_4: null  # 아임웹 배포 최적화
-  rolling_average: 21.25
+  sprint_4: 12  # 아임웹 배포 최적화 완료
+  rolling_average: 19.4
 
 # Team Configuration
 team:

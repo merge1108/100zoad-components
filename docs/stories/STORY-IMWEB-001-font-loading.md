@@ -1,6 +1,6 @@
 # STORY-IMWEB-001: Pretendard 폰트 강제 적용
 
-**Status**: Pending
+**Status**: Completed
 **Priority**: High
 **Sprint**: Sprint 2
 **Story Points**: 3
@@ -17,11 +17,11 @@
 
 ## 🎯 Acceptance Criteria
 
-- [ ] **AC1**: Header의 모든 텍스트(로고, 메뉴, 버튼)가 Pretendard 폰트로 표시됨
-- [ ] **AC2**: Footer의 모든 텍스트가 Pretendard 폰트로 표시됨
-- [ ] **AC3**: Form의 모든 텍스트(제목, 라벨, 버튼, 메시지)가 Pretendard 폰트로 표시됨
-- [ ] **AC4**: 아임웹의 기본 CSS보다 높은 우선순위로 폰트가 적용됨
-- [ ] **AC5**: 폰트 weight가 300, 500, 700만 사용됨
+- [x] **AC1**: Header의 모든 텍스트(로고, 메뉴, 버튼)가 Pretendard 폰트로 표시됨
+- [x] **AC2**: Footer의 모든 텍스트가 Pretendard 폰트로 표시됨
+- [x] **AC3**: Form의 모든 텍스트(제목, 라벨, 버튼, 메시지)가 Pretendard 폰트로 표시됨
+- [x] **AC4**: 아임웹의 기본 CSS보다 높은 우선순위로 폰트가 적용됨
+- [x] **AC5**: 폰트 weight가 300, 500, 700만 사용됨
 
 ---
 
@@ -125,5 +125,19 @@
 ## 📅 Timeline
 
 - **Created**: 2026-01-02
-- **Started**: TBD
-- **Completed**: TBD
+- **Started**: 2026-01-02
+- **Completed**: 2026-01-02
+
+---
+
+## 📝 Implementation Notes
+
+### 변경 사항
+1. **`<link>` 태그 추가**: 3개 파일 모두 `@import` 대신 `<link rel="stylesheet">` 태그로 폰트 먼저 로드
+2. **강제 적용 CSS**: 와일드카드 선택자(`*`, `*::before`, `*::after`) + `!important`로 모든 요소에 폰트 강제 적용
+3. **font-weight 통일**: `font-weight: normal` → `300`으로 변경
+
+### 수정된 파일
+- `imweb/doosanweve_kimjunsu/main.html`
+- `imweb/doosanweve_kimjunsu/form.html`
+- `imweb/doosanweve_kimjunsu/footer.html`

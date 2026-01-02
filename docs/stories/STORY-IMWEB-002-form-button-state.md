@@ -1,6 +1,6 @@
 # STORY-IMWEB-002: Form 버튼 초기 상태 수정
 
-**Status**: Pending
+**Status**: Completed
 **Priority**: High
 **Sprint**: Sprint 2
 **Story Points**: 2
@@ -17,11 +17,11 @@
 
 ## 🎯 Acceptance Criteria
 
-- [ ] **AC1**: 페이지 로드 시 버튼이 두산 블루(#003DA5)로 표시됨
-- [ ] **AC2**: 버튼이 활성화 상태(enabled)로 표시됨
-- [ ] **AC3**: 버튼 호버 시 어두운 블루(#002380)로 변경됨
-- [ ] **AC4**: 제출 중일 때만 로딩 상태(회색, disabled)가 적용됨
-- [ ] **AC5**: 여러 폼이 있어도 각각 독립적으로 작동함
+- [x] **AC1**: 페이지 로드 시 버튼이 두산 블루(#003DA5)로 표시됨
+- [x] **AC2**: 버튼이 활성화 상태(enabled)로 표시됨
+- [x] **AC3**: 버튼 호버 시 어두운 블루(#002380)로 변경됨
+- [x] **AC4**: 제출 중일 때만 로딩 상태(회색, disabled)가 적용됨
+- [x] **AC5**: 여러 폼이 있어도 각각 독립적으로 작동함 (uniqueId로 격리)
 
 ---
 
@@ -150,5 +150,27 @@ submitButton.style.backgroundColor = config.styles.primaryColor;
 ## 📅 Timeline
 
 - **Created**: 2026-01-02
-- **Started**: TBD
-- **Completed**: TBD
+- **Started**: 2026-01-02
+- **Completed**: 2026-01-02
+
+---
+
+## ✅ Implementation Notes
+
+### 변경 사항
+
+**CSS 수정 (`form.html` 244-270줄)**:
+- 모든 버튼 스타일 속성에 `!important` 추가
+- `opacity: 1 !important` 추가하여 투명도 강제
+- `:disabled` 상태에도 `!important` 적용
+
+**JavaScript 수정 (`form.html` 426-433줄)**:
+- 폼 초기화 직후 버튼 상태 명시적 설정
+- `disabled = false` 강제
+- `loading` 클래스 제거
+- 인라인 스타일로 색상/커서 강제 적용
+
+### 테스트 결과
+- AC1-AC5 모두 통과
+- 아임웹 환경에서 버튼이 파란색으로 표시됨
+- 호버/클릭/제출 상태 모두 정상 작동
