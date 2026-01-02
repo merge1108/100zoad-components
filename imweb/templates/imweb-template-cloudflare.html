@@ -1,0 +1,305 @@
+<!--
+  ================================================
+  100zoad 아임웹 통합 템플릿 - Cloudflare Pages 버전
+  ================================================
+
+  사용법:
+  1. Cloudflare Pages에 100zoad 프로젝트 배포
+  2. 아래 CLOUDFLARE_URL을 실제 배포 URL로 변경
+  3. CONFIG 섹션 수정 (고객사 정보)
+  4. 이 파일 전체를 아임웹 HTML 섹션에 붙여넣기
+
+  장점:
+  - 한 번의 배포로 모든 사이트 업데이트
+  - 아임웹 HTML이 매우 간단
+  - 유지보수 쉬움
+  - 버전 관리 용이
+
+  ================================================
+-->
+
+<!-- Pretendard 폰트 (필수) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
+<!-- ================================================
+     1. Cloudflare Pages 빌드 파일 로드
+     ================================================ -->
+<!--
+  TODO: 실제 Cloudflare Pages URL로 변경하세요
+  예시: https://100zoad.pages.dev/assets/main-xxxx.js
+-->
+<script type="module" crossorigin>
+  // ✅ Cloudflare Pages URL
+  const CLOUDFLARE_URL = 'https://100zoad-components.pages.dev';
+
+  // 메인 JS 파일 동적 로드
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.crossOrigin = 'anonymous';
+  script.src = `${CLOUDFLARE_URL}/assets/main-CuMLdMIh.js`;
+  document.head.appendChild(script);
+
+  console.log('✅ 100zoad 컴포넌트 로드 시작:', CLOUDFLARE_URL);
+</script>
+
+<!-- ================================================
+     2. CONFIG 설정 (고객사별로 수정)
+     ================================================ -->
+<script>
+window.ZOAD_CONFIG = {
+  // ========================================
+  // 기본 정보
+  // ========================================
+  meta: {
+    siteName: '두산위브더제니스 센트럴천안', // 현장명
+    version: '1.0.0',
+    lastUpdated: '2026-01-02'
+  },
+
+  // ========================================
+  // 헤더 설정
+  // ========================================
+  header: {
+    enabled: true,
+    logo: {
+      url: 'https://cdn.imweb.me/upload/S20251124bbc848073a8d6/46f6b8cc97277.png', // 로고 이미지 URL
+      alt: '두산위브더제니스 센트럴천안'
+    },
+    pageType: 'onepage', // 'onepage' 또는 'multipage'
+    menu: [
+      { text: '사업안내', target: '#section1' },
+      { text: '입지안내', target: '#section2' },
+      { text: '프리미엄', target: '#section3' },
+      { text: '평면안내', target: '#section4' }
+    ],
+    specialMenu: {
+      text: '관심고객등록',
+      target: '#form-section',
+      animation: 'pulse' // 'pulse', 'glow', 'shake'
+    },
+    styles: {
+      bgColor: '#ffffff',
+      textColor: '#333333',
+      hoverColor: '#003DA5',
+      borderColor: '#e5e5e5'
+    }
+  },
+
+  // ========================================
+  // 입력폼 설정
+  // ========================================
+  form: {
+    enabled: true,
+    title: '관심고객 등록',
+    description: '간단한 정보를 입력해주시면 상담 전화를 드리겠습니다.',
+    displayMode: 'section', // 'popup', 'section', 'both'
+    fields: {
+      name: {
+        label: '이름',
+        placeholder: '홍길동',
+        required: true
+      },
+      phone: {
+        label: '전화번호',
+        placeholder: '010-1234-5678',
+        required: true
+      }
+      // 추가 필드는 여기에 정의
+    },
+    airtable: {
+      workerUrl: 'https://100zoad-airtable-proxy.choiwseok.workers.dev/submit' // Cloudflare Worker URL
+    },
+    messages: {
+      success: '✓ 신청이 완료되었습니다!',
+      error: '제출 중 오류가 발생했습니다. 다시 시도해주세요.'
+    },
+    styles: {
+      primaryColor: '#003DA5',
+      bgColor: '#ffffff',
+      textColor: '#333333'
+    }
+  },
+
+  // ========================================
+  // 퀵메뉴 설정 (PC 우측 고정 버튼)
+  // ========================================
+  quickMenu: {
+    enabled: true,
+    position: {
+      right: '30px',
+      top: '50%'
+    },
+    buttons: [
+      {
+        text: '입력폼',
+        icon: '📝',
+        action: 'openForm',
+        color: '#003DA5'
+      },
+      {
+        text: '전화걸기',
+        icon: '📞',
+        action: 'call',
+        phone: '1666-3170',
+        color: '#28a745'
+      }
+    ]
+  },
+
+  // ========================================
+  // 모바일 내비게이터 설정 (하단 고정 버튼)
+  // ========================================
+  mobileNav: {
+    enabled: true,
+    buttons: [
+      {
+        text: '상담신청',
+        icon: '📝',
+        action: 'openForm',
+        color: '#003DA5'
+      },
+      {
+        text: '전화',
+        icon: '📞',
+        action: 'call',
+        phone: '1666-3170',
+        color: '#28a745'
+      },
+      {
+        text: '위치',
+        icon: '📍',
+        action: 'link',
+        url: 'https://naver.me/example',
+        target: '_blank',
+        color: '#17a2b8'
+      }
+    ]
+  },
+
+  // ========================================
+  // 푸터 설정
+  // ========================================
+  footer: {
+    enabled: true,
+    line1: {
+      siteName: '두산위브더제니스 센트럴천안',
+      phone: '1666-3170'
+    },
+    line2: {
+      company: '럿셀',
+      ceo: '최우석',
+      phone: '010-4997-7087',
+      businessNumber: '466-23-01872'
+    },
+    legal: {
+      termsUrl: '',
+      privacyUrl: '',
+      openIn: 'newTab'
+    },
+    styles: {
+      bgColor: '#f8f9fa',
+      textColor: '#666666',
+      linkColor: '#003DA5'
+    }
+  },
+
+  // ========================================
+  // 분석 도구 설정 (GTM/GA4)
+  // ========================================
+  analytics: {
+    gtm: {
+      enabled: false,
+      containerId: 'GTM-XXXXXXX' // Google Tag Manager ID
+    },
+    ga4: {
+      enabled: false,
+      measurementId: 'G-XXXXXXXXXX' // GA4 측정 ID
+    }
+  }
+};
+
+console.log('✅ CONFIG 설정 완료:', window.ZOAD_CONFIG.meta.siteName);
+</script>
+
+<!-- ================================================
+     3. 컴포넌트 배치
+     ================================================ -->
+<!-- 헤더 -->
+<zoad-header></zoad-header>
+
+<!-- 퀵메뉴 (PC) -->
+<zoad-quickmenu></zoad-quickmenu>
+
+<!-- 모바일 내비게이터 -->
+<zoad-mobile-nav></zoad-mobile-nav>
+
+<!--
+  입력폼 섹션 (원하는 위치에 배치)
+  displayMode: 'section'일 때만 표시됨
+-->
+<div id="form-section">
+  <zoad-form></zoad-form>
+</div>
+
+<!--
+  푸터 (페이지 최하단에 배치)
+-->
+<zoad-footer></zoad-footer>
+
+<!-- ================================================
+     4. 로딩 완료 확인
+     ================================================ -->
+<script>
+window.addEventListener('load', function() {
+  console.log('✅ 100zoad 컴포넌트 로딩 완료');
+
+  // 컴포넌트 등록 확인
+  const components = [
+    'zoad-header',
+    'zoad-form',
+    'zoad-quickmenu',
+    'zoad-mobile-nav',
+    'zoad-footer'
+  ];
+
+  components.forEach(tag => {
+    if (customElements.get(tag)) {
+      console.log(`✅ ${tag} 등록됨`);
+    } else {
+      console.warn(`⚠️ ${tag} 미등록`);
+    }
+  });
+});
+</script>
+
+<!-- ================================================
+     📝 사용 가이드
+     ================================================
+
+     [1] Cloudflare Pages 배포:
+         1. GitHub에 푸시
+         2. Cloudflare Pages에서 프로젝트 연결
+         3. 빌드 명령: npm run build
+         4. 배포 디렉토리: dist
+         5. 배포 완료 후 URL 확인
+
+     [2] 아임웹 적용:
+         1. 위 CLOUDFLARE_URL을 실제 URL로 변경
+         2. CONFIG 섹션 수정 (고객사 정보)
+         3. 전체 복사
+         4. 아임웹 > HTML 섹션 > 붙여넣기
+         5. 저장
+
+     [3] 업데이트:
+         1. 코드 수정
+         2. GitHub 푸시
+         3. Cloudflare Pages 자동 재배포
+         4. 모든 아임웹 사이트 자동 업데이트!
+
+     [4] 문제 해결:
+         - F12 개발자 도구 > Console 확인
+         - 빨간색 오류 메시지 확인
+         - [100zoad] 로그 검색
+
+     ================================================
+-->

@@ -343,11 +343,20 @@ export function validateConfig(config) {
       });
     }
 
-    if (!config.form.legal || !config.form.legal.termsText || !config.form.legal.privacyText) {
-      errors.push({
-        field: 'form.legal',
-        message: 'form.legal.termsText와 form.legal.privacyText가 필수입니다.'
-      });
+    // legal 필드는 선택적 (없으면 기본값 사용)
+    if (config.form.legal) {
+      if (!config.form.legal.termsText) {
+        config.form.legal.termsText = '서비스 이용약관에 동의합니다.';
+      }
+      if (!config.form.legal.privacyText) {
+        config.form.legal.privacyText = '개인정보 수집 및 이용에 동의합니다.';
+      }
+    } else {
+      // legal 객체가 없으면 기본값으로 생성
+      config.form.legal = {
+        termsText: '서비스 이용약관에 동의합니다.',
+        privacyText: '개인정보 수집 및 이용에 동의합니다.'
+      };
     }
   }
 
