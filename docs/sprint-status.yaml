@@ -3,7 +3,7 @@ project_name: "100zoad"
 project_level: 3
 sprint_plan_path: "docs/sprint-plan-100zoad-2026-01-01.md"
 current_sprint: 2
-last_updated: "2026-01-02T15:00:00Z"
+last_updated: "2026-01-02T18:00:00Z"
 
 sprints:
   - sprint_number: 0
@@ -164,7 +164,7 @@ sprints:
     end_date: "2026-01-03"
     capacity_points: 25
     committed_points: 25
-    completed_points: 9
+    completed_points: 18
     status: "in_progress"
     goal: "동적 필드, 이벤트 추적, 반응형 디자인 완성하여 실전 배포 준비"
     stories:
@@ -198,26 +198,29 @@ sprints:
       - story_id: "STORY-012"
         title: "선택 필드 동적 구성"
         points: 5
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-003"
         priority: "Must Have"
+        completed_date: "2026-01-02"
 
       - story_id: "STORY-018"
         title: "퀵메뉴 버튼 액션 (입력폼, 전화, URL)"
         points: 2
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-004"
         priority: "Must Have"
+        completed_date: "2026-01-02"
 
       - story_id: "STORY-020"
         title: "모바일 내비게이터 버튼 액션"
         points: 2
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-004"
         priority: "Must Have"
+        completed_date: "2026-01-02"
 
       - story_id: "STORY-021"
         title: "GTM/GA4 전환 이벤트 추적"
