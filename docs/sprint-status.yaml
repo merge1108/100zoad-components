@@ -164,7 +164,7 @@ sprints:
     end_date: "2026-01-03"
     capacity_points: 25
     committed_points: 25
-    completed_points: 21
+    completed_points: 24
     status: "in_progress"
     goal: "동적 필드, 이벤트 추적, 반응형 디자인 완성하여 실전 배포 준비"
     stories:
@@ -234,10 +234,11 @@ sprints:
       - story_id: "STORY-023"
         title: "PC/모바일 반응형 전환"
         points: 3
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-007"
         priority: "Must Have"
+        completed_date: "2026-01-02"
 
       - story_id: "STORY-027"
         title: "HTTPS 강제 및 데이터 암호화"
