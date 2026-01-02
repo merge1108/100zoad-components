@@ -89,9 +89,10 @@ async function initializeComponents() {
   // 로딩 인디케이터 표시 (Config가 있으면 사용, 없으면 기본값)
   let loaderElement = null;
 
-  // 로더 Config 설정 (window.CONFIG가 없을 수도 있으므로 안전하게 처리)
+  // 로더 Config 설정 (window.ZOAD_CONFIG 또는 window.CONFIG 사용)
   if (typeof window !== 'undefined') {
-    window.LOADER_CONFIG = window.CONFIG?.loader || {
+    const globalConfig = window.ZOAD_CONFIG || window.CONFIG;
+    window.LOADER_CONFIG = globalConfig?.loader || {
       spinnerType: 'circle', // 'circle' | 'bars' | 'dots'
       bgColor: 'rgba(255, 255, 255, 0.95)',
       primaryColor: '#007bff',
@@ -143,7 +144,7 @@ async function initializeComponents() {
         // 모든 컴포넌트 로딩 완료 후 스크롤 추적 시작
         if (typeof window !== 'undefined') {
           try {
-            const scrollTracker = initScrollTracking(window.CONFIG || {});
+            const scrollTracker = initScrollTracking(window.ZOAD_CONFIG || window.CONFIG || {});
             console.log('✅ [STORY-022] 스크롤 깊이 추적 활성화:', scrollTracker.getStatus());
           } catch (error) {
             console.error('❌ [STORY-022] 스크롤 추적 초기화 실패:', error);

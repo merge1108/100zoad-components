@@ -1,372 +1,274 @@
 <!--
   ================================================
-  100zoad Header Component - 아임웹 배포용
+  100zoad 헤더 컴포넌트 - Cloudflare Pages 버전
   ================================================
 
+  배포: https://100zoad-components.pages.dev
+  고객사: 두산위브더제니스 센트럴천안 (김준수)
+  버전: 2.1.0 (로딩 순서 제어 추가)
+
+  포함 컴포넌트:
+  - ✅ 헤더 (로고, 메뉴, 햄버거 메뉴)
+  - ✅ 퀵메뉴 (PC 우측 고정 버튼)
+  - ✅ 모바일 내비게이터 (하단 고정 버튼)
+
   사용법:
-  1. 이 파일 전체를 복사
-  2. 아임웹 → 코드위젯 → 붙여넣기
-  3. CONFIG 설정 수정 (현장명, 로고, 메뉴 등)
+  1. 아임웹 페이지 최상단에 HTML 위젯 추가
+  2. 이 파일 전체를 복사하여 붙여넣기
+  3. 저장
 
   ================================================
 -->
 
-<!-- Pretendard 폰트 (아임웹 CSS보다 먼저 로드) -->
+<!-- Pretendard 폰트 (필수) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 
-<div id="zoad-header-container"></div>
+<!-- 로딩 화면 (스크립트 로드 전 즉시 표시) -->
+<div id="zoad-loading-screen" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.98);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+">
+  <div style="
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e5e5e5;
+    border-top: 4px solid #003DA5;
+    border-radius: 50%;
+    animation: zoad-spin 1s linear infinite;
+  "></div>
+  <p style="margin-top: 20px; color: #666; font-size: 14px;">로딩 중...</p>
+</div>
 
-<script>
-// ================================================
-// CONFIG 설정
-// ================================================
-// 이 부분만 수정하면 됩니다!
-
-window.ZOAD_HEADER_CONFIG = {
-  // 로고 설정
-  logo: {
-    url: 'https://cdn.imweb.me/upload/S20251124bbc848073a8d6/46f6b8cc97277.png',  // 로고 이미지 URL
-    alt: '두산위브더제니스 센트럴천안'
-  },
-
-  // 페이지 타입 ("onepage" 또는 "multipage")
-  pageType: 'onepage',
-
-  // 메뉴 항목 (최대 6개)
-  menu: [
-    { text: '사업안내', target: '#section1' },
-    { text: '입지안내', target: '#section2' },
-    { text: '프리미엄', target: '#section3' },
-    { text: '평면안내', target: '#section4' }
-  ],
-
-  // 특수 메뉴 (관심고객등록 버튼)
-  specialMenu: {
-    text: '관심고객등록',
-    target: '#form-section',
-    animation: 'pulse'  // 'pulse', 'glow', 'shake'
-  },
-
-  // 스타일 설정
-  styles: {
-    bgColor: '#ffffff',
-    textColor: '#333333',
-    hoverColor: '#003DA5'
+<style>
+  @keyframes zoad-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
+</style>
+
+<!-- CONFIG 설정 (먼저 정의) -->
+<script>
+window.ZOAD_CONFIG = {
+  // 기본 정보
+  meta: {
+    siteName: '두산위브더제니스 센트럴천안',
+    version: '2.1.0',
+    lastUpdated: '2026-01-02'
+  },
+
+  // ========================================
+  // 헤더 설정
+  // ========================================
+  header: {
+    enabled: true,
+    logo: {
+      url: 'https://cdn.imweb.me/upload/S20251124bbc848073a8d6/46f6b8cc97277.png',
+      alt: '두산위브더제니스 센트럴천안'
+    },
+    pageType: 'onepage',
+    menu: [
+      { text: '사업안내', target: '#section1' },
+      { text: '입지안내', target: '#section2' },
+      { text: '프리미엄', target: '#section3' },
+      { text: '평면안내', target: '#section4' }
+    ],
+    specialMenu: {
+      text: '관심고객등록',
+      target: '#form-section',
+      animation: 'pulse'
+    },
+    styles: {
+      bgColor: '#ffffff',
+      textColor: '#333333',
+      hoverColor: '#003DA5',
+      borderColor: '#e5e5e5'
+    }
+  },
+
+  // ========================================
+  // 퀵메뉴 설정 (PC 우측 고정)
+  // ========================================
+  quickMenu: {
+    enabled: true,
+    position: {
+      right: '30px',
+      top: '50%'
+    },
+    buttons: [
+      {
+        text: '입력폼',
+        icon: '📝',
+        action: 'openForm',
+        color: '#003DA5'
+      },
+      {
+        text: '전화걸기',
+        icon: '📞',
+        action: 'call',
+        phone: '1666-3170',
+        color: '#28a745'
+      }
+    ]
+  },
+
+  // ========================================
+  // 모바일 내비게이터 설정 (하단 고정)
+  // ========================================
+  mobileNav: {
+    enabled: true,
+    buttons: [
+      {
+        text: '상담신청',
+        icon: '📝',
+        action: 'openForm',
+        color: '#003DA5'
+      },
+      {
+        text: '전화',
+        icon: '📞',
+        action: 'call',
+        phone: '1666-3170',
+        color: '#28a745'
+      },
+      {
+        text: '위치',
+        icon: '📍',
+        action: 'link',
+        url: 'https://naver.me/example',
+        target: '_blank',
+        color: '#17a2b8'
+      }
+    ]
+  },
+
+  // 입력폼/푸터는 별도 HTML에서 병합됨
+  form: null,
+  footer: null
 };
 
-// ================================================
-// Header Component 코드 (수정하지 마세요)
-// ================================================
-(function() {
-  const config = window.ZOAD_HEADER_CONFIG;
-  const container = document.getElementById('zoad-header-container');
+console.log('✅ [main.html] ZOAD_CONFIG 설정 완료');
+</script>
 
-  // HTML 생성
-  const headerHTML = `
-    <style>
-      /* Pretendard 폰트 강제 적용 (아임웹 CSS 오버라이드) */
-      #zoad-header-container,
-      #zoad-header-container *,
-      #zoad-header-container *::before,
-      #zoad-header-container *::after,
-      .zoad-header,
-      .zoad-header *,
-      .zoad-mobile-menu,
-      .zoad-mobile-menu * {
-        font-family: "Pretendard", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
-      }
+<!-- Cloudflare Pages 빌드 파일 로드 -->
+<script type="module" crossorigin>
+  const CLOUDFLARE_URL = 'https://100zoad-components.pages.dev';
 
-      .zoad-header-spacer {
-        height: 70px;
-      }
+  // 메인 JS 파일 로드
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.crossOrigin = 'anonymous';
+  script.src = `${CLOUDFLARE_URL}/assets/main-CpD8AFz1.js`;
 
-      .zoad-header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 70px;
-        background-color: ${config.styles.bgColor} !important;
-        color: ${config.styles.textColor};
-        z-index: 1000;
-        border-bottom: 1px solid #e5e5e5;
-      }
+  script.onerror = () => {
+    console.error('❌ 100zoad 컴포넌트 로드 실패:', script.src);
+    // 로딩 화면 숨기기 (에러 시에도)
+    hideLoadingScreen();
+  };
 
-      .zoad-header-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        height: 100%;
-        padding: 0 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
+  script.onload = () => {
+    console.log('✅ 100zoad 메인 스크립트 로드 완료');
+  };
 
-      .zoad-header-logo img {
-        height: 40px;
-        cursor: pointer;
-      }
+  document.head.appendChild(script);
 
-      .zoad-header-logo-text {
-        font-size: 20px;
-        font-weight: 700;
-        cursor: pointer;
-      }
-
-      .zoad-header-menu {
-        display: flex;
-        gap: 30px;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
-
-      .zoad-header-menu-link {
-        color: ${config.styles.textColor};
-        text-decoration: none;
-        font-size: 16px;
-        font-weight: 500;
-        transition: color 0.2s;
-      }
-
-      .zoad-header-menu-link:hover {
-        color: ${config.styles.hoverColor};
-      }
-
-      .zoad-header-menu-link.special {
-        background: ${config.styles.hoverColor};
-        color: #ffffff !important;
-        padding: 10px 20px;
-        border-radius: 25px;
-        font-weight: 700;
-      }
-
-      .zoad-header-menu-link.special:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 61, 165, 0.4);
-      }
-
-      @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-      }
-
-      .zoad-header-menu-link.special.animation-pulse {
-        animation: pulse 2s ease-in-out infinite;
-      }
-
-      /* 모바일 햄버거 */
-      .zoad-hamburger-btn {
-        display: none;
-        flex-direction: column;
-        gap: 5px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 5px;
-      }
-
-      .zoad-hamburger-btn span {
-        width: 25px;
-        height: 3px;
-        background: ${config.styles.textColor};
-        border-radius: 2px;
-        transition: 0.3s;
-      }
-
-      .zoad-mobile-menu {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 80%;
-        max-width: 320px;
-        height: 100vh;
-        background: ${config.styles.bgColor} !important;
-        box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-        z-index: 1001;
-        transition: right 0.3s;
-        overflow-y: auto;
-      }
-
-      .zoad-mobile-menu.open {
-        right: 0;
-      }
-
-      .zoad-mobile-menu-header {
-        padding: 20px;
-        border-bottom: 1px solid #e5e5e5;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .zoad-mobile-menu-close {
-        background: none;
-        border: none;
-        font-size: 28px;
-        cursor: pointer;
-      }
-
-      .zoad-mobile-menu-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .zoad-mobile-menu-item {
-        border-bottom: 1px solid #e5e5e5;
-      }
-
-      .zoad-mobile-menu-link {
-        display: block;
-        padding: 18px 20px;
-        color: ${config.styles.textColor};
-        text-decoration: none;
-        font-size: 16px;
-        font-weight: 500;
-      }
-
-      .zoad-mobile-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        z-index: 1000;
-        display: none;
-      }
-
-      .zoad-mobile-overlay.active {
-        display: block;
-      }
-
-      @media (max-width: 768px) {
-        .zoad-header-menu-nav {
-          display: none;
-        }
-
-        .zoad-hamburger-btn {
-          display: flex;
-        }
-
-        .zoad-header {
-          height: 60px;
-        }
-
-        .zoad-header-spacer {
-          height: 60px;
-        }
-
-        .zoad-header-logo img {
-          height: 32px;
-        }
-      }
-    </style>
-
-    <!-- 헤더 스페이서 -->
-    <div class="zoad-header-spacer"></div>
-
-    <!-- 헤더 -->
-    <header class="zoad-header">
-      <div class="zoad-header-inner">
-        <!-- 로고 -->
-        <div class="zoad-header-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-          ${config.logo.url
-            ? `<img src="${config.logo.url}" alt="${config.logo.alt}">`
-            : `<span class="zoad-header-logo-text">${config.logo.alt}</span>`
-          }
-        </div>
-
-        <!-- PC 메뉴 -->
-        <nav class="zoad-header-menu-nav">
-          <ul class="zoad-header-menu">
-            ${config.menu.map(item => `
-              <li>
-                <a href="${item.target}" class="zoad-header-menu-link" data-target="${item.target}">
-                  ${item.text}
-                </a>
-              </li>
-            `).join('')}
-            ${config.specialMenu ? `
-              <li>
-                <a href="${config.specialMenu.target}" class="zoad-header-menu-link special animation-${config.specialMenu.animation}" data-target="${config.specialMenu.target}">
-                  ${config.specialMenu.text}
-                </a>
-              </li>
-            ` : ''}
-          </ul>
-        </nav>
-
-        <!-- 햄버거 버튼 -->
-        <button class="zoad-hamburger-btn" onclick="window.zoadToggleMobileMenu()">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-      </div>
-    </header>
-
-    <!-- 모바일 오버레이 -->
-    <div class="zoad-mobile-overlay" onclick="window.zoadCloseMobileMenu()"></div>
-
-    <!-- 모바일 메뉴 -->
-    <div class="zoad-mobile-menu">
-      <div class="zoad-mobile-menu-header">
-        <div>${config.logo.alt}</div>
-        <button class="zoad-mobile-menu-close" onclick="window.zoadCloseMobileMenu()">×</button>
-      </div>
-      <ul class="zoad-mobile-menu-list">
-        ${config.menu.map(item => `
-          <li class="zoad-mobile-menu-item">
-            <a href="${item.target}" class="zoad-mobile-menu-link" onclick="window.zoadCloseMobileMenu()">
-              ${item.text}
-            </a>
-          </li>
-        `).join('')}
-        ${config.specialMenu ? `
-          <li class="zoad-mobile-menu-item">
-            <a href="${config.specialMenu.target}" class="zoad-mobile-menu-link" onclick="window.zoadCloseMobileMenu()" style="background: ${config.styles.hoverColor}; color: #fff; text-align: center; border-radius: 8px; margin: 10px; font-weight: 700;">
-              ${config.specialMenu.text}
-            </a>
-          </li>
-        ` : ''}
-      </ul>
-    </div>
-  `;
-
-  container.innerHTML = headerHTML;
-
-  // 원페이지 스크롤 이벤트
-  if (config.pageType === 'onepage') {
-    document.querySelectorAll('.zoad-header-menu-link, .zoad-mobile-menu-link').forEach(link => {
-      link.addEventListener('click', function(e) {
-        const target = this.getAttribute('data-target');
-        if (target && target.startsWith('#')) {
-          e.preventDefault();
-          const section = document.querySelector(target);
-          if (section) {
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }
-      });
-    });
+  // 로딩 화면 숨기기 함수
+  function hideLoadingScreen() {
+    const loadingScreen = document.getElementById('zoad-loading-screen');
+    if (loadingScreen) {
+      loadingScreen.style.transition = 'opacity 0.3s ease';
+      loadingScreen.style.opacity = '0';
+      setTimeout(() => {
+        loadingScreen.remove();
+      }, 300);
+    }
   }
 
-  // 모바일 메뉴 토글 함수
-  window.zoadToggleMobileMenu = function() {
-    const menu = document.querySelector('.zoad-mobile-menu');
-    const overlay = document.querySelector('.zoad-mobile-overlay');
-    menu.classList.toggle('open');
-    overlay.classList.toggle('active');
-    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
-  };
+  // 전역 함수로 노출 (다른 코드블럭에서 사용 가능)
+  window.__ZOAD_HIDE_LOADING__ = hideLoadingScreen;
+</script>
 
-  window.zoadCloseMobileMenu = function() {
-    document.querySelector('.zoad-mobile-menu').classList.remove('open');
-    document.querySelector('.zoad-mobile-overlay').classList.remove('active');
-    document.body.style.overflow = '';
-  };
+<!-- 컴포넌트 배치 -->
+<!-- 헤더 -->
+<zoad-header></zoad-header>
+
+<!-- 퀵메뉴 (PC 우측 고정) -->
+<zoad-quickmenu></zoad-quickmenu>
+
+<!-- 모바일 내비게이터 (하단 고정) -->
+<zoad-mobile-nav></zoad-mobile-nav>
+
+<!-- 로딩 완료 확인 및 다른 코드블럭 동기화 -->
+<script>
+(function() {
+  const COMPONENT_LIST = ['zoad-header', 'zoad-quickmenu', 'zoad-mobile-nav'];
+  let checkInterval;
+  let attempts = 0;
+  const maxAttempts = 100; // 10초 (100ms * 100)
+
+  checkInterval = setInterval(function() {
+    attempts++;
+
+    // 모든 컴포넌트 등록 확인
+    const allRegistered = COMPONENT_LIST.every(name => customElements.get(name));
+
+    if (allRegistered) {
+      clearInterval(checkInterval);
+      console.log('✅ [main.html] 모든 컴포넌트 등록 완료');
+
+      // 렌더링 대기 후 확인
+      setTimeout(function() {
+        let allRendered = true;
+
+        COMPONENT_LIST.forEach(name => {
+          const el = document.querySelector(name);
+          if (el && el.shadowRoot) {
+            console.log(`✅ [${name}] 렌더링 완료`);
+          } else {
+            console.warn(`⚠️ [${name}] 렌더링 실패`);
+            allRendered = false;
+          }
+        });
+
+        // 준비 완료 플래그 설정
+        window.__ZOAD_READY__ = true;
+        window.dispatchEvent(new CustomEvent('zoad-ready'));
+        console.log('🎉 [main.html] ZOAD 준비 완료!');
+
+        // 로딩 화면 숨기기 (3초 후 또는 렌더링 완료 시)
+        if (window.__ZOAD_HIDE_LOADING__) {
+          window.__ZOAD_HIDE_LOADING__();
+        }
+      }, 500);
+    } else if (attempts >= maxAttempts) {
+      clearInterval(checkInterval);
+      console.error('❌ [main.html] 컴포넌트 로딩 타임아웃');
+
+      // 타임아웃 시에도 플래그 설정 (다른 컴포넌트가 계속 대기하지 않도록)
+      window.__ZOAD_READY__ = true;
+      window.dispatchEvent(new CustomEvent('zoad-ready'));
+
+      // 로딩 화면 숨기기
+      if (window.__ZOAD_HIDE_LOADING__) {
+        window.__ZOAD_HIDE_LOADING__();
+      }
+    }
+  }, 100);
+
+  // 3초 후 강제로 로딩 화면 숨기기 (안전장치)
+  setTimeout(function() {
+    if (window.__ZOAD_HIDE_LOADING__) {
+      window.__ZOAD_HIDE_LOADING__();
+    }
+  }, 3000);
 })();
 </script>

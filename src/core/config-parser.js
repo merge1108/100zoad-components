@@ -413,7 +413,7 @@ function deepMerge(target, source) {
 
 /**
  * Config 파싱 함수
- * Window.CONFIG를 파싱하고 기본값으로 fallback
+ * Window.CONFIG 또는 Window.ZOAD_CONFIG를 파싱하고 기본값으로 fallback
  *
  * @returns {WindowConfig} 파싱된 Config 객체
  * @throws {ConfigValidationError} Config가 유효하지 않을 때
@@ -435,8 +435,16 @@ export function parseConfig() {
     );
   }
 
-  // Window.CONFIG 읽기
-  const userConfig = window.CONFIG || {};
+  // Window.CONFIG 또는 Window.ZOAD_CONFIG 읽기 (ZOAD_CONFIG 우선)
+  const userConfig = window.ZOAD_CONFIG || window.CONFIG || {};
+
+  if (window.ZOAD_CONFIG) {
+    console.log('📦 [config-parser] ZOAD_CONFIG 사용');
+  } else if (window.CONFIG) {
+    console.log('📦 [config-parser] CONFIG 사용');
+  } else {
+    console.warn('⚠️ [config-parser] CONFIG가 정의되지 않음, 기본값 사용');
+  }
 
   // 기본값과 병합
   const mergedConfig = deepMerge(DEFAULTS, userConfig);

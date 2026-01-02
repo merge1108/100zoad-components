@@ -1,600 +1,201 @@
 <!--
   ================================================
-  100zoad Form Component - 아임웹 배포용
+  100zoad 입력폼 컴포넌트 - Cloudflare Pages 버전
   ================================================
 
-  사용법:
-  1. 이 파일 전체를 복사
-  2. 아임웹 → 코드위젯 → 붙여넣기
-  3. CONFIG 설정 수정 (Cloudflare Worker URL 등)
+  배포: https://100zoad-components.pages.dev
+  고객사: 두산위브더제니스 센트럴천안 (김준수)
+  버전: 2.1.0 (로딩 순서 제어 추가)
 
-  주의: Cloudflare Worker URL을 반드시 설정하세요!
+  포함 컴포넌트:
+  - ✅ 입력폼 (관심고객 등록)
+
+  사용법:
+  1. 아임웹 페이지 원하는 위치에 HTML 위젯 추가
+  2. 이 파일 전체를 복사하여 붙여넣기
+  3. 저장
+
+  주의: main.html이 먼저 로드되어야 합니다!
 
   ================================================
 -->
 
-<!-- Pretendard 폰트 (아임웹 CSS보다 먼저 로드) -->
+<!-- Pretendard 폰트 (이미 main.html에서 로드됨, 중복 방지용) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 
-<div class="zoad-form-container-wrapper"></div>
+<!-- 입력폼 섹션 (컨테이너) -->
+<div id="form-section">
+  <!-- 컴포넌트가 동적으로 생성됨 -->
+</div>
 
+<!-- CONFIG 설정 및 컴포넌트 생성 -->
 <script>
-// ================================================
-// CONFIG 설정
-// ================================================
-// 이 부분만 수정하면 됩니다!
-
-window.ZOAD_FORM_CONFIG = {
-  // 폼 제목 및 설명
-  title: '관심고객 등록',
-  description: '간단한 정보를 입력해주시면 상담 전화를 드리겠습니다.',
-
-  // 필드 설정
-  fields: {
-    name: {
-      label: '이름',
-      placeholder: '홍길동',
-      required: true
-    },
-    phone: {
-      label: '전화번호',
-      placeholder: '010-1234-5678',
-      required: true
-    }
-
-    // ========================================
-    // 추가 입력칸 예시 (필요시 주석 해제하여 사용)
-    // ========================================
-
-    // 예시 1: 텍스트 입력칸 (이메일, 주소 등)
-    // ,
-    // email: {
-    //   type: 'text',
-    //   label: '이메일',
-    //   placeholder: 'example@email.com',
-    //   required: false
-    // }
-
-    // 예시 2: 드롭다운 선택 (관심평형, 예산대 등)
-    // ,
-    // interest: {
-    //   type: 'select',
-    //   label: '관심평형',
-    //   options: ['84㎡', '99㎡', '110㎡', '기타'],
-    //   required: false
-    // }
-
-    // 예시 3: 여러 줄 텍스트 (문의사항)
-    // ,
-    // message: {
-    //   type: 'textarea',
-    //   label: '문의사항',
-    //   placeholder: '궁금한 점을 자유롭게 작성해주세요',
-    //   required: false
-    // }
-
-    // 예시 4: 날짜 선택
-    // ,
-    // visitDate: {
-    //   type: 'date',
-    //   label: '방문 희망일',
-    //   required: false
-    // }
-  },
-
-  // Cloudflare Worker URL (필수!)
-  airtable: {
-    workerUrl: 'https://100zoad-airtable-proxy.choiwseok.workers.dev/submit'
-  },
-
-  // 현장명 (자동으로 Worker에 전송됨)
-  meta: {
-    siteName: '두산위브더제니스 센트럴천안'
-  },
-
-  // 메시지
-  messages: {
-    success: '✓ 신청이 완료되었습니다!',
-    error: '제출 중 오류가 발생했습니다. 다시 시도해주세요.'
-  },
-
-  // 스타일 설정
-  styles: {
-    primaryColor: '#003DA5',
-    bgColor: '#ffffff',
-    textColor: '#333333'
-  }
-};
-
-// ================================================
-// Form Component 코드 (수정하지 마세요)
-// ================================================
 (function() {
-  const config = window.ZOAD_FORM_CONFIG;
-
-  // 고유 ID 생성 (여러 폼을 배치해도 충돌 방지)
-  const uniqueId = 'zoad-form-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-
-  // container 찾기
-  const containers = document.querySelectorAll('.zoad-form-container-wrapper');
-  const container = Array.from(containers).find(c => !c.hasAttribute('data-initialized'));
-  if (!container) return;
-  container.setAttribute('data-initialized', 'true');
-
-  // HTML 생성
-  const formHTML = `
-    <style>
-      /* Pretendard 폰트 강제 적용 (아임웹 CSS 오버라이드) */
-      .zoad-form-container-wrapper,
-      .zoad-form-container-wrapper *,
-      .zoad-form-container-wrapper *::before,
-      .zoad-form-container-wrapper *::after,
-      .${uniqueId},
-      .${uniqueId} *,
-      .${uniqueId} *::before,
-      .${uniqueId} *::after {
-        font-family: "Pretendard", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
-      }
-
-      .${uniqueId} .zoad-form-container {
-        background-color: ${config.styles.bgColor};
-        color: ${config.styles.textColor};
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        max-width: 500px;
-        margin: 0 auto;
-      }
-
-      .${uniqueId} .zoad-form-title {
-        font-size: 24px;
-        font-weight: 700;
-        margin: 0 0 24px 0;
-        text-align: center;
-      }
-
-      .${uniqueId} .zoad-form-description {
-        font-size: 14px;
-        font-weight: 300;
-        color: #666666;
-        text-align: center;
-        margin-bottom: 24px;
-        line-height: 1.5;
-      }
-
-      .${uniqueId} .zoad-form-group {
-        margin-bottom: 20px;
-      }
-
-      .${uniqueId} .zoad-form-label {
-        display: block;
-        font-size: 14px;
-        font-weight: 500;
-        margin-bottom: 8px;
-      }
-
-      .${uniqueId} .zoad-form-label.required::after {
-        content: '*';
-        color: #dc3545;
-        margin-left: 4px;
-      }
-
-      .${uniqueId} .zoad-form-input {
-        width: 100%;
-        padding: 12px 16px;
-        font-size: 16px;
-        font-weight: 300;
-        border: 2px solid #dddddd;
-        border-radius: 8px;
-        background-color: #ffffff;
-        transition: all 0.2s;
-        outline: none;
-        box-sizing: border-box;
-      }
-
-      .${uniqueId} .zoad-form-input:focus {
-        border-color: ${config.styles.primaryColor};
-        box-shadow: 0 0 0 3px ${config.styles.primaryColor}1a;
-      }
-
-      .${uniqueId} .zoad-form-input.error {
-        border-color: #dc3545;
-      }
-
-      .${uniqueId} .zoad-form-error-message {
-        display: none;
-        font-size: 13px;
-        font-weight: 300;
-        color: #dc3545;
-        margin-top: 6px;
-      }
-
-      .${uniqueId} .zoad-form-error-message.show {
-        display: block;
-      }
-
-      .${uniqueId} .zoad-form-legal {
-        margin: 24px 0;
-        padding: 16px;
-        background-color: #f9f9f9;
-        border: 1px solid #dddddd;
-        border-radius: 8px;
-      }
-
-      .${uniqueId} .zoad-form-checkbox-group {
-        margin-bottom: 12px;
-      }
-
-      .${uniqueId} .zoad-form-checkbox-label {
-        display: flex;
-        align-items: flex-start;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 300;
-      }
-
-      .${uniqueId} .zoad-form-checkbox-label input {
-        width: 18px;
-        height: 18px;
-        margin-right: 8px;
-        margin-top: 2px;
-        cursor: pointer;
-      }
-
-      .${uniqueId} .zoad-form-submit-button {
-        width: 100% !important;
-        padding: 14px 24px !important;
-        font-size: 16px !important;
-        font-weight: 700 !important;
-        color: #ffffff !important;
-        background-color: ${config.styles.primaryColor} !important;
-        border: none !important;
-        border-radius: 8px !important;
-        cursor: pointer !important;
-        transition: all 0.2s !important;
-        margin-top: 24px !important;
-        opacity: 1 !important;
-      }
-
-      .${uniqueId} .zoad-form-submit-button:hover:not(:disabled) {
-        background-color: #002380 !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 12px ${config.styles.primaryColor}4d !important;
-      }
-
-      .${uniqueId} .zoad-form-submit-button:disabled {
-        background-color: #cccccc !important;
-        cursor: not-allowed !important;
-        transform: none !important;
-        opacity: 0.7 !important;
-      }
-
-      .${uniqueId} .zoad-form-submit-button.loading {
-        position: relative;
-        color: transparent;
-      }
-
-      .${uniqueId} .zoad-form-submit-button.loading::after {
-        content: '';
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        top: 50%;
-        left: 50%;
-        margin-left: -10px;
-        margin-top: -10px;
-        border: 3px solid #ffffff;
-        border-radius: 50%;
-        border-top-color: transparent;
-        animation: zoad-spin-${uniqueId} 0.8s linear infinite;
-      }
-
-      @keyframes zoad-spin-${uniqueId} {
-        to { transform: rotate(360deg); }
-      }
-
-      .${uniqueId} .zoad-form-success-message,
-      .${uniqueId} .zoad-form-error-alert {
-        display: none !important;
-        padding: 16px;
-        border-radius: 8px;
-        margin-top: 16px;
-        text-align: center;
-        font-weight: 500;
-      }
-
-      .${uniqueId} .zoad-form-success-message {
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-      }
-
-      .${uniqueId} .zoad-form-error-alert {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-      }
-
-      .${uniqueId} .zoad-form-success-message.show,
-      .${uniqueId} .zoad-form-error-alert.show {
-        display: block !important;
-      }
-
-      @media (max-width: 768px) {
-        .${uniqueId} .zoad-form-container {
-          padding: 24px 20px;
+  // CONFIG 병합 함수
+  function mergeFormConfig() {
+    // ZOAD_CONFIG가 없으면 초기화
+    if (!window.ZOAD_CONFIG) {
+      window.ZOAD_CONFIG = {
+        meta: {
+          siteName: '두산위브더제니스 센트럴천안'
         }
-
-        .${uniqueId} .zoad-form-title {
-          font-size: 20px;
-        }
-      }
-    </style>
-
-    <!-- 입력폼 -->
-    <div class="${uniqueId}">
-      <div class="zoad-form-container">
-        <h2 class="zoad-form-title">${config.title}</h2>
-        <p class="zoad-form-description">${config.description}</p>
-
-        <form class="zoad-lead-form">
-          <!-- 이름 필드 -->
-          <div class="zoad-form-group">
-            <label class="zoad-form-label ${config.fields.name.required ? 'required' : ''}">
-              ${config.fields.name.label}
-            </label>
-            <input
-              type="text"
-              class="zoad-form-input name-input"
-              placeholder="${config.fields.name.placeholder}"
-              ${config.fields.name.required ? 'required' : ''}
-            />
-            <div class="zoad-form-error-message name-error">
-              ${config.fields.name.label}을(를) 입력해주세요.
-            </div>
-          </div>
-
-          <!-- 전화번호 필드 -->
-          <div class="zoad-form-group">
-            <label class="zoad-form-label ${config.fields.phone.required ? 'required' : ''}">
-              ${config.fields.phone.label}
-            </label>
-            <input
-              type="tel"
-              class="zoad-form-input phone-input"
-              placeholder="${config.fields.phone.placeholder}"
-              ${config.fields.phone.required ? 'required' : ''}
-            />
-            <div class="zoad-form-error-message phone-error">
-              올바른 전화번호를 입력해주세요.
-            </div>
-          </div>
-
-          <!-- 법적 동의 -->
-          <div class="zoad-form-legal">
-            <div class="zoad-form-checkbox-group">
-              <label class="zoad-form-checkbox-label">
-                <input type="checkbox" class="terms-checkbox" required />
-                <span>[필수] 이용약관에 동의합니다.</span>
-              </label>
-            </div>
-            <div class="zoad-form-checkbox-group">
-              <label class="zoad-form-checkbox-label">
-                <input type="checkbox" class="privacy-checkbox" required />
-                <span>[필수] 개인정보처리방침에 동의합니다.</span>
-              </label>
-            </div>
-            <div class="zoad-form-error-message legal-error">
-              필수 동의 항목을 모두 체크해주세요.
-            </div>
-          </div>
-
-          <!-- 제출 버튼 -->
-          <button type="submit" class="zoad-form-submit-button">
-            신청하기
-          </button>
-
-          <!-- 성공 메시지 -->
-          <div class="zoad-form-success-message success-message">
-            ${config.messages.success}
-          </div>
-
-          <!-- 오류 메시지 -->
-          <div class="zoad-form-error-alert error-alert">
-            ${config.messages.error}
-          </div>
-        </form>
-      </div>
-    </div>
-  `;
-
-  container.innerHTML = formHTML;
-
-  // ====================================
-  // JavaScript 이벤트 처리
-  // ====================================
-
-  const form = container.querySelector('.zoad-lead-form');
-  const nameInput = container.querySelector('.name-input');
-  const phoneInput = container.querySelector('.phone-input');
-  const termsCheckbox = container.querySelector('.terms-checkbox');
-  const privacyCheckbox = container.querySelector('.privacy-checkbox');
-  const submitButton = container.querySelector('.zoad-form-submit-button');
-  const successMessage = container.querySelector('.success-message');
-  const errorAlert = container.querySelector('.error-alert');
-
-  // ====================================
-  // 버튼 초기 상태 명시적 설정 (아임웹 CSS 오버라이드)
-  // ====================================
-  submitButton.disabled = false;
-  submitButton.classList.remove('loading');
-  submitButton.style.backgroundColor = config.styles.primaryColor;
-  submitButton.style.color = '#ffffff';
-  submitButton.style.cursor = 'pointer';
-
-  // ====================================
-  // 성공/오류 메시지 초기 상태 강제 숨김 (아임웹 CSS 오버라이드)
-  // ====================================
-  successMessage.classList.remove('show');
-  successMessage.style.display = 'none';
-  errorAlert.classList.remove('show');
-  errorAlert.style.display = 'none';
-
-  // 전화번호 실시간 포맷팅
-  phoneInput.addEventListener('input', function(e) {
-    let value = e.target.value.replace(/[^0-9]/g, '');
-    let formatted = '';
-
-    if (value.length <= 3) {
-      formatted = value;
-    } else if (value.length <= 7) {
-      formatted = value.slice(0, 3) + '-' + value.slice(3);
-    } else {
-      formatted = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11);
+      };
     }
 
-    e.target.value = formatted;
-    clearFieldError('phone');
-  });
+    // 입력폼 설정 추가/병합
+    window.ZOAD_CONFIG.form = {
+      enabled: true,
+      title: '관심고객 등록',
+      description: '간단한 정보를 입력해주시면 상담 전화를 드리겠습니다.',
+      displayMode: 'section', // 'popup', 'section', 'both'
+      fields: {
+        name: {
+          label: '이름',
+          placeholder: '홍길동',
+          required: true
+        },
+        phone: {
+          label: '전화번호',
+          placeholder: '010-1234-5678',
+          required: true
+        }
+      },
+      airtable: {
+        workerUrl: 'https://100zoad-airtable-proxy.choiwseok.workers.dev/submit'
+      },
+      messages: {
+        success: '✓ 신청이 완료되었습니다!',
+        error: '제출 중 오류가 발생했습니다. 다시 시도해주세요.'
+      },
+      styles: {
+        primaryColor: '#003DA5',
+        bgColor: '#ffffff',
+        textColor: '#333333'
+      }
+    };
 
-  // 입력 시 오류 메시지 제거
-  nameInput.addEventListener('input', () => clearFieldError('name'));
-  termsCheckbox.addEventListener('change', () => clearFieldError('legal'));
-  privacyCheckbox.addEventListener('change', () => clearFieldError('legal'));
+    console.log('✅ [form.html] CONFIG 설정 완료');
+  }
 
-  // 폼 제출
-  form.addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    // 검증
-    if (!validateForm()) {
+  // 컴포넌트 생성 함수
+  function createFormComponent() {
+    const container = document.getElementById('form-section');
+    if (!container) {
+      console.error('❌ [form.html] form-section 컨테이너를 찾을 수 없습니다');
       return;
     }
 
-    // 폼 데이터 수집
-    const formData = {
-      '이름': nameInput.value.trim(),
-      '전화번호': phoneInput.value.trim(),
-      'siteName': config.meta.siteName,
-      'leadSource': 'direct'
-    };
+    // 이미 생성된 경우 스킵
+    if (container.querySelector('zoad-form')) {
+      console.log('⏭️ [form.html] zoad-form이 이미 존재합니다');
+      return;
+    }
 
-    // UI 상태 업데이트 (제출 중)
-    submitButton.classList.add('loading');
-    submitButton.disabled = true;
-    successMessage.classList.remove('show');
-    errorAlert.classList.remove('show');
+    // 컴포넌트 생성
+    const formElement = document.createElement('zoad-form');
+    container.appendChild(formElement);
+    console.log('✅ [form.html] zoad-form 컴포넌트 생성');
 
-    try {
-      const workerUrl = config.airtable.workerUrl;
-
-      if (!workerUrl) {
-        throw new Error('Worker URL이 설정되지 않았습니다.');
-      }
-
-      const response = await fetch(workerUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        // 성공
-        successMessage.style.display = 'block';
-        successMessage.classList.add('show');
-        form.reset();
-
-        setTimeout(() => {
-          successMessage.classList.remove('show');
-          successMessage.style.display = 'none';
-        }, 3000);
+    // 렌더링 확인
+    setTimeout(function() {
+      if (formElement.shadowRoot) {
+        console.log('✅ [form.html] 입력폼 렌더링 완료');
       } else {
-        // 실패
-        errorAlert.style.display = 'block';
-        errorAlert.classList.add('show');
-
-        setTimeout(() => {
-          errorAlert.classList.remove('show');
-          errorAlert.style.display = 'none';
-        }, 5000);
+        console.warn('⚠️ [form.html] 입력폼 렌더링 실패 - shadowRoot 없음');
       }
-    } catch (error) {
-      console.error('제출 오류:', error);
-      errorAlert.style.display = 'block';
-      errorAlert.classList.add('show');
+    }, 500);
+  }
 
-      setTimeout(() => {
-        errorAlert.classList.remove('show');
-        errorAlert.style.display = 'none';
-      }, 5000);
-    } finally {
-      submitButton.classList.remove('loading');
-      submitButton.disabled = false;
+  // main.html의 ZOAD가 준비될 때까지 대기
+  function waitForZoadReady(callback) {
+    // 이미 준비된 경우
+    if (window.__ZOAD_READY__) {
+      console.log('✅ [form.html] ZOAD 이미 준비됨');
+      callback();
+      return;
     }
+
+    // zoad-form이 등록될 때까지 대기
+    if (customElements.get('zoad-form')) {
+      console.log('✅ [form.html] zoad-form 이미 등록됨');
+      callback();
+      return;
+    }
+
+    console.log('⏳ [form.html] ZOAD 준비 대기 중...');
+
+    // 이벤트 리스너로 대기
+    window.addEventListener('zoad-ready', function() {
+      console.log('✅ [form.html] zoad-ready 이벤트 수신');
+      callback();
+    }, { once: true });
+
+    // 폴링으로도 대기 (이벤트가 이미 발생한 경우 대비)
+    let attempts = 0;
+    const maxAttempts = 100; // 10초
+
+    const checkInterval = setInterval(function() {
+      attempts++;
+
+      if (window.__ZOAD_READY__ || customElements.get('zoad-form')) {
+        clearInterval(checkInterval);
+        callback();
+      } else if (attempts >= maxAttempts) {
+        clearInterval(checkInterval);
+        console.error('❌ [form.html] ZOAD 준비 타임아웃');
+        // 그래도 시도해봄
+        callback();
+      }
+    }, 100);
+  }
+
+  // 실행
+  mergeFormConfig();
+
+  waitForZoadReady(function() {
+    // zoad-form이 정의될 때까지 추가 대기
+    customElements.whenDefined('zoad-form').then(function() {
+      console.log('✅ [form.html] zoad-form 정의 완료');
+      createFormComponent();
+    }).catch(function(err) {
+      console.error('❌ [form.html] zoad-form 정의 실패:', err);
+    });
   });
-
-  // 검증 함수
-  function validateForm() {
-    let isValid = true;
-
-    // 이름 검증
-    if (!nameInput.value.trim()) {
-      showFieldError('name', config.fields.name.label + '을(를) 입력해주세요.');
-      isValid = false;
-    }
-
-    // 전화번호 검증
-    const phoneValue = phoneInput.value.trim();
-    const phoneNumbers = phoneValue.replace(/[^0-9]/g, '');
-
-    if (!phoneValue) {
-      showFieldError('phone', config.fields.phone.label + '을(를) 입력해주세요.');
-      isValid = false;
-    } else if (phoneNumbers.length !== 11 || !phoneNumbers.startsWith('010')) {
-      showFieldError('phone', '올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)');
-      isValid = false;
-    }
-
-    // 법적 동의 검증
-    if (!termsCheckbox.checked || !privacyCheckbox.checked) {
-      showFieldError('legal', '필수 동의 항목을 모두 체크해주세요.');
-      isValid = false;
-    }
-
-    return isValid;
-  }
-
-  // 필드 오류 표시
-  function showFieldError(fieldType, message) {
-    const input = container.querySelector('.' + fieldType + '-input');
-    const errorElement = container.querySelector('.' + fieldType + '-error');
-
-    if (input) {
-      input.classList.add('error');
-    }
-
-    if (errorElement) {
-      errorElement.textContent = message;
-      errorElement.classList.add('show');
-    }
-  }
-
-  // 필드 오류 제거
-  function clearFieldError(fieldType) {
-    const input = container.querySelector('.' + fieldType + '-input');
-    const errorElement = container.querySelector('.' + fieldType + '-error');
-
-    if (input) {
-      input.classList.remove('error');
-    }
-
-    if (errorElement) {
-      errorElement.classList.remove('show');
-    }
-  }
 })();
 </script>
+
+<!--
+  ================================================
+  📝 추가 필드 설정 예시
+  ================================================
+
+  아래 주석을 해제하여 추가 필드를 설정할 수 있습니다:
+
+  <script>
+  // 이메일 필드 추가
+  window.ZOAD_CONFIG.form.fields.email = {
+    type: 'text',
+    label: '이메일',
+    placeholder: 'example@email.com',
+    required: false
+  };
+
+  // 관심평형 선택 추가
+  window.ZOAD_CONFIG.form.fields.interest = {
+    type: 'select',
+    label: '관심평형',
+    options: ['84㎡', '99㎡', '110㎡', '기타'],
+    required: false
+  };
+
+  // 문의사항 추가
+  window.ZOAD_CONFIG.form.fields.message = {
+    type: 'textarea',
+    label: '문의사항',
+    placeholder: '궁금한 점을 자유롭게 작성해주세요',
+    required: false
+  };
+  </script>
+
+  ================================================
+-->
