@@ -13,7 +13,7 @@
  */
 
 import BaseComponent from '../../core/base-component.js';
-import { trackCallClick } from '../../utils/analytics.js';
+import { trackCallClick, trackButtonClick } from '../../utils/analytics.js';
 
 /**
  * 모바일 내비게이터 웹 컴포넌트
@@ -248,8 +248,12 @@ export class MobileNavigatorComponent extends BaseComponent {
     const url = button.dataset.url;
     const target = button.dataset.target;
     const index = button.dataset.index;
+    const buttonText = button.querySelector('.button-text')?.textContent || '버튼';
 
-    this.debug('버튼 클릭:', { action, phone, url, target, index });
+    this.debug('버튼 클릭:', { action, phone, url, target, index, buttonText });
+
+    // GTM/GA4 이벤트 추적 (STORY-022)
+    trackButtonClick(buttonText, action, 'mobileNav', parseInt(index, 10), this.config);
 
     // 액션 타입별 처리
     switch (action) {
@@ -268,9 +272,6 @@ export class MobileNavigatorComponent extends BaseComponent {
       default:
         console.warn(`⚠️ [mobileNav] 알 수 없는 액션: ${action}`);
     }
-
-    // GTM/GA4 이벤트 추적 (STORY-021에서 구현 예정)
-    this.trackButtonClick(action, index);
   }
 
   /**
@@ -334,25 +335,6 @@ export class MobileNavigatorComponent extends BaseComponent {
       window.open(url, '_blank', 'noopener,noreferrer');
     } else {
       window.location.href = url;
-    }
-  }
-
-  /**
-   * 버튼 클릭 추적
-   * @param {string} action - 액션 타입
-   * @param {number} index - 버튼 인덱스
-   * @private
-   */
-  trackButtonClick(action, index) {
-    // GTM/GA4 이벤트 송출 (STORY-021에서 구현 예정)
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        event: 'mobile_nav_click',
-        component: 'mobileNav',
-        action: action,
-        button_index: index
-      });
-      this.debug('GTM 이벤트 송출:', { action, index });
     }
   }
 

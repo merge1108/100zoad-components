@@ -38,6 +38,9 @@ if (import.meta.env.DEV) {
 import { loadComponentsParallel, printLoadingReport } from './utils/component-loader.js';
 import './components/loader/loader.js';
 
+// ===== STORY-022: 스크롤 깊이 추적 =====
+import { initScrollTracking } from './utils/scroll-tracker.js';
+
 /**
  * 로딩할 컴포넌트 정의
  * @type {import('./utils/component-loader.js').ComponentDefinition[]}
@@ -134,6 +137,17 @@ async function initializeComponents() {
             totalTime: elapsed,
             timestamp: new Date().toISOString()
           };
+        }
+
+        // STORY-022: 스크롤 깊이 추적 초기화
+        // 모든 컴포넌트 로딩 완료 후 스크롤 추적 시작
+        if (typeof window !== 'undefined') {
+          try {
+            const scrollTracker = initScrollTracking(window.CONFIG || {});
+            console.log('✅ [STORY-022] 스크롤 깊이 추적 활성화:', scrollTracker.getStatus());
+          } catch (error) {
+            console.error('❌ [STORY-022] 스크롤 추적 초기화 실패:', error);
+          }
         }
       }
     });

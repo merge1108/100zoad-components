@@ -216,6 +216,7 @@ export function trackEvent(eventName, eventData = {}) {
   try {
     const fullEventData = {
       event: eventName,
+      event_category: eventData.event_category || 'engagement',
       ...eventData
     };
 
@@ -224,6 +225,117 @@ export function trackEvent(eventName, eventData = {}) {
     console.log('[Analytics] 이벤트 추적:', fullEventData);
   } catch (error) {
     console.error('[Analytics] trackEvent 오류:', error);
+  }
+}
+
+/**
+ * 메뉴 클릭 이벤트 추적 (STORY-022)
+ * 헤더 메뉴 항목 클릭을 추적합니다.
+ *
+ * @param {string} menuItem - 메뉴 항목 텍스트
+ * @param {string} target - 타겟 URL 또는 섹션 ID
+ * @param {string} component - 컴포넌트 이름 ('header' | 'mobile-header')
+ * @param {Object} [config={}] - Config 설정
+ *
+ * @example
+ * trackMenuClick('분양정보', '#section-info', 'header', config);
+ */
+export function trackMenuClick(menuItem, target, component = 'header', config = {}) {
+  try {
+    // Config에서 이벤트명 가져오기 (커스터마이징 가능)
+    const eventName = config?.analytics?.events?.menuClick || 'menu_click';
+
+    // GTM/GA4 이벤트 데이터 구성
+    const eventData = {
+      event: eventName,
+      event_category: 'engagement',
+      event_label: 'menu_navigation',
+      menu_item: menuItem,
+      menu_target: target,
+      component: component
+    };
+
+    // dataLayer에 송출
+    pushToDataLayer(eventData);
+
+    console.log('[Analytics] 메뉴 클릭 추적 완료:', eventData);
+  } catch (error) {
+    console.error('[Analytics] trackMenuClick 오류:', error);
+  }
+}
+
+/**
+ * 버튼 클릭 이벤트 추적 (STORY-022)
+ * 퀵메뉴, 모바일 내비게이터 버튼 클릭을 추적합니다.
+ *
+ * @param {string} buttonText - 버튼 텍스트
+ * @param {string} action - 버튼 액션 ('openForm' | 'call' | 'link')
+ * @param {string} component - 컴포넌트 이름 ('quickmenu' | 'mobileNav')
+ * @param {number} [buttonIndex] - 버튼 인덱스
+ * @param {Object} [config={}] - Config 설정
+ *
+ * @example
+ * trackButtonClick('입력폼', 'openForm', 'quickmenu', 0, config);
+ */
+export function trackButtonClick(buttonText, action, component = 'quickmenu', buttonIndex, config = {}) {
+  try {
+    // Config에서 이벤트명 가져오기 (커스터마이징 가능)
+    const eventName = config?.analytics?.events?.buttonClick || 'button_click';
+
+    // GTM/GA4 이벤트 데이터 구성
+    const eventData = {
+      event: eventName,
+      event_category: 'engagement',
+      event_label: 'button_interaction',
+      button_text: buttonText,
+      button_action: action,
+      component: component
+    };
+
+    // 버튼 인덱스 추가 (있는 경우)
+    if (typeof buttonIndex !== 'undefined') {
+      eventData.button_index = buttonIndex;
+    }
+
+    // dataLayer에 송출
+    pushToDataLayer(eventData);
+
+    console.log('[Analytics] 버튼 클릭 추적 완료:', eventData);
+  } catch (error) {
+    console.error('[Analytics] trackButtonClick 오류:', error);
+  }
+}
+
+/**
+ * 스크롤 깊이 이벤트 추적 (STORY-022)
+ * 페이지 스크롤 깊이를 추적합니다 (25%, 50%, 75%, 100%).
+ *
+ * @param {number} percentage - 스크롤 깊이 퍼센트 (25, 50, 75, 100)
+ * @param {Object} [config={}] - Config 설정
+ *
+ * @example
+ * trackScrollDepth(50, config);
+ */
+export function trackScrollDepth(percentage, config = {}) {
+  try {
+    // Config에서 이벤트명 가져오기 (커스터마이징 가능)
+    const eventName = config?.analytics?.events?.scrollDepth || 'scroll_depth';
+
+    // GTM/GA4 이벤트 데이터 구성
+    const eventData = {
+      event: eventName,
+      event_category: 'engagement',
+      event_label: 'page_scroll',
+      scroll_depth_percentage: percentage,
+      scroll_depth_threshold: `${percentage}%`
+    };
+
+    // dataLayer에 송출
+    pushToDataLayer(eventData);
+
+    console.log('[Analytics] 스크롤 깊이 추적 완료:', eventData);
+  } catch (error) {
+    console.error('[Analytics] trackScrollDepth 오류:', error);
   }
 }
 
@@ -250,10 +362,13 @@ if (typeof window !== 'undefined') {
     pushToDataLayer,
     trackFormSubmit,
     trackCallClick,
-    trackEvent
+    trackEvent,
+    trackMenuClick,
+    trackButtonClick,
+    trackScrollDepth
   };
 
-  console.log('✅ Analytics 유틸리티 로드 완료');
+  console.log('✅ Analytics 유틸리티 로드 완료 (STORY-022: 비전환 이벤트 추적 추가)');
 }
 
 export default {
@@ -263,5 +378,8 @@ export default {
   trackFormSubmit,
   trackCallClick,
   trackEvent,
+  trackMenuClick,
+  trackButtonClick,
+  trackScrollDepth,
   getAnalyticsConfig
 };

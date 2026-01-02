@@ -13,6 +13,7 @@
  */
 
 import { BaseComponent } from '../../core/base-component.js';
+import { trackMenuClick } from '../../utils/analytics.js';
 
 /**
  * Header 웹 컴포넌트
@@ -797,8 +798,12 @@ class HeaderComponent extends BaseComponent {
     const link = event.currentTarget;
     const target = link.getAttribute('data-target');
     const pageType = link.getAttribute('data-page-type');
+    const menuText = link.textContent.trim();
 
-    this.debug(`메뉴 클릭: ${link.textContent.trim()}, target: ${target}, pageType: ${pageType}`);
+    this.debug(`메뉴 클릭: ${menuText}, target: ${target}, pageType: ${pageType}`);
+
+    // GTM/GA4 이벤트 추적 (STORY-022)
+    trackMenuClick(menuText, target, 'header', this.config);
 
     // 원페이지 모드: 섹션으로 스크롤 이동
     if (pageType === 'onepage' && target && target.startsWith('#')) {
@@ -939,8 +944,12 @@ class HeaderComponent extends BaseComponent {
     const link = event.currentTarget;
     const target = link.getAttribute('data-target');
     const pageType = link.getAttribute('data-page-type');
+    const menuText = link.textContent.trim();
 
-    this.debug(`모바일 메뉴 클릭: ${link.textContent.trim()}, target: ${target}, pageType: ${pageType}`);
+    this.debug(`모바일 메뉴 클릭: ${menuText}, target: ${target}, pageType: ${pageType}`);
+
+    // GTM/GA4 이벤트 추적 (STORY-022)
+    trackMenuClick(menuText, target, 'mobile-header', this.config);
 
     // 원페이지 모드: 섹션으로 스크롤 이동
     if (pageType === 'onepage' && target && target.startsWith('#')) {
