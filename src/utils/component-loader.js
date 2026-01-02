@@ -6,12 +6,16 @@
  * - 개별 컴포넌트 로딩 시간 측정
  * - 로딩 진행 상태 추적
  * - 타임아웃 처리
+ * - Graceful Degradation (폴백 시스템)
  *
  * @author merge
- * @version 1.0.0
+ * @version 1.1.0
  * @created 2026-01-02
- * @story STORY-025
+ * @updated 2026-01-02 (STORY-026: Graceful Degradation)
+ * @story STORY-025, STORY-026
  */
+
+import { activateFallback } from './fallback-manager.js';
 
 /**
  * 컴포넌트 로딩 결과
@@ -77,6 +81,13 @@ export async function loadComponent(component, onProgress = null) {
     const loadTime = performance.now() - startTime;
 
     console.error(`❌ [${component.name}] 로딩 실패:`, error.message);
+
+    // STORY-026: Graceful Degradation - 폴백 활성화
+    try {
+      activateFallback(component.name, error, loadTime);
+    } catch (fallbackError) {
+      console.error(`❌ [${component.name}] 폴백 활성화 실패:`, fallbackError);
+    }
 
     if (onProgress) {
       onProgress(component.name, false, loadTime);
@@ -291,6 +302,13 @@ export function printLoadingReport(results) {
   console.log(`   - AC2: 컴포넌트 개별 500ms 이내: ${allUnder500 ? '✅ 통과' : '⚠️ 일부 초과'}`);
 
   console.log('=============================\n');
+
+  // STORY-026: 폴백 리포트 출력
+  import('./fallback-manager.js').then(({ printFallbackReport }) => {
+    printFallbackReport();
+  }).catch(err => {
+    console.warn('폴백 리포트 출력 실패:', err);
+  });
 
   return report;
 }

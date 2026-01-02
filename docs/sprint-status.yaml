@@ -255,7 +255,7 @@ sprints:
     end_date: "2026-01-04"
     capacity_points: 20
     committed_points: 20
-    completed_points: 6
+    completed_points: 11
     status: "in_progress"
     goal: "성능 최적화, 크로스 브라우저 호환성, 폴백 시스템, 문서화 완료"
     stories:
@@ -296,10 +296,11 @@ sprints:
       - story_id: "STORY-026"
         title: "Graceful Degradation (폴백 시스템)"
         points: 5
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-008"
         priority: "Must Have"
+        completed_date: "2026-01-02"
 
       - story_id: "STORY-029"
         title: "Config 예시 및 문서"

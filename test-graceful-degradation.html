@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STORY-026: Graceful Degradation 테스트</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #dc3545;
+      padding-bottom: 10px;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-section h2 {
+      margin-top: 0;
+      color: #dc3545;
+    }
+    .acceptance-criteria {
+      background: #e7f3ff;
+      border-left: 4px solid #007bff;
+      padding: 15px;
+      margin: 15px 0;
+    }
+    .acceptance-criteria h3 {
+      margin-top: 0;
+      color: #007bff;
+    }
+    .acceptance-criteria ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    .acceptance-criteria li {
+      margin: 5px 0;
+    }
+    button {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #c82333;
+    }
+    button.success {
+      background: #28a745;
+    }
+    button.success:hover {
+      background: #218838;
+    }
+    .component-container {
+      border: 2px dashed #ccc;
+      padding: 20px;
+      margin: 15px 0;
+      min-height: 100px;
+      background: #fafafa;
+    }
+    .instructions {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      color: #856404;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+    }
+    .warning {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+      font-weight: bold;
+    }
+    pre {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      border-left: 4px solid #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚨 STORY-026: Graceful Degradation 테스트</h1>
+
+  <div class="acceptance-criteria">
+    <h3>📋 Acceptance Criteria</h3>
+    <ul>
+      <li><strong>AC1:</strong> 입력폼 로딩 실패 시 → 간단한 HTML form 폴백 (아임웹 내장)</li>
+      <li><strong>AC2:</strong> 헤더 로딩 실패 시 → 로고 + 전화번호만 표시</li>
+      <li><strong>AC3:</strong> 퀵메뉴/내비게이터 로딩 실패 시 → 숨김 처리</li>
+      <li><strong>AC4:</strong> 컴포넌트별 타임아웃 → 3초</li>
+      <li><strong>AC5:</strong> 로딩 실패 시 → 콘솔 로그 기록</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    ⚠️ 이 테스트는 의도적으로 컴포넌트 로딩 실패를 시뮬레이션합니다!
+    <br>브라우저 개발자 도구(F12) 콘솔을 열어서 로그를 확인하세요.
+  </div>
+
+  <div class="test-section">
+    <h2>🧪 테스트 시나리오</h2>
+
+    <h3>1. 정상 로딩 테스트 (비교용)</h3>
+    <button class="success" onclick="testNormalLoad()">✅ 정상 로딩 테스트</button>
+    <p>모든 컴포넌트가 정상적으로 로드되는지 확인합니다.</p>
+
+    <h3>2. 타임아웃 시뮬레이션</h3>
+    <button onclick="testTimeout()">⏱️ 타임아웃 테스트 (3초 초과)</button>
+    <p>컴포넌트 로딩에 3초 이상 걸리는 상황을 시뮬레이션합니다.</p>
+
+    <h3>3. 네트워크 오류 시뮬레이션</h3>
+    <button onclick="testNetworkError()">🔌 네트워크 오류 테스트</button>
+    <p>잘못된 URL로 컴포넌트 로딩 실패를 시뮬레이션합니다.</p>
+
+    <h3>4. 개별 컴포넌트 폴백 테스트</h3>
+    <button onclick="testHeaderFallback()">🏠 Header 폴백</button>
+    <button onclick="testFormFallback()">📝 Form 폴백</button>
+    <button onclick="testQuickMenuFallback()">⚡ QuickMenu 폴백</button>
+    <button onclick="testMobileNavFallback()">📱 MobileNav 폴백</button>
+
+    <h3>5. 폴백 리포트 보기</h3>
+    <button class="success" onclick="showFallbackReport()">📊 폴백 리포트 출력</button>
+    <p>현재까지 발생한 모든 폴백 로그를 콘솔에 출력합니다.</p>
+  </div>
+
+  <div class="test-section">
+    <h2>📌 컴포넌트 렌더링 영역</h2>
+    <div class="instructions">
+      💡 테스트 버튼을 클릭하면 아래에 컴포넌트가 렌더링되거나 폴백이 표시됩니다.
+    </div>
+
+    <h3>Header:</h3>
+    <div class="component-container" id="header-container">
+      <!-- Header 컴포넌트가 여기에 렌더링됩니다 -->
+      <zoad-header></zoad-header>
+    </div>
+
+    <h3>Form:</h3>
+    <div class="component-container" id="form-container">
+      <!-- Form 컴포넌트가 여기에 렌더링됩니다 -->
+      <zoad-form></zoad-form>
+    </div>
+
+    <h3>QuickMenu:</h3>
+    <div class="component-container" id="quickmenu-container">
+      <!-- QuickMenu 컴포넌트가 여기에 렌더링됩니다 -->
+      <zoad-quickmenu></zoad-quickmenu>
+    </div>
+
+    <h3>MobileNav:</h3>
+    <div class="component-container" id="mobilenav-container">
+      <!-- MobileNav 컴포넌트가 여기에 렌더링됩니다 -->
+      <zoad-mobile-nav></zoad-mobile-nav>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>📖 테스트 가이드</h2>
+    <pre>
+1. 브라우저 개발자 도구(F12)를 열고 Console 탭으로 이동하세요.
+
+2. 각 테스트 버튼을 클릭하고 다음을 확인하세요:
+   ✓ 콘솔에 "❌ [Fallback]" 로그가 표시되는지
+   ✓ 폴백 HTML이 렌더링되는지
+   ✓ AC별 요구사항이 충족되는지
+
+3. AC 검증:
+   - AC1 (Form): 간단한 HTML form이 표시되는지
+   - AC2 (Header): 로고 + 전화번호만 표시되는지
+   - AC3 (QuickMenu/MobileNav): 완전히 숨겨지는지
+   - AC4: 타임아웃이 3초로 설정되어 있는지 (콘솔 로그 확인)
+   - AC5: 로딩 실패 시 상세 로그가 기록되는지
+
+4. 폴백 리포트 확인:
+   "📊 폴백 리포트 출력" 버튼을 클릭하여 전체 폴백 로그를 확인하세요.
+    </pre>
+  </div>
+
+  <!-- Window.CONFIG 정의 (테스트용) -->
+  <script>
+    // 테스트용 Config
+    window.CONFIG = {
+      meta: {
+        siteName: '강남 센트럴 파크 (Fallback 테스트)',
+        version: '1.0.0',
+        lastUpdated: '2026-01-02'
+      },
+      header: {
+        logo: {
+          url: 'https://via.placeholder.com/512x512?text=LOGO',
+          alt: '강남 센트럴 파크'
+        },
+        pageType: 'onepage',
+        menu: [
+          { text: '단지정보', target: '#section1' },
+          { text: '입지환경', target: '#section2' }
+        ],
+        mobile: {
+          breakpoint: 768,
+          hamburgerPosition: 'right'
+        },
+        styles: {
+          bgColor: '#ffffff',
+          textColor: '#333333',
+          hoverColor: '#007bff'
+        }
+      },
+      footer: {
+        line1: {
+          siteName: '강남 센트럴 파크',
+          phone: '1588-1234'
+        },
+        line2: {
+          company: '100zoad 마케팅',
+          ceo: '홍길동',
+          phone: '02-1234-5678',
+          businessNumber: '123-45-67890'
+        },
+        legal: {
+          termsUrl: 'https://example.com/terms',
+          privacyUrl: 'https://example.com/privacy',
+          openIn: 'popup'
+        },
+        styles: {
+          bgColor: '#f8f9fa',
+          textColor: '#666666'
+        }
+      },
+      form: {
+        displayMode: 'section',
+        fields: {
+          name: {
+            label: '이름',
+            placeholder: '홍길동',
+            required: true
+          },
+          phone: {
+            label: '전화번호',
+            placeholder: '010-1234-5678',
+            required: true
+          },
+          additional: []
+        },
+        legal: {
+          termsText: '이용약관 전문...',
+          privacyText: '개인정보처리방침 전문...'
+        },
+        messages: {
+          success: '✓ 신청이 완료되었습니다!',
+          error: '제출 중 오류가 발생했습니다.'
+        },
+        airtable: {
+          workerUrl: 'https://100zoad-airtable-proxy.choiwseok.workers.dev/submit'
+        },
+        styles: {
+          bgColor: '#ffffff',
+          textColor: '#333333',
+          primaryColor: '#007bff',
+          borderColor: '#dddddd',
+          errorColor: '#dc3545'
+        }
+      },
+      quickMenu: {
+        enabled: true,
+        position: {
+          right: '30px',
+          top: '50%'
+        },
+        buttons: [
+          {
+            text: '입력폼',
+            icon: '📝',
+            action: 'openForm',
+            color: '#007bff'
+          },
+          {
+            text: '전화걸기',
+            icon: '📞',
+            action: 'call',
+            phone: '1588-1234',
+            color: '#28a745'
+          }
+        ]
+      },
+      mobileNav: {
+        enabled: true,
+        buttons: [
+          {
+            text: '상담신청',
+            icon: '📝',
+            action: 'openForm',
+            color: '#007bff'
+          },
+          {
+            text: '전화',
+            icon: '📞',
+            action: 'call',
+            phone: '1588-1234',
+            color: '#28a745'
+          }
+        ]
+      },
+      debug: true
+    };
+
+    console.log('✅ Window.CONFIG 설정 완료:', window.CONFIG);
+  </script>
+
+  <script type="module">
+    import { loadComponent } from '/src/utils/component-loader.js';
+    import { activateFallback, printFallbackReport } from '/src/utils/fallback-manager.js';
+
+    // 전역 함수로 노출
+    window.testNormalLoad = async function() {
+      console.clear();
+      console.log('\n=== ✅ 정상 로딩 테스트 ===\n');
+
+      // 실제 컴포넌트 로드
+      const components = [
+        { name: 'header', loader: () => import('/src/components/header/header.js'), timeout: 3000 },
+        { name: 'form', loader: () => import('/src/components/form/form.js'), timeout: 3000 },
+        { name: 'quickmenu', loader: () => import('/src/components/quickmenu/quickmenu.js'), timeout: 3000 },
+        { name: 'mobile-nav', loader: () => import('/src/components/mobile-nav/mobile-nav.js'), timeout: 3000 }
+      ];
+
+      for (const comp of components) {
+        try {
+          const result = await loadComponent(comp);
+          console.log(`✅ [${comp.name}] 로딩 성공 (${result.loadTime.toFixed(2)}ms)`);
+        } catch (error) {
+          console.error(`❌ [${comp.name}] 로딩 실패:`, error);
+        }
+      }
+
+      console.log('\n✅ 정상 로딩 테스트 완료!\n');
+    };
+
+    window.testTimeout = async function() {
+      console.clear();
+      console.log('\n=== ⏱️ 타임아웃 테스트 (3초 초과) ===\n');
+      console.log('의도적으로 5초 지연을 발생시켜 타임아웃을 시뮬레이션합니다.');
+      console.log('AC4 검증: 타임아웃은 3초로 설정되어 있어야 합니다.\n');
+
+      // 5초 지연되는 가짜 로더
+      const slowLoader = () => new Promise((resolve) => {
+        setTimeout(() => resolve({ default: class {} }), 5000);
+      });
+
+      const result = await loadComponent({
+        name: 'header',
+        loader: slowLoader,
+        timeout: 3000
+      });
+
+      console.log('\n⏱️ 타임아웃 테스트 결과:', result);
+      console.log('로딩 시간이 3초를 초과하면 폴백이 활성화되어야 합니다.\n');
+    };
+
+    window.testNetworkError = async function() {
+      console.clear();
+      console.log('\n=== 🔌 네트워크 오류 테스트 ===\n');
+      console.log('즉시 오류를 발생시켜 컴포넌트 로딩 실패를 시뮬레이션합니다.\n');
+
+      // 즉시 오류를 발생시키는 로더
+      const brokenLoader = () => Promise.reject(new Error('네트워크 오류 시뮬레이션'));
+
+      const result = await loadComponent({
+        name: 'form',
+        loader: brokenLoader,
+        timeout: 3000
+      });
+
+      console.log('\n🔌 네트워크 오류 테스트 결과:', result);
+      console.log('로딩 실패 시 폴백이 활성화되어야 합니다.\n');
+    };
+
+    window.testHeaderFallback = function() {
+      console.clear();
+      console.log('\n=== 🏠 Header 폴백 테스트 ===\n');
+      console.log('AC2 검증: 헤더 로딩 실패 시 로고 + 전화번호만 표시\n');
+
+      activateFallback('header', new Error('의도적 실패 - 폴백 테스트'), 1234);
+
+      console.log('\n✅ Header 폴백 활성화 완료!');
+      console.log('위 Header 영역을 확인하세요. 로고 + 전화번호만 표시되어야 합니다.\n');
+    };
+
+    window.testFormFallback = function() {
+      console.clear();
+      console.log('\n=== 📝 Form 폴백 테스트 ===\n');
+      console.log('AC1 검증: 입력폼 로딩 실패 시 간단한 HTML form 폴백\n');
+
+      activateFallback('form', new Error('의도적 실패 - 폴백 테스트'), 2345);
+
+      console.log('\n✅ Form 폴백 활성화 완료!');
+      console.log('위 Form 영역을 확인하세요. 간단한 HTML form이 표시되어야 합니다.\n');
+      console.log('폴백 form에서 다음을 테스트하세요:');
+      console.log('- 이름/전화번호 입력 필드');
+      console.log('- 전화번호 자동 하이픈 삽입');
+      console.log('- 제출 버튼 동작\n');
+    };
+
+    window.testQuickMenuFallback = function() {
+      console.clear();
+      console.log('\n=== ⚡ QuickMenu 폴백 테스트 ===\n');
+      console.log('AC3 검증: 퀵메뉴 로딩 실패 시 숨김 처리\n');
+
+      activateFallback('quickmenu', new Error('의도적 실패 - 폴백 테스트'), 3456);
+
+      console.log('\n✅ QuickMenu 폴백 활성화 완료!');
+      console.log('위 QuickMenu 영역을 확인하세요. 완전히 숨겨져야 합니다.\n');
+    };
+
+    window.testMobileNavFallback = function() {
+      console.clear();
+      console.log('\n=== 📱 MobileNav 폴백 테스트 ===\n');
+      console.log('AC3 검증: 모바일 내비게이터 로딩 실패 시 숨김 처리\n');
+
+      activateFallback('mobile-nav', new Error('의도적 실패 - 폴백 테스트'), 4567);
+
+      console.log('\n✅ MobileNav 폴백 활성화 완료!');
+      console.log('위 MobileNav 영역을 확인하세요. 완전히 숨겨져야 합니다.\n');
+    };
+
+    window.showFallbackReport = function() {
+      console.clear();
+      console.log('\n=== 📊 폴백 리포트 ===\n');
+      console.log('AC5 검증: 로딩 실패 시 콘솔 로그 기록\n');
+
+      printFallbackReport();
+
+      console.log('\n📌 위 리포트를 확인하세요:');
+      console.log('- 실패한 컴포넌트 목록');
+      console.log('- 각 실패 시간 및 오류 메시지');
+      console.log('- 폴백 전략\n');
+    };
+
+    // 페이지 로드 시 안내 메시지
+    console.log('====================================');
+    console.log('  STORY-026: Graceful Degradation');
+    console.log('====================================');
+    console.log('버튼을 클릭하여 폴백 시스템을 테스트하세요.');
+    console.log('');
+  </script>
+</body>
+</html>
