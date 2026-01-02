@@ -3,7 +3,7 @@ project_name: "100zoad"
 project_level: 3
 sprint_plan_path: "docs/sprint-plan-100zoad-2026-01-01.md"
 current_sprint: 2
-last_updated: "2026-01-02T12:00:00Z"
+last_updated: "2026-01-02T15:00:00Z"
 
 sprints:
   - sprint_number: 0
@@ -164,7 +164,7 @@ sprints:
     end_date: "2026-01-03"
     capacity_points: 25
     committed_points: 25
-    completed_points: 8
+    completed_points: 9
     status: "in_progress"
     goal: "동적 필드, 이벤트 추적, 반응형 디자인 완성하여 실전 배포 준비"
     stories:
@@ -189,10 +189,11 @@ sprints:
       - story_id: "STORY-009"
         title: "푸터 법적 정보 링크"
         points: 1
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-002"
         priority: "Must Have"
+        completed_date: "2026-01-02"
 
       - story_id: "STORY-012"
         title: "선택 필드 동적 구성"
