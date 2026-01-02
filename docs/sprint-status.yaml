@@ -255,17 +255,18 @@ sprints:
     end_date: "2026-01-04"
     capacity_points: 20
     committed_points: 20
-    completed_points: 13
+    completed_points: 14
     status: "in_progress"
     goal: "성능 최적화, 크로스 브라우저 호환성, 폴백 시스템, 문서화 완료"
     stories:
       - story_id: "STORY-007"
         title: "파비콘 자동 설정"
         points: 1
-        status: "not_started"
+        status: "completed"
         assigned_to: "merge"
         epic: "EPIC-001"
         priority: "Should Have"
+        completed_date: "2026-01-02"
 
       - story_id: "STORY-022"
         title: "비전환 이벤트 추적"
