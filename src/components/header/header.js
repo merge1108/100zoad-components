@@ -699,6 +699,65 @@ class HeaderComponent extends BaseComponent {
     });
 
     this.debug('이벤트 리스너 연결 완료');
+
+    // STORY-007: 파비콘 자동 설정
+    this.setFavicon();
+  }
+
+  /**
+   * 파비콘 자동 설정 (STORY-007)
+   * Config의 로고 URL을 브라우저 탭 파비콘으로 설정합니다.
+   *
+   * Acceptance Criteria:
+   * - [ ] Config의 로고 URL을 파비콘으로 자동 설정
+   * - [ ] 512x512px PNG 지원
+   * - [ ] 브라우저 탭에 파비콘 표시
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#rel
+   */
+  setFavicon() {
+    try {
+      // Config에서 로고 URL 가져오기
+      const logoUrl = this.getConfigValue('logo.url', '');
+
+      if (!logoUrl) {
+        this.debug('파비콘 설정 건너뜀: 로고 URL이 없습니다.');
+        return;
+      }
+
+      // 기존 favicon link 태그 찾기
+      let faviconLink = document.querySelector('link[rel="icon"]');
+
+      if (!faviconLink) {
+        // 없으면 새로 생성
+        faviconLink = document.createElement('link');
+        faviconLink.rel = 'icon';
+        faviconLink.type = 'image/png'; // PNG 형식 명시
+        document.head.appendChild(faviconLink);
+        this.debug('파비콘 link 태그 생성');
+      }
+
+      // 파비콘 URL 설정
+      faviconLink.href = logoUrl;
+
+      // 512x512px PNG 지원을 위한 추가 link 태그 (Apple Touch Icon)
+      // iOS 및 Android 홈 화면에 추가 시 사용
+      let appleTouchIcon = document.querySelector('link[rel="apple-touch-icon"]');
+
+      if (!appleTouchIcon) {
+        appleTouchIcon = document.createElement('link');
+        appleTouchIcon.rel = 'apple-touch-icon';
+        appleTouchIcon.sizes = '512x512'; // 크기 명시
+        document.head.appendChild(appleTouchIcon);
+      }
+
+      appleTouchIcon.href = logoUrl;
+
+      this.debug(`✅ 파비콘 설정 완료: ${logoUrl}`);
+      console.log(`[HeaderComponent] 파비콘 설정: ${logoUrl}`);
+    } catch (error) {
+      console.error(`[HeaderComponent] 파비콘 설정 실패:`, error);
+    }
   }
 
   /**
@@ -706,7 +765,8 @@ class HeaderComponent extends BaseComponent {
    * 스크롤 위치에 따라 헤더 스타일 변경
    */
   handleScroll() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    // 크로스 브라우저 호환 스크롤 위치 가져오기
+    const scrollTop = this.getScrollPosition();
     const header = this.$('#header');
 
     if (!header) return;
@@ -773,12 +833,11 @@ class HeaderComponent extends BaseComponent {
 
     // 헤더 높이만큼 오프셋 적용 (헤더가 섹션을 가리지 않도록)
     const headerHeight = this.$('#header')?.offsetHeight || 70;
-    const targetPosition = section.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+    const currentScrollPos = this.getScrollPosition();
+    const targetPosition = section.getBoundingClientRect().top + currentScrollPos - headerHeight;
 
-    window.scrollTo({
-      top: targetPosition,
-      behavior: 'smooth'
-    });
+    // 크로스 브라우저 호환 부드러운 스크롤
+    this.smoothScrollTo(targetPosition, 'smooth');
 
     this.debug(`섹션으로 스크롤: ${section.id || section.className}`);
   }
@@ -792,10 +851,8 @@ class HeaderComponent extends BaseComponent {
   handleLogoClick(event) {
     event.preventDefault();
 
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    // 크로스 브라우저 호환 부드러운 스크롤
+    this.smoothScrollTo(0, 'smooth');
 
     this.debug('로고 클릭: 페이지 최상단으로 스크롤');
   }

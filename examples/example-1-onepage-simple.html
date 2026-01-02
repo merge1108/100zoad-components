@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>예시 1: 원페이지 랜딩페이지 (간단한 구성)</title>
+
+  <!--
+    ================================================
+    예시 1: 원페이지 랜딩페이지 (간단한 구성)
+    ================================================
+
+    사용 시나리오:
+    - 단일 페이지 랜딩페이지
+    - 헤더 + 입력폼 + 퀵메뉴만 사용
+    - 푸터와 모바일 내비게이터는 비활성화
+    - 추가 입력 필드 없음 (이름, 전화번호만)
+
+    특징:
+    - 최소한의 구성으로 빠르게 시작 가능
+    - 원페이지 스크롤 방식
+    - 간단한 리드 수집 목적
+  -->
+
+  <script>
+    window.CONFIG = {
+      // 1. 기본 정보
+      meta: {
+        siteName: '서초 자이 아파트',
+        version: '1.0.0',
+        lastUpdated: '2026-01-01'
+      },
+
+      // 2. 헤더 (원페이지 설정)
+      header: {
+        logo: {
+          url: 'https://example.com/logo-seocho.png',
+          alt: '서초 자이 아파트'
+        },
+        pageType: 'onepage',  // 원페이지 모드
+        menu: [
+          { text: '단지정보', target: '#about' },
+          { text: '입지환경', target: '#location' },
+          { text: '세대정보', target: '#plan' },
+          { text: '분양안내', target: '#info' }
+        ],
+        specialMenu: {
+          text: '관심고객등록',
+          animation: 'pulse',
+          target: '#form-section'
+        },
+        mobile: {
+          breakpoint: 768,
+          hamburgerPosition: 'right'
+        },
+        styles: {
+          bgColor: '#ffffff',
+          textColor: '#333333',
+          hoverColor: '#0066cc'
+        }
+      },
+
+      // 3. 푸터는 사용하지 않음 (이 블록을 삭제)
+      // footer: { ... }
+
+      // 4. 입력폼 (필수 필드만)
+      form: {
+        displayMode: 'both',  // 팝업 + 섹션 모두 사용
+        fields: {
+          name: {
+            label: '성함',
+            placeholder: '예: 홍길동',
+            required: true
+          },
+          phone: {
+            label: '연락처',
+            placeholder: '예: 010-1234-5678',
+            required: true
+          },
+          additional: []  // 추가 필드 없음
+        },
+        legal: {
+          termsText: '이용약관 전문 (실제 약관으로 교체)',
+          privacyText: '개인정보처리방침 전문 (실제 방침으로 교체)'
+        },
+        messages: {
+          success: '✓ 등록이 완료되었습니다!\n곧 연락드리겠습니다.',
+          error: '오류가 발생했습니다.\n다시 시도해주세요.'
+        },
+        airtable: {
+          workerUrl: 'https://your-worker.workers.dev/submit'
+        },
+        styles: {
+          bgColor: '#ffffff',
+          textColor: '#333333',
+          primaryColor: '#0066cc',
+          borderColor: '#dddddd',
+          errorColor: '#dc3545'
+        }
+      },
+
+      // 5. PC 퀵메뉴 (간단한 구성)
+      quickMenu: {
+        enabled: true,
+        position: {
+          right: '20px',
+          top: '50%'
+        },
+        buttons: [
+          {
+            text: '관심고객',
+            icon: '📝',
+            action: 'openForm',
+            color: '#0066cc'
+          },
+          {
+            text: '전화상담',
+            icon: '📞',
+            action: 'call',
+            phone: '1588-1234',
+            color: '#28a745'
+          }
+        ]
+      },
+
+      // 6. 모바일 내비게이터는 사용하지 않음 (이 블록을 삭제)
+      // mobileNav: { ... }
+
+      // 7. 반응형 설정
+      responsive: {
+        breakpoint: 768
+      },
+
+      // 8. 분석 도구 (GTM 미사용)
+      analytics: {
+        gtmId: '',  // GTM 사용 안 함
+        events: {
+          form_submit: 'form_submit',
+          call_click: 'call_click'
+        }
+      },
+
+      // 9. Graceful Degradation
+      fallback: {
+        enabled: true,
+        timeout: 3000
+      }
+    };
+  </script>
+
+  <!-- 컴포넌트 로드 -->
+  <script type="module">
+    const CLOUDFLARE_URL = 'https://100zoad-components.pages.dev';
+    const components = [
+      '/src/core/config-parser.js',
+      '/src/core/base-component.js',
+      '/src/components/header/header.js',
+      '/src/components/form/form.js',
+      '/src/components/quickmenu/quickmenu.js'
+    ];
+
+    components.forEach(component => {
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = `${CLOUDFLARE_URL}${component}`;
+      document.head.appendChild(script);
+    });
+  </script>
+</head>
+<body>
+  <!-- 헤더 -->
+  <zoad-header></zoad-header>
+
+  <!-- 메인 콘텐츠 (아임웹 섹션) -->
+  <main>
+    <section id="about">
+      <!-- 단지정보 섹션 -->
+      <h2>단지정보</h2>
+      <p>아임웹에서 작성한 내용...</p>
+    </section>
+
+    <section id="location">
+      <!-- 입지환경 섹션 -->
+      <h2>입지환경</h2>
+      <p>아임웹에서 작성한 내용...</p>
+    </section>
+
+    <section id="plan">
+      <!-- 세대정보 섹션 -->
+      <h2>세대정보</h2>
+      <p>아임웹에서 작성한 내용...</p>
+    </section>
+
+    <section id="info">
+      <!-- 분양안내 섹션 -->
+      <h2>분양안내</h2>
+      <p>아임웹에서 작성한 내용...</p>
+    </section>
+
+    <!-- 입력폼 섹션 -->
+    <section id="form-section">
+      <zoad-form mode="section"></zoad-form>
+    </section>
+  </main>
+
+  <!-- 퀵메뉴 -->
+  <zoad-quickmenu></zoad-quickmenu>
+
+  <!-- 입력폼 팝업 -->
+  <zoad-form mode="popup"></zoad-form>
+</body>
+</html>

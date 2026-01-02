@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STORY-025: 로딩 성능 테스트</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #007bff;
+      padding-bottom: 10px;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-section h2 {
+      margin-top: 0;
+      color: #007bff;
+    }
+    .ac-item {
+      margin: 10px 0;
+      padding: 10px;
+      border-left: 4px solid #28a745;
+      background: #f8f9fa;
+    }
+    .ac-item.fail {
+      border-left-color: #dc3545;
+    }
+    .metric {
+      display: inline-block;
+      margin: 10px 20px 10px 0;
+      padding: 10px 15px;
+      background: #007bff;
+      color: white;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .metric.good {
+      background: #28a745;
+    }
+    .metric.warn {
+      background: #ffc107;
+      color: #333;
+    }
+    .metric.fail {
+      background: #dc3545;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    pre {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      border-left: 4px solid #007bff;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 STORY-025: 로딩 최적화 및 로딩 화면 - 성능 테스트</h1>
+
+  <div class="test-section">
+    <h2>📊 실시간 성능 메트릭</h2>
+    <div id="metrics">
+      <div class="metric" id="total-time">총 로딩 시간: 측정 중...</div>
+      <div class="metric" id="component-count">로딩된 컴포넌트: 0/5</div>
+      <div class="metric" id="avg-time">평균 로딩 시간: -</div>
+      <div class="metric" id="max-time">최대 로딩 시간: -</div>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>✅ Acceptance Criteria 검증</h2>
+    <div id="ac-results">
+      <div class="ac-item" id="ac1">
+        <strong>AC1:</strong> 모든 컴포넌트 초기 로딩 완료: 3초 이내
+        <span id="ac1-result">⏳ 측정 중...</span>
+      </div>
+      <div class="ac-item" id="ac2">
+        <strong>AC2:</strong> 로딩 화면 표시 (스피너, config로 설정)
+        <span id="ac2-result">⏳ 측정 중...</span>
+      </div>
+      <div class="ac-item" id="ac3">
+        <strong>AC3:</strong> 컴포넌트 개별 로딩 시간: 각 500ms 이내
+        <span id="ac3-result">⏳ 측정 중...</span>
+      </div>
+      <div class="ac-item" id="ac4">
+        <strong>AC4:</strong> Lighthouse Performance 점수: 90 이상
+        <span id="ac4-result">⚠️ 수동 측정 필요 (아래 버튼 클릭)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>📋 컴포넌트 로딩 상세</h2>
+    <div id="component-details">
+      <pre id="details-output">로딩 중...</pre>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>🧪 액션</h2>
+    <button onclick="runLighthouseTest()">🔍 Lighthouse 테스트 가이드</button>
+    <button onclick="reloadPage()">🔄 페이지 새로고침</button>
+    <button onclick="viewPerformanceData()">📊 성능 데이터 보기</button>
+  </div>
+
+  <!-- Config 설정 -->
+  <script>
+    window.CONFIG = {
+      meta: {
+        siteName: 'STORY-025 테스트',
+        version: '1.0.0',
+        lastUpdated: '2026-01-02'
+      },
+      // 모든 컴포넌트 활성화
+      header: {
+        logo: {
+          url: 'https://via.placeholder.com/150',
+          alt: '테스트 로고'
+        },
+        pageType: 'onepage',
+        menu: [
+          { text: '메뉴1', target: '#section1' }
+        ],
+        mobile: { breakpoint: 768, hamburgerPosition: 'right' },
+        styles: { bgColor: '#ffffff', textColor: '#333333', hoverColor: '#007bff' }
+      },
+      footer: {
+        line1: { siteName: '테스트 현장', phone: '1588-0000' },
+        line2: { company: '100zoad', ceo: '테스트', phone: '02-1234-5678', businessNumber: '123-45-67890' },
+        legal: { termsUrl: '#', privacyUrl: '#', openIn: 'popup' },
+        styles: { bgColor: '#f8f9fa', textColor: '#666666' }
+      },
+      form: {
+        displayMode: 'section',
+        fields: {
+          name: { label: '이름', placeholder: '홍길동', required: true },
+          phone: { label: '전화번호', placeholder: '010-0000-0000', required: true },
+          additional: []
+        },
+        legal: { termsText: '약관...', privacyText: '개인정보...' },
+        messages: { success: '성공!', error: '오류!' },
+        airtable: { workerUrl: 'https://test.workers.dev/submit' },
+        styles: { bgColor: '#ffffff', textColor: '#333333', primaryColor: '#007bff' }
+      },
+      quickMenu: {
+        enabled: true,
+        position: { right: '30px', top: '50%' },
+        buttons: [
+          { text: '입력폼', icon: '📝', action: 'openForm', color: '#007bff' }
+        ]
+      },
+      mobileNav: {
+        enabled: true,
+        buttons: [
+          { text: '상담신청', icon: '📝', action: 'openForm', color: '#007bff' }
+        ]
+      },
+      loader: {
+        spinnerType: 'circle', // 'circle' | 'bars' | 'dots'
+        bgColor: 'rgba(255, 255, 255, 0.95)',
+        primaryColor: '#007bff',
+        textColor: '#333333',
+        showProgress: true
+      },
+      debug: true
+    };
+
+    // 성능 모니터링
+    let performanceStartTime = performance.now();
+
+    // 컴포넌트 로딩 완료 감지
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        checkLoadingComplete();
+      }, 1000);
+    });
+
+    function checkLoadingComplete() {
+      const perfData = window.__ZOAD_PERFORMANCE__;
+
+      if (!perfData) {
+        console.warn('⚠️ 성능 데이터를 찾을 수 없습니다.');
+        document.getElementById('details-output').textContent = '성능 데이터를 찾을 수 없습니다. 페이지를 새로고침하세요.';
+        return;
+      }
+
+      const { results, totalTime } = perfData;
+      const totalSeconds = totalTime / 1000;
+
+      // 메트릭 업데이트
+      const totalTimeEl = document.getElementById('total-time');
+      totalTimeEl.textContent = `총 로딩 시간: ${totalSeconds.toFixed(2)}s`;
+      totalTimeEl.className = 'metric ' + (totalSeconds <= 3 ? 'good' : 'fail');
+
+      const successCount = results.filter(r => r.success).length;
+      const componentCountEl = document.getElementById('component-count');
+      componentCountEl.textContent = `로딩된 컴포넌트: ${successCount}/${results.length}`;
+      componentCountEl.className = 'metric ' + (successCount === results.length ? 'good' : 'warn');
+
+      const avgTime = results.reduce((sum, r) => sum + r.loadTime, 0) / results.length;
+      const avgTimeEl = document.getElementById('avg-time');
+      avgTimeEl.textContent = `평균 로딩 시간: ${avgTime.toFixed(2)}ms`;
+      avgTimeEl.className = 'metric ' + (avgTime <= 500 ? 'good' : 'warn');
+
+      const maxTime = Math.max(...results.map(r => r.loadTime));
+      const maxTimeEl = document.getElementById('max-time');
+      maxTimeEl.textContent = `최대 로딩 시간: ${maxTime.toFixed(2)}ms`;
+      maxTimeEl.className = 'metric ' + (maxTime <= 500 ? 'good' : 'warn');
+
+      // AC 검증
+      const ac1 = totalSeconds <= 3;
+      const ac1El = document.getElementById('ac1');
+      document.getElementById('ac1-result').textContent = ac1 ? '✅ 통과' : '❌ 실패';
+      ac1El.className = 'ac-item ' + (ac1 ? '' : 'fail');
+
+      const ac2 = document.querySelector('zoad-loader') !== null;
+      const ac2El = document.getElementById('ac2');
+      document.getElementById('ac2-result').textContent = ac2 ? '✅ 표시됨 (이미 숨김)' : '❌ 미표시';
+      ac2El.className = 'ac-item ' + (ac2 ? '' : 'fail');
+
+      const ac3 = results.every(r => r.loadTime <= 500);
+      const ac3El = document.getElementById('ac3');
+      document.getElementById('ac3-result').textContent = ac3 ? '✅ 통과' : '⚠️ 일부 초과';
+      ac3El.className = 'ac-item ' + (ac3 ? '' : 'fail');
+
+      // 상세 정보
+      const detailsOutput = document.getElementById('details-output');
+      let details = `총 로딩 시간: ${totalSeconds.toFixed(2)}s\n\n`;
+      details += `컴포넌트별 로딩 시간:\n\n`;
+
+      results.forEach(r => {
+        const status = r.success ? '✅' : '❌';
+        const time500 = r.loadTime <= 500 ? '✅' : '⚠️';
+        details += `  ${status} ${r.name.padEnd(12)} ${r.loadTime.toFixed(2).padStart(7)}ms ${time500}\n`;
+      });
+
+      details += `\n\nAC 검증 결과:\n`;
+      details += `  ${ac1 ? '✅' : '❌'} AC1: 3초 이내 로딩 (${totalSeconds.toFixed(2)}s)\n`;
+      details += `  ${ac2 ? '✅' : '❌'} AC2: 로딩 화면 표시\n`;
+      details += `  ${ac3 ? '✅' : '⚠️'} AC3: 개별 500ms 이내\n`;
+      details += `  ⚠️  AC4: Lighthouse 수동 측정 필요\n`;
+
+      detailsOutput.textContent = details;
+    }
+
+    function runLighthouseTest() {
+      alert(
+        'Lighthouse 테스트 가이드:\n\n' +
+        '1. Chrome DevTools 열기 (F12)\n' +
+        '2. "Lighthouse" 탭 선택\n' +
+        '3. "Performance" 체크\n' +
+        '4. "Analyze page load" 클릭\n' +
+        '5. Performance 점수 확인 (90점 이상 목표)\n\n' +
+        '또는 페이지에서 우클릭 → "검사" → "Lighthouse" 탭'
+      );
+    }
+
+    function reloadPage() {
+      location.reload();
+    }
+
+    function viewPerformanceData() {
+      console.log('=== 성능 데이터 ===');
+      console.log(window.__ZOAD_PERFORMANCE__);
+      console.table(window.__ZOAD_PERFORMANCE__?.results);
+      alert('콘솔(F12)에서 성능 데이터를 확인하세요!');
+    }
+  </script>
+
+  <!-- 컴포넌트 배치 -->
+  <zoad-header></zoad-header>
+
+  <div style="min-height: 300px; padding: 40px 20px; text-align: center;">
+    <h2>컴포넌트 테스트 영역</h2>
+    <p>모든 컴포넌트가 정상적으로 로드되었는지 확인하세요.</p>
+  </div>
+
+  <zoad-form></zoad-form>
+  <zoad-quickmenu></zoad-quickmenu>
+  <zoad-mobile-nav></zoad-mobile-nav>
+  <zoad-footer></zoad-footer>
+
+  <!-- Main.js 로드 -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

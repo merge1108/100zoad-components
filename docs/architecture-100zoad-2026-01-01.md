@@ -451,24 +451,29 @@ Window.CONFIG = {
 
 **테이블: Leads (리드 정보)**
 
+**설계 철학:** MVP는 CRM 기능을 배제하고 리드 전달에만 집중합니다. 확장 가능한 구조를 위해 추가 입력 필드는 `Inquiry_Container`에 JSON 형태로 저장합니다.
+
 | 필드명 | 타입 | 필수 | 설명 |
 |--------|------|------|------|
-| `id` | Auto Number | ✓ | Airtable 자동 생성 |
-| `이름` | Single Line Text | ✓ | 신청자 이름 |
-| `전화번호` | Phone Number | ✓ | 하이픈 포함 형식 (010-1234-5678) |
-| `현장명` | Single Line Text | ✓ | 어느 랜딩페이지에서 왔는지 |
-| `제출시간` | Date & Time | ✓ | 자동 타임스탬프 |
-| `주소` | Long Text | - | 선택 필드 (동적) |
-| `방문희망시간` | Single Select | - | 드롭다운 선택 ("오전", "오후", "저녁") |
-| `방문희망날짜` | Date | - | 날짜 선택 |
-| `방문희망시각` | Single Line Text | - | 시간 선택 |
-| `유입경로` | Single Line Text | ✓ | UTM 파라미터 기반 ("google-ads", "naver-sa") |
-| `페이지URL` | URL | ✓ | 신청한 페이지 |
-| `처리상태` | Single Select | ✓ | "신규", "연락중", "상담완료", "전환실패" |
-| `상담사메모` | Long Text | - | 상담사가 직접 작성 |
+| `Lead_ID` | Formula | ✓ | 수식: `"lead-"&RECORD_ID()` (자동 생성, 예: lead-recXXXXXX) |
+| `Lead_Name` | Single Line Text | ✓ | 신청자 이름 |
+| `Lead_Phone_Number` | Phone Number | ✓ | 하이픈 포함 형식 (010-1234-5678) |
+| `Site_Name` | Single Line Text | ✓ | 현장명 (Window.CONFIG.meta.siteName에서 전달) |
+| `Submit_Date_and_Time` | Date & Time | ✓ | 제출 일시 (24시간 형식, 자동 타임스탬프) |
+| `Inquiry_Container` | Long Text | - | 추가 입력 필드를 JSON 형태로 저장<br>예: `{"주소": "서울시 강남구", "방문희망시간": "오전"}` |
+| `Lead_Source` | Single Line Text | - | 유입 경로 (기본값: "direct")<br>예: "google-ads", "naver-sa", "direct" |
+| `Lead_Status` | Single Select | ✓ | 리드 상태<br>옵션: "신규접수", "상담사 전송 완료", "상담사 전송 실패" |
+
+**필드 설명:**
+
+1. **Lead_ID (수식):** Airtable의 RECORD_ID()를 사용하여 고유 ID 생성
+2. **Inquiry_Container:** 이름/전화번호를 제외한 모든 추가 필드를 JSON으로 저장
+   - 유연한 필드 추가 가능 (코드 수정 없이)
+   - 현장별 맞춤 필드 지원
+3. **Lead_Status:** MVP는 "신규접수"만 사용, 향후 외부 CRM 연동 시 확장 가능
 
 **데이터 보존:**
-- 보존 기간: 3년 (법적 요구사항)
+- 보존 기간: 3년 (개인정보보호법 준수)
 - 백업: Airtable 자동 백업 + 월 1회 CSV 수동 백업
 
 ---

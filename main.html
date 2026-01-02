@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>현장명 - 100zoad 컴포넌트</title>
+
+  <!--
+    ================================================
+    100zoad 웹 컴포넌트 설정 파일
+    ================================================
+
+    이 파일은 100zoad 웹 컴포넌트의 모든 설정을 관리합니다.
+    코드 지식이 없어도 아래 설정 값만 수정하면 현장별로 커스터마이징할 수 있습니다.
+
+    ⚠️ 주의사항:
+    1. 작은따옴표(' ')나 큰따옴표(" ")를 삭제하지 마세요.
+    2. 쉼표(,)와 중괄호({ })를 함부로 추가/삭제하지 마세요.
+    3. 오류가 발생하면 브라우저 개발자 도구(F12)의 Console을 확인하세요.
+    4. 백업 후 수정하는 것을 권장합니다.
+
+    📚 자세한 가이드: docs/config-guide.md 참조
+  -->
+
+  <script>
+    /**
+     * ================================================
+     * Window.CONFIG - 100zoad 컴포넌트 설정
+     * ================================================
+     *
+     * 이 객체가 모든 컴포넌트의 동작을 제어합니다.
+     * 각 항목의 주석을 읽고 현장에 맞게 수정하세요.
+     */
+    window.CONFIG = {
+
+      // ========================================
+      // 1. 기본 정보 (필수)
+      // ========================================
+      meta: {
+        siteName: '강남 센트럴 파크',  // 현장명 (필수)
+        version: '1.0.0',              // Config 버전 (수정 불필요)
+        lastUpdated: '2026-01-01'      // 마지막 수정일 (YYYY-MM-DD)
+      },
+
+      // ========================================
+      // 2. 헤더 컴포넌트 (선택)
+      // ========================================
+      // PC와 모바일 상단 헤더를 설정합니다.
+      // 이 블록을 삭제하면 헤더가 표시되지 않습니다.
+      header: {
+        // 로고 설정
+        logo: {
+          url: 'https://example.com/logo.png',  // 로고 이미지 URL (512x512px PNG 권장)
+          alt: '강남 센트럴 파크'                // 이미지 대체 텍스트
+        },
+
+        // 페이지 타입
+        // - "onepage": 원페이지 (섹션으로 스크롤 이동)
+        // - "multipage": 멀티페이지 (다른 페이지로 이동)
+        pageType: 'onepage',
+
+        // 메뉴 항목 (최대 6개)
+        menu: [
+          { text: '단지정보', target: '#section1' },  // target: 섹션 ID 또는 페이지 URL
+          { text: '입지환경', target: '#section2' },
+          { text: '세대정보', target: '#section3' },
+          { text: '커뮤니티', target: '#section4' },
+          { text: '분양안내', target: '#section5' }
+        ],
+
+        // 특수 메뉴: "관심고객등록" (선택)
+        // 가장 오른쪽에 눈에 띄게 표시되는 메뉴
+        specialMenu: {
+          text: '관심고객등록',           // 메뉴 텍스트
+          animation: 'pulse',             // 애니메이션: "pulse", "glow", "bounce" 중 선택
+          target: '#form-section'         // 클릭 시 이동할 섹션 ID 또는 URL
+        },
+
+        // 모바일 설정
+        mobile: {
+          breakpoint: 768,                // 모바일 전환 기준 (px, 기본: 768)
+          hamburgerPosition: 'right'      // 햄버거 메뉴 위치: "left" 또는 "right"
+        },
+
+        // 헤더 스타일
+        styles: {
+          bgColor: '#ffffff',             // 배경색
+          textColor: '#333333',           // 텍스트 색
+          hoverColor: '#007bff'           // 마우스 올렸을 때 색
+        }
+      },
+
+      // ========================================
+      // 3. 푸터 컴포넌트 (선택)
+      // ========================================
+      // 페이지 하단 푸터를 설정합니다.
+      // 이 블록을 삭제하면 푸터가 표시되지 않습니다.
+      footer: {
+        // 1단 정보: 현장 정보
+        line1: {
+          siteName: '강남 센트럴 파크',   // 현장명
+          phone: '1588-0000'              // 상담사 전화번호
+        },
+
+        // 2단 정보: 대행사 정보
+        line2: {
+          company: '100zoad 마케팅',      // 대행사 회사명
+          ceo: '홍길동',                  // 대표자명
+          phone: '02-1234-5678',          // 대행사 전화번호
+          businessNumber: '123-45-67890'  // 사업자번호
+        },
+
+        // 법적 정보 링크
+        legal: {
+          termsUrl: 'https://example.com/terms',      // 이용약관 URL
+          privacyUrl: 'https://example.com/privacy',  // 개인정보처리방침 URL
+          openIn: 'popup'                             // 링크 열기 방식: "popup" 또는 "newTab"
+        },
+
+        // 푸터 스타일
+        styles: {
+          bgColor: '#f8f9fa',             // 배경색
+          textColor: '#666666'            // 텍스트 색
+        }
+      },
+
+      // ========================================
+      // 4. 입력폼 컴포넌트 (필수)
+      // ========================================
+      // 리드 수집 입력폼을 설정합니다.
+      // 이 블록은 반드시 있어야 합니다.
+      form: {
+        // 표시 모드
+        // - "popup": 팝업으로만 표시 (퀵메뉴/모바일 내비게이터 버튼 클릭 시)
+        // - "section": 섹션으로만 표시 (페이지 본문에 배치)
+        // - "both": 두 가지 모두 사용
+        displayMode: 'both',
+
+        // 입력 필드 설정
+        fields: {
+          // 필수 필드: 이름
+          name: {
+            label: '이름',                // 필드 라벨
+            placeholder: '홍길동',        // 플레이스홀더 (입력 예시)
+            required: true                // 필수 여부 (변경 불가)
+          },
+
+          // 필수 필드: 전화번호
+          phone: {
+            label: '전화번호',
+            placeholder: '010-0000-0000',
+            required: true                // 필수 여부 (변경 불가)
+          },
+
+          // 추가 선택 필드 (원하는 만큼 추가 가능)
+          additional: [
+            {
+              type: 'text',                          // 필드 타입: "text", "dropdown", "datetime"
+              name: 'address',                       // 필드 이름 (Airtable 컬럼명)
+              label: '주소',                         // 필드 라벨
+              placeholder: '서울시 강남구...',      // 플레이스홀더
+              required: false                        // 필수 여부
+            },
+            {
+              type: 'dropdown',
+              name: 'area',
+              label: '관심평형',
+              options: ['59㎡', '84㎡', '114㎡'],   // 드롭다운 옵션
+              required: true
+            },
+            {
+              type: 'datetime',
+              name: 'visitDate',
+              label: '방문 희망 일시',
+              required: false
+            }
+          ]
+        },
+
+        // 법적 동의 문구
+        legal: {
+          // 이용약관 전문 (실제 약관 내용으로 교체 필요)
+          termsText: `
+            [이용약관]
+
+            제1조 (목적)
+            본 약관은 100zoad가 제공하는 서비스의 이용과 관련하여...
+
+            제2조 (정의)
+            1. "서비스"란 구현된 서비스를 의미합니다.
+            2. "회원"이란 본 약관에 동의한 자를 의미합니다.
+
+            (이하 생략... 실제 약관으로 교체하세요)
+          `,
+
+          // 개인정보처리방침 전문 (실제 방침 내용으로 교체 필요)
+          privacyText: `
+            [개인정보처리방침]
+
+            1. 수집하는 개인정보 항목
+            - 필수항목: 이름, 전화번호
+            - 선택항목: 주소, 방문 희망 일시, 관심평형
+
+            2. 개인정보의 수집 및 이용목적
+            - 분양 상담 및 안내
+            - 마케팅 활동
+
+            3. 개인정보의 보유 및 이용기간
+            - 수집일로부터 3년
+
+            (이하 생략... 실제 방침으로 교체하세요)
+          `
+        },
+
+        // 메시지 설정
+        messages: {
+          success: '✓ 신청이 완료되었습니다!\n빠른 시일 내에 연락드리겠습니다.',  // 성공 메시지
+          error: '제출 중 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.'      // 오류 메시지
+        },
+
+        // Airtable 연동 설정 (중요!)
+        airtable: {
+          workerUrl: 'https://100zoad-airtable-proxy.choiwseok.workers.dev/submit'  // Cloudflare Worker URL
+          // ⚠️ 이 URL은 현장마다 다릅니다. 정확한 URL을 입력하세요.
+        },
+
+        // 입력폼 스타일
+        styles: {
+          bgColor: '#ffffff',             // 배경색
+          textColor: '#333333',           // 텍스트 색
+          primaryColor: '#007bff',        // 주요 색 (버튼 등)
+          borderColor: '#dddddd',         // 테두리 색
+          errorColor: '#dc3545'           // 오류 메시지 색
+        }
+      },
+
+      // ========================================
+      // 5. PC 퀵메뉴 (선택)
+      // ========================================
+      // PC 화면 우측에 고정 표시되는 버튼입니다.
+      // 이 블록을 삭제하거나 enabled: false로 설정하면 표시되지 않습니다.
+      quickMenu: {
+        enabled: true,                    // 활성화 여부 (true/false)
+
+        // 위치 설정
+        position: {
+          right: '30px',                  // 우측 여백 (px)
+          top: '50%'                      // 상단 여백 (% 또는 px)
+        },
+
+        // 버튼 목록 (최대 4개)
+        buttons: [
+          {
+            text: '입력폼',               // 버튼 텍스트
+            icon: '📝',                  // 아이콘 (emoji 또는 이미지 URL)
+            action: 'openForm',           // 액션: "openForm", "call", "link"
+            color: '#007bff'              // 버튼 색
+          },
+          {
+            text: '전화걸기',
+            icon: '📞',
+            action: 'call',
+            phone: '1588-0000',           // 전화번호 (action이 "call"일 때 필수)
+            color: '#28a745'
+          }
+          // 최대 4개까지 추가 가능
+        ]
+      },
+
+      // ========================================
+      // 6. 모바일 하단 내비게이터 (선택)
+      // ========================================
+      // 모바일 화면 최하단에 고정 표시되는 버튼입니다.
+      // 이 블록을 삭제하거나 enabled: false로 설정하면 표시되지 않습니다.
+      mobileNav: {
+        enabled: true,                    // 활성화 여부 (true/false)
+
+        // 버튼 목록 (최대 3개)
+        buttons: [
+          {
+            text: '상담신청',             // 버튼 텍스트
+            icon: '📝',                  // 아이콘
+            action: 'openForm',           // 액션: "openForm", "call", "link"
+            color: '#007bff'              // 버튼 색
+          },
+          {
+            text: '전화',
+            icon: '📞',
+            action: 'call',
+            phone: '1588-0000',           // 전화번호
+            color: '#28a745'
+          }
+          // 최대 3개까지 추가 가능
+        ]
+      },
+
+      // ========================================
+      // 7. 반응형 설정
+      // ========================================
+      // PC/모바일 전환 기준을 설정합니다.
+      responsive: {
+        breakpoint: 768                   // 브레이크포인트 (px, 기본: 768)
+        // 768px 이하: 모바일 / 769px 이상: PC
+      },
+
+      // ========================================
+      // 8. 분석 도구 설정 (선택)
+      // ========================================
+      // Google Tag Manager, GA4, Google Ads 연동
+      analytics: {
+        gtmId: 'GTM-XXXXXXX',             // Google Tag Manager ID (선택)
+        // GTM을 사용하지 않으면 빈 문자열('')로 설정
+
+        // 이벤트 이름 (GTM/GA4에서 사용)
+        events: {
+          form_submit: 'form_submit',     // 입력폼 제출 이벤트명
+          call_click: 'call_click'        // 전화걸기 클릭 이벤트명
+        }
+      },
+
+      // ========================================
+      // 9. Graceful Degradation 설정
+      // ========================================
+      // 컴포넌트 로딩 실패 시 폴백 전략
+      fallback: {
+        enabled: true,                    // 폴백 활성화 여부 (권장: true)
+        timeout: 3000                     // 타임아웃 (ms, 기본: 3000)
+        // 3초 안에 로딩되지 않으면 폴백 HTML 표시
+      }
+    };
+  </script>
+
+  <!--
+    ================================================
+    컴포넌트 로드 스크립트
+    ================================================
+
+    아래 스크립트는 수정하지 마세요.
+    Cloudflare Pages에서 컴포넌트를 로드합니다.
+  -->
+  <script type="module">
+    // Cloudflare Pages URL (프로덕션 환경)
+    const CLOUDFLARE_URL = 'https://100zoad-components.pages.dev';
+
+    // 컴포넌트 목록
+    const components = [
+      '/src/core/config-parser.js',
+      '/src/core/base-component.js',
+      '/src/components/header/header.js',
+      '/src/components/footer/footer.js',
+      '/src/components/form/form.js',
+      '/src/components/quickmenu/quickmenu.js',
+      '/src/components/mobile-nav/mobile-nav.js'
+    ];
+
+    // 컴포넌트 동적 로드
+    components.forEach(component => {
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = `${CLOUDFLARE_URL}${component}`;
+      document.head.appendChild(script);
+    });
+
+    console.log('✅ 100zoad 컴포넌트 로드 시작');
+  </script>
+</head>
+<body>
+  <!--
+    ================================================
+    컴포넌트 삽입 영역
+    ================================================
+
+    아래 Custom Elements를 아임웹 페이지에 복사-붙여넣기하세요.
+  -->
+
+  <!-- 헤더 컴포넌트 (페이지 상단) -->
+  <zoad-header></zoad-header>
+
+  <!-- 메인 콘텐츠 영역 (아임웹 섹션) -->
+  <main>
+    <!-- 아임웹에서 작성한 섹션들이 여기에 위치 -->
+
+    <!-- 입력폼 컴포넌트 (섹션 모드) -->
+    <!-- 원하는 섹션 위치에 아래 태그를 삽입하세요 -->
+    <section id="form-section">
+      <zoad-form mode="section"></zoad-form>
+    </section>
+  </main>
+
+  <!-- 푸터 컴포넌트 (페이지 하단) -->
+  <zoad-footer></zoad-footer>
+
+  <!-- PC 퀵메뉴 (항상 우측에 고정) -->
+  <zoad-quickmenu></zoad-quickmenu>
+
+  <!-- 모바일 내비게이터 (모바일에서 하단에 고정) -->
+  <zoad-mobile-nav></zoad-mobile-nav>
+
+  <!-- 입력폼 팝업 (퀵메뉴/내비게이터에서 호출) -->
+  <zoad-form mode="popup"></zoad-form>
+
+  <!--
+    ================================================
+    사용 가이드
+    ================================================
+
+    1. 이 파일을 아임웹 "코드위젯" 또는 "<head> 추가 코드"에 삽입
+    2. Window.CONFIG 값을 현장에 맞게 수정
+    3. 컴포넌트 태그를 원하는 위치에 배치
+    4. 브라우저에서 페이지를 열어 테스트
+    5. 오류가 있으면 개발자 도구(F12) Console 확인
+
+    📚 자세한 가이드: docs/config-guide.md
+    ❓ 오류 해결: docs/config-guide.md의 "오류 해결 가이드" 참조
+  -->
+</body>
+</html>

@@ -1,11 +1,29 @@
-# Cloudflare Pages 배포 설정 (향후 Workers용)
-# 현재는 Cloudflare Pages가 자동으로 감지하므로 별도 설정 불필요
-# Workers 구현 시 이 파일을 활용
+# Cloudflare Workers 배포 설정
+# Airtable API 프록시 Worker
 
-name = "100zoad-components"
+name = "100zoad-airtable-proxy"
+main = "workers/airtable-proxy.js"
 compatibility_date = "2024-01-01"
 
-# Workers 설정은 STORY-014에서 추가 예정
-# [env.production]
+# 환경변수 (실제 값은 Cloudflare Dashboard에서 설정)
+# 또는 wrangler secret put <NAME> 명령어로 설정
+# 예: wrangler secret put AIRTABLE_API_KEY
+
+# [vars]
+# 아래 값들은 Secrets로 설정해야 합니다 (보안을 위해)
+# AIRTABLE_API_KEY = "your_api_key_here"  (Secret으로 설정)
+# AIRTABLE_BASE_ID = "your_base_id_here"  (Secret으로 설정)
+# AIRTABLE_TABLE_NAME = "Leads"  (Secret으로 설정)
+# ALLOWED_ORIGINS = "https://your-site.imweb.me"  (여러 개는 쉼표로 구분)
+
+# 개발 환경
+[env.development]
+name = "100zoad-airtable-proxy-dev"
+vars = { ENVIRONMENT = "development" }
+
+# 프로덕션 환경
+[env.production]
+name = "100zoad-airtable-proxy"
+vars = { ENVIRONMENT = "production" }
 # workers_dev = false
-# route = "https://100zoad-components.pages.dev/*"
+# route = "https://your-domain.workers.dev/*"
