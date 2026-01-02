@@ -35,6 +35,12 @@ class HeaderComponent extends BaseComponent {
      * @type {boolean}
      */
     this.isScrolled = false;
+
+    /**
+     * 모바일 메뉴 열림 상태
+     * @type {boolean}
+     */
+    this.isMobileMenuOpen = false;
   }
 
   /**
@@ -238,13 +244,182 @@ class HeaderComponent extends BaseComponent {
           height: ${headerHeight};
         }
 
-        /* PC 화면에서만 표시 (모바일은 햄버거 메뉴 사용) */
+        /* 햄버거 메뉴 버튼 (모바일 전용) */
+        .hamburger-btn {
+          display: none;
+          flex-direction: column;
+          justify-content: space-around;
+          width: 30px;
+          height: 24px;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+          z-index: 10;
+        }
+
+        .hamburger-btn span {
+          width: 100%;
+          height: 3px;
+          background-color: ${textColor};
+          transition: all 0.3s ease;
+          border-radius: 2px;
+        }
+
+        /* 햄버거 활성화 시 X자 애니메이션 */
+        .hamburger-btn.active span:nth-child(1) {
+          transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .hamburger-btn.active span:nth-child(2) {
+          opacity: 0;
+        }
+
+        .hamburger-btn.active span:nth-child(3) {
+          transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* 모바일 사이드 메뉴 */
+        .mobile-menu {
+          position: fixed;
+          top: 0;
+          right: -100%;
+          width: 80%;
+          max-width: 320px;
+          height: 100vh;
+          background-color: ${bgColor};
+          box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+          z-index: 1001;
+          transition: right 0.3s ease;
+          overflow-y: auto;
+        }
+
+        .mobile-menu.open {
+          right: 0;
+        }
+
+        /* 모바일 메뉴 헤더 */
+        .mobile-menu-header {
+          padding: 20px;
+          border-bottom: 1px solid ${borderColor};
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .mobile-menu-logo {
+          display: flex;
+          align-items: center;
+        }
+
+        .mobile-menu-logo img {
+          height: 35px;
+          width: auto;
+          object-fit: contain;
+        }
+
+        .mobile-menu-logo-text {
+          font-size: 18px;
+          font-weight: 700;
+          color: ${textColor};
+        }
+
+        /* 닫기 버튼 */
+        .mobile-menu-close {
+          background: transparent;
+          border: none;
+          font-size: 28px;
+          color: ${textColor};
+          cursor: pointer;
+          padding: 0;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* 모바일 메뉴 리스트 */
+        .mobile-menu-list {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+
+        .mobile-menu-item {
+          border-bottom: 1px solid ${borderColor};
+        }
+
+        .mobile-menu-link {
+          display: block;
+          padding: 18px 20px;
+          color: ${textColor};
+          text-decoration: none;
+          font-size: 16px;
+          font-weight: 500;
+          transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .mobile-menu-link:active {
+          background-color: rgba(0, 123, 255, 0.05);
+        }
+
+        /* 모바일 특수 메뉴 */
+        .mobile-menu-link.special-menu {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: #ffffff !important;
+          font-weight: 600;
+          margin: 10px;
+          border-radius: 8px;
+          text-align: center;
+        }
+
+        /* 오버레이 (배경 어둡게) */
+        .mobile-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          z-index: 1000;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .mobile-overlay.active {
+          opacity: 1;
+          visibility: visible;
+        }
+
+        /* 모바일 반응형 */
         @media (max-width: 768px) {
-          .header {
+          /* PC 메뉴 숨김 */
+          .menu-nav {
             display: none;
           }
+
+          /* 햄버거 버튼 표시 */
+          .hamburger-btn {
+            display: flex;
+          }
+
+          /* 헤더 높이 조정 */
+          .header {
+            height: 60px;
+          }
+
           .header-spacer {
-            display: none;
+            height: 60px;
+          }
+
+          .header-inner {
+            padding: 0 16px;
+          }
+
+          .logo img {
+            height: 32px;
           }
         }
       </style>
@@ -260,15 +435,44 @@ class HeaderComponent extends BaseComponent {
             ${this.renderLogo(logo)}
           </div>
 
-          <!-- 메뉴 -->
+          <!-- PC 메뉴 -->
           <nav class="menu-nav" id="menu-nav">
             <ul class="menu" id="menu">
               ${this.renderMenuItems(displayMenu, pageType)}
               ${specialMenu ? this.renderSpecialMenu(specialMenu, pageType) : ''}
             </ul>
           </nav>
+
+          <!-- 모바일 햄버거 버튼 -->
+          <button class="hamburger-btn" id="hamburger-btn" aria-label="메뉴 열기">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
         </div>
       </header>
+
+      <!-- 모바일 오버레이 -->
+      <div class="mobile-overlay" id="mobile-overlay"></div>
+
+      <!-- 모바일 사이드 메뉴 -->
+      <div class="mobile-menu" id="mobile-menu">
+        <!-- 모바일 메뉴 헤더 -->
+        <div class="mobile-menu-header">
+          <div class="mobile-menu-logo">
+            ${this.renderMobileLogo(logo)}
+          </div>
+          <button class="mobile-menu-close" id="mobile-menu-close" aria-label="메뉴 닫기">
+            ×
+          </button>
+        </div>
+
+        <!-- 모바일 메뉴 리스트 -->
+        <ul class="mobile-menu-list" id="mobile-menu-list">
+          ${this.renderMobileMenuItems(displayMenu, pageType)}
+          ${specialMenu ? this.renderMobileSpecialMenu(specialMenu, pageType) : ''}
+        </ul>
+      </div>
     `;
   }
 
@@ -366,13 +570,99 @@ class HeaderComponent extends BaseComponent {
   }
 
   /**
+   * 모바일 로고 렌더링
+   *
+   * @param {Object} logo - 로고 설정
+   * @returns {string} HTML 문자열
+   */
+  renderMobileLogo(logo) {
+    if (logo.url) {
+      return `
+        <img
+          src="${logo.url}"
+          alt="${logo.alt || '로고'}"
+          class="mobile-menu-logo-img"
+        />
+      `;
+    } else {
+      const siteName = this.config?.meta?.siteName || '100zoad';
+      return `
+        <span class="mobile-menu-logo-text">
+          ${siteName}
+        </span>
+      `;
+    }
+  }
+
+  /**
+   * 모바일 메뉴 항목 렌더링
+   *
+   * @param {Array} menu - 메뉴 항목 배열
+   * @param {string} pageType - 페이지 타입 ('onepage' | 'multipage')
+   * @returns {string} HTML 문자열
+   */
+  renderMobileMenuItems(menu, pageType) {
+    if (!menu || menu.length === 0) {
+      return '<li class="mobile-menu-item"><span class="mobile-menu-link">메뉴 없음</span></li>';
+    }
+
+    return menu.map((item, index) => {
+      const text = item.text || `메뉴${index + 1}`;
+      const target = item.target || '#';
+
+      return `
+        <li class="mobile-menu-item">
+          <a
+            href="${target}"
+            class="mobile-menu-link"
+            data-target="${target}"
+            data-page-type="${pageType}"
+          >
+            ${text}
+          </a>
+        </li>
+      `;
+    }).join('');
+  }
+
+  /**
+   * 모바일 특수 메뉴 렌더링
+   *
+   * @param {Object} specialMenu - 특수 메뉴 설정
+   * @param {string} pageType - 페이지 타입
+   * @returns {string} HTML 문자열
+   */
+  renderMobileSpecialMenu(specialMenu, pageType) {
+    if (!specialMenu || !specialMenu.text) {
+      return '';
+    }
+
+    const text = specialMenu.text || '관심고객등록';
+    const target = specialMenu.target || '#form-section';
+
+    return `
+      <li class="mobile-menu-item">
+        <a
+          href="${target}"
+          class="mobile-menu-link special-menu"
+          data-target="${target}"
+          data-page-type="${pageType}"
+          data-special="true"
+        >
+          ${text}
+        </a>
+      </li>
+    `;
+  }
+
+  /**
    * 이벤트 리스너 연결
    */
   attachEvents() {
     // 스크롤 이벤트 (헤더 그림자 효과)
     window.addEventListener('scroll', this.handleScroll.bind(this));
 
-    // 메뉴 클릭 이벤트
+    // PC 메뉴 클릭 이벤트
     const menuLinks = this.$$('.menu-link');
     menuLinks.forEach(link => {
       link.addEventListener('click', this.handleMenuClick.bind(this));
@@ -383,6 +673,30 @@ class HeaderComponent extends BaseComponent {
     if (logo) {
       logo.addEventListener('click', this.handleLogoClick.bind(this));
     }
+
+    // 햄버거 버튼 클릭 이벤트
+    const hamburgerBtn = this.$('#hamburger-btn');
+    if (hamburgerBtn) {
+      hamburgerBtn.addEventListener('click', this.toggleMobileMenu.bind(this));
+    }
+
+    // 모바일 메뉴 닫기 버튼 클릭 이벤트
+    const mobileMenuClose = this.$('#mobile-menu-close');
+    if (mobileMenuClose) {
+      mobileMenuClose.addEventListener('click', this.closeMobileMenu.bind(this));
+    }
+
+    // 모바일 오버레이 클릭 이벤트 (배경 클릭 시 메뉴 닫기)
+    const mobileOverlay = this.$('#mobile-overlay');
+    if (mobileOverlay) {
+      mobileOverlay.addEventListener('click', this.closeMobileMenu.bind(this));
+    }
+
+    // 모바일 메뉴 항목 클릭 이벤트
+    const mobileMenuLinks = this.$$('.mobile-menu-link');
+    mobileMenuLinks.forEach(link => {
+      link.addEventListener('click', this.handleMobileMenuClick.bind(this));
+    });
 
     this.debug('이벤트 리스너 연결 완료');
   }
@@ -484,6 +798,119 @@ class HeaderComponent extends BaseComponent {
     });
 
     this.debug('로고 클릭: 페이지 최상단으로 스크롤');
+  }
+
+  /**
+   * 모바일 메뉴 토글 (열기/닫기)
+   * 햄버거 버튼 클릭 시 호출
+   *
+   * @param {Event} event - 클릭 이벤트
+   */
+  toggleMobileMenu(event) {
+    event.preventDefault();
+
+    if (this.isMobileMenuOpen) {
+      this.closeMobileMenu();
+    } else {
+      this.openMobileMenu();
+    }
+  }
+
+  /**
+   * 모바일 메뉴 열기
+   */
+  openMobileMenu() {
+    const mobileMenu = this.$('#mobile-menu');
+    const mobileOverlay = this.$('#mobile-overlay');
+    const hamburgerBtn = this.$('#hamburger-btn');
+
+    if (mobileMenu) {
+      mobileMenu.classList.add('open');
+    }
+
+    if (mobileOverlay) {
+      mobileOverlay.classList.add('active');
+    }
+
+    if (hamburgerBtn) {
+      hamburgerBtn.classList.add('active');
+      hamburgerBtn.setAttribute('aria-label', '메뉴 닫기');
+    }
+
+    // 바디 스크롤 방지 (모바일 메뉴 열릴 때)
+    document.body.style.overflow = 'hidden';
+
+    this.isMobileMenuOpen = true;
+    this.debug('모바일 메뉴 열림');
+  }
+
+  /**
+   * 모바일 메뉴 닫기
+   */
+  closeMobileMenu() {
+    const mobileMenu = this.$('#mobile-menu');
+    const mobileOverlay = this.$('#mobile-overlay');
+    const hamburgerBtn = this.$('#hamburger-btn');
+
+    if (mobileMenu) {
+      mobileMenu.classList.remove('open');
+    }
+
+    if (mobileOverlay) {
+      mobileOverlay.classList.remove('active');
+    }
+
+    if (hamburgerBtn) {
+      hamburgerBtn.classList.remove('active');
+      hamburgerBtn.setAttribute('aria-label', '메뉴 열기');
+    }
+
+    // 바디 스크롤 복원
+    document.body.style.overflow = '';
+
+    this.isMobileMenuOpen = false;
+    this.debug('모바일 메뉴 닫힘');
+  }
+
+  /**
+   * 모바일 메뉴 항목 클릭 이벤트 핸들러
+   * 메뉴 클릭 시 해당 섹션으로 이동하고 메뉴 자동 닫기
+   *
+   * @param {Event} event - 클릭 이벤트
+   */
+  handleMobileMenuClick(event) {
+    const link = event.currentTarget;
+    const target = link.getAttribute('data-target');
+    const pageType = link.getAttribute('data-page-type');
+
+    this.debug(`모바일 메뉴 클릭: ${link.textContent.trim()}, target: ${target}, pageType: ${pageType}`);
+
+    // 원페이지 모드: 섹션으로 스크롤 이동
+    if (pageType === 'onepage' && target && target.startsWith('#')) {
+      event.preventDefault();
+
+      // 메뉴 먼저 닫기
+      this.closeMobileMenu();
+
+      // 약간의 딜레이 후 스크롤 (애니메이션이 부드럽게 보이도록)
+      setTimeout(() => {
+        const sectionId = target.substring(1);
+        const section = document.getElementById(sectionId) || document.querySelector(target);
+
+        if (section) {
+          this.scrollToSection(section);
+        } else {
+          console.warn(`[HeaderComponent] 섹션을 찾을 수 없습니다: ${target}`);
+        }
+      }, 300); // 메뉴 닫힘 애니메이션 시간
+    }
+    // 멀티페이지 모드: 기본 링크 동작 (페이지 이동)
+    else {
+      // 메뉴 닫기
+      this.closeMobileMenu();
+      // 브라우저 기본 동작 (페이지 이동)
+      this.debug(`멀티페이지 모드: ${target}로 이동`);
+    }
   }
 
   /**

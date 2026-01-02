@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STORY-006: 모바일 햄버거 메뉴 테스트</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f8f9fa;
+    }
+
+    /* 섹션 스타일 */
+    section {
+      min-height: 100vh;
+      padding: 100px 20px 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    section:nth-child(odd) {
+      background-color: #ffffff;
+    }
+
+    section:nth-child(even) {
+      background-color: #f1f3f5;
+    }
+
+    section h1 {
+      font-size: 3rem;
+      color: #212529;
+      margin-bottom: 20px;
+    }
+
+    section p {
+      font-size: 1.2rem;
+      color: #495057;
+      max-width: 600px;
+    }
+
+    /* 테스트 정보 박스 */
+    .test-info {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #ffffff;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      max-width: 300px;
+      z-index: 999;
+    }
+
+    .test-info h3 {
+      font-size: 14px;
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+
+    .test-info ul {
+      list-style: none;
+      font-size: 12px;
+      color: #495057;
+    }
+
+    .test-info li {
+      margin-bottom: 5px;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .test-info li:before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    /* 모바일 안내 */
+    .mobile-notice {
+      background-color: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .mobile-notice p {
+      color: #856404;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .mobile-notice strong {
+      display: block;
+      font-size: 16px;
+      margin-top: 10px;
+      color: #333;
+    }
+
+    @media (min-width: 769px) {
+      .mobile-notice {
+        display: block;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mobile-notice {
+        display: none;
+      }
+
+      .test-info {
+        display: none;
+      }
+
+      section h1 {
+        font-size: 2rem;
+      }
+
+      section p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Config 설정 -->
+  <script>
+    window.CONFIG = {
+      meta: {
+        siteName: '100zoad 테스트',
+        version: '1.0.0',
+        lastUpdated: '2026-01-02'
+      },
+      header: {
+        logo: {
+          url: 'https://cdn.imweb.me/upload/S20220627649966e5ac07f/12345678.png',
+          alt: '100zoad 로고'
+        },
+        pageType: 'onepage', // 원페이지 모드
+        menu: [
+          { text: '홈', target: '#home' },
+          { text: '소개', target: '#about' },
+          { text: '서비스', target: '#services' },
+          { text: '문의', target: '#contact' }
+        ],
+        specialMenu: {
+          text: '관심고객등록',
+          animation: 'pulse', // pulse, glow, shake
+          target: '#contact'
+        },
+        mobile: {
+          breakpoint: 768,
+          hamburgerPosition: 'right'
+        },
+        styles: {
+          bgColor: '#ffffff',
+          textColor: '#333333',
+          hoverColor: '#007bff',
+          borderColor: '#e5e5e5',
+          logoHeight: '40px',
+          logoWidth: 'auto',
+          headerHeight: '70px',
+          headerPadding: '0 20px',
+          menuFontSize: '16px',
+          menuFontWeight: '500',
+          menuSpacing: '30px',
+          scrolledShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+        }
+      }
+    };
+  </script>
+
+  <!-- 헤더 컴포넌트 -->
+  <zoad-header></zoad-header>
+
+  <!-- 모바일 안내 (PC에서만 표시) -->
+  <div class="mobile-notice">
+    <p>📱 모바일 햄버거 메뉴 테스트</p>
+    <p>Chrome DevTools를 열어 모바일 시뮬레이션으로 전환하세요.</p>
+    <strong>단축키: Ctrl + Shift + M (또는 Cmd + Shift + M)</strong>
+    <p style="margin-top: 10px; font-size: 12px;">화면 너비를 768px 이하로 조정하면 햄버거 메뉴가 표시됩니다.</p>
+  </div>
+
+  <!-- 섹션 1: 홈 -->
+  <section id="home">
+    <h1>🏠 홈</h1>
+    <p>STORY-006 모바일 햄버거 메뉴 테스트 페이지입니다. 모바일 환경에서 상단의 햄버거 메뉴(☰)를 클릭해보세요.</p>
+  </section>
+
+  <!-- 섹션 2: 소개 -->
+  <section id="about">
+    <h1>👋 소개</h1>
+    <p>모바일에서 햄버거 메뉴를 클릭하면 사이드 메뉴가 열립니다. 메뉴 상단에 로고가 표시되어야 합니다.</p>
+  </section>
+
+  <!-- 섹션 3: 서비스 -->
+  <section id="services">
+    <h1>⚙️ 서비스</h1>
+    <p>메뉴 항목을 클릭하면 해당 섹션으로 부드럽게 스크롤되고, 메뉴가 자동으로 닫혀야 합니다.</p>
+  </section>
+
+  <!-- 섹션 4: 문의 -->
+  <section id="contact">
+    <h1>📞 문의</h1>
+    <p>메뉴 외부(어두운 배경)를 클릭해도 메뉴가 닫혀야 합니다. 특수 메뉴('관심고객등록')는 보라색 그라데이션으로 표시됩니다.</p>
+  </section>
+
+  <!-- 테스트 정보 (PC에서만 표시) -->
+  <div class="test-info">
+    <h3>✅ 테스트 체크리스트</h3>
+    <ul>
+      <li>모바일(≤768px)에서 햄버거 아이콘 표시</li>
+      <li>햄버거 클릭 시 사이드 메뉴 펼침</li>
+      <li>펼친 메뉴 상단에 로고 표시</li>
+      <li>메뉴 항목 클릭 시 자동 닫힘</li>
+      <li>오버레이 클릭 시 메뉴 닫힘</li>
+    </ul>
+  </div>
+
+  <!-- 컴포넌트 스크립트 로드 -->
+  <script type="module">
+    import './src/core/base-component.js';
+    import './src/components/header/header.js';
+  </script>
+</body>
+</html>
