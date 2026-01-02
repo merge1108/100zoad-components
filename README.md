@@ -85,6 +85,11 @@
 │   │   ├── config-parser.js    # Config 파싱
 │   │   └── base-component.js   # 베이스 클래스
 │   └── main.js           # 개발 환경 엔트리포인트
+├── imweb/                # 아임웹 배포용 파일
+│   └── doosanweve_kimjunsu/  # 고객사별 폴더
+│       ├── main.html     # 메인 페이지
+│       ├── form.html     # 폼 컴포넌트
+│       └── footer.html   # 푸터 컴포넌트
 ├── workers/              # Cloudflare Workers (API 프록시)
 ├── public/               # 정적 파일
 ├── docs/                 # 문서

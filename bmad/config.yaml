@@ -18,3 +18,17 @@ paths:
   docs: "docs"
   stories: "docs/stories"
   tests: "tests"
+  deployment: "imweb"  # 아임웹 배포용 파일 폴더
+
+# Deployment configuration
+deployment:
+  imweb:
+    enabled: true
+    sites:
+      - name: "doosanweve_kimjunsu"
+        path: "imweb/doosanweve_kimjunsu"
+        files:
+          - "main.html"      # 메인 페이지
+          - "form.html"      # 폼 컴포넌트
+          - "footer.html"    # 푸터 컴포넌트
+        description: "두산위브 김준수 고객사 아임웹 배포용 파일"

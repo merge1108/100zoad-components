@@ -1,0 +1,254 @@
+<!--
+  ================================================
+  100zoad Footer Component - 아임웹 배포용
+  ================================================
+
+  사용법:
+  1. 이 파일 전체를 복사
+  2. 아임웹 → 코드위젯 → 붙여넣기
+  3. CONFIG 설정 수정 (현장명, 연락처, 대행사 정보 등)
+
+  ================================================
+-->
+
+<div id="zoad-footer-container"></div>
+
+<script>
+// ================================================
+// CONFIG 설정
+// ================================================
+// 이 부분만 수정하면 됩니다!
+
+window.ZOAD_FOOTER_CONFIG = {
+  // 1단: 현장 정보
+  line1: {
+    siteName: '두산위브더제니스 센트럴천안',
+    phone: '1666-3170'
+  },
+
+  // 2단: 대행사 정보
+  line2: {
+    company: '럿셀',
+    ceo: '최우석',
+    phone: '010-4997-7087',
+    businessNumber: '466-23-01872'
+  },
+
+  // 법적 정보 링크 (선택사항)
+  legal: {
+    termsUrl: '',    // 이용약관 URL
+    privacyUrl: '', // 개인정보처리방침 URL
+    openIn: 'newTab'  // 'newTab' 또는 'popup'
+  },
+
+  // 스타일 설정
+  styles: {
+    bgColor: '#f8f9fa',
+    textColor: '#666666',
+    linkColor: '#003DA5'
+  }
+};
+
+// ================================================
+// Footer Component 코드 (수정하지 마세요)
+// ================================================
+(function() {
+  const config = window.ZOAD_FOOTER_CONFIG;
+  const container = document.getElementById('zoad-footer-container');
+
+  // 전화번호를 tel: 링크로 변환
+  const siteTelLink = config.line1.phone.replace(/[^0-9]/g, '');
+  const companyTelLink = config.line2.phone.replace(/[^0-9]/g, '');
+  const showLegalLinks = config.legal && (config.legal.termsUrl || config.legal.privacyUrl);
+
+  // HTML 생성
+  const footerHTML = `
+    <style>
+      @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+      #zoad-footer {
+        font-family: "Pretendard", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      }
+
+      .zoad-footer {
+        background-color: ${config.styles.bgColor};
+        color: ${config.styles.textColor};
+        border-top: 1px solid #e5e5e5;
+        padding: 40px 20px;
+      }
+
+      .zoad-footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .zoad-footer-content {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .zoad-footer-line {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .zoad-footer-line-title {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .zoad-footer-line-content {
+        font-size: 14px;
+        font-weight: 300;
+        line-height: 1.6;
+      }
+
+      .zoad-footer-info-item {
+        display: inline;
+      }
+
+      .zoad-footer-info-item:not(:last-child)::after {
+        content: ' | ';
+        margin: 0 8px;
+        color: #dddddd;
+      }
+
+      .zoad-footer-phone-link {
+        color: ${config.styles.linkColor};
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .zoad-footer-phone-link:hover {
+        text-decoration: underline;
+      }
+
+      .zoad-footer-legal-links {
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e5e5;
+        text-align: center;
+      }
+
+      .zoad-footer-legal-links a {
+        color: ${config.styles.linkColor};
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .zoad-footer-legal-links a:hover {
+        text-decoration: underline;
+      }
+
+      .zoad-footer-legal-links a:not(:last-child)::after {
+        content: ' | ';
+        margin: 0 12px;
+        color: ${config.styles.textColor};
+        font-weight: normal;
+      }
+
+      /* PC 화면: 2단 가로 레이아웃 */
+      @media (min-width: 769px) {
+        .zoad-footer-content {
+          flex-direction: row;
+          justify-content: space-between;
+        }
+
+        .zoad-footer-line:first-child {
+          padding-right: 40px;
+          border-right: 1px solid #e5e5e5;
+          flex: 1;
+        }
+
+        .zoad-footer-line:last-child {
+          padding-left: 40px;
+          flex: 1;
+        }
+      }
+
+      /* 모바일 화면: 세로 스택 */
+      @media (max-width: 768px) {
+        .zoad-footer {
+          padding: 30px 16px;
+        }
+
+        .zoad-footer-content {
+          gap: 20px;
+        }
+
+        .zoad-footer-line {
+          padding-bottom: 20px;
+          border-bottom: 1px solid #e5e5e5;
+        }
+
+        .zoad-footer-line:last-child {
+          padding-bottom: 0;
+          border-bottom: none;
+        }
+
+        .zoad-footer-line-content {
+          font-size: 13px;
+        }
+
+        .zoad-footer-info-item {
+          display: block;
+        }
+
+        .zoad-footer-info-item:not(:last-child)::after {
+          content: '';
+          margin: 0;
+        }
+
+        .zoad-footer-legal-links a {
+          font-size: 13px;
+        }
+      }
+    </style>
+
+    <!-- 푸터 -->
+    <footer class="zoad-footer">
+      <div class="zoad-footer-inner">
+        <div class="zoad-footer-content">
+          <!-- 1단: 현장정보 -->
+          <div class="zoad-footer-line">
+            <div class="zoad-footer-line-title">현장 정보</div>
+            <div class="zoad-footer-line-content">
+              <div class="zoad-footer-info-item"><strong>${config.line1.siteName}</strong></div>
+              <div class="zoad-footer-info-item">
+                상담: <a href="tel:${siteTelLink}" class="zoad-footer-phone-link">${config.line1.phone}</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2단: 대행사정보 -->
+          <div class="zoad-footer-line">
+            <div class="zoad-footer-line-title">광고 대행사 정보</div>
+            <div class="zoad-footer-line-content">
+              <div class="zoad-footer-info-item">${config.line2.company}</div>
+              <div class="zoad-footer-info-item">대표: ${config.line2.ceo}</div>
+              <div class="zoad-footer-info-item">
+                연락처: <a href="tel:${companyTelLink}" class="zoad-footer-phone-link">${config.line2.phone}</a>
+              </div>
+              <div class="zoad-footer-info-item">사업자번호: ${config.line2.businessNumber}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 법적 정보 링크 -->
+        ${showLegalLinks ? `
+        <div class="zoad-footer-legal-links">
+          ${config.legal.termsUrl ? `<a href="${config.legal.termsUrl}" target="_blank" rel="noopener noreferrer">이용약관</a>` : ''}
+          ${config.legal.privacyUrl ? `<a href="${config.legal.privacyUrl}" target="_blank" rel="noopener noreferrer">개인정보처리방침</a>` : ''}
+        </div>
+        ` : ''}
+      </div>
+    </footer>
+  `;
+
+  container.innerHTML = footerHTML;
+})();
+</script>

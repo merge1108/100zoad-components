@@ -740,7 +740,7 @@ class HeaderComponent extends BaseComponent {
   /**
    * 헤더 스타일 강제 적용 (STORY-IMWEB-004)
    * 아임웹 환경에서 CSS 우선순위 문제를 해결하기 위해
-   * JavaScript로 스타일을 강제로 적용합니다.
+   * 완전히 독립적인 플로팅 레이어로 헤더를 구현합니다.
    *
    * @see STORY-IMWEB-004
    */
@@ -749,39 +749,69 @@ class HeaderComponent extends BaseComponent {
       // Config에서 스타일 값 가져오기
       const bgColor = this.getConfigValue('styles.bgColor', '#ffffff');
       const textColor = this.getConfigValue('styles.textColor', '#333333');
+      const borderColor = this.getConfigValue('styles.borderColor', '#e5e5e5');
 
       // 약간의 딜레이 후 스타일 강제 적용 (아임웹 CSS 로드 후)
       setTimeout(() => {
         const header = this.$('#header');
+        const headerInner = this.$('.header-inner');
         const menuNav = this.$('#menu-nav');
         const menu = this.$('#menu');
         const menuLinks = this.$$('.menu-link');
+        const specialMenuLinks = this.$$('.special-menu');
         const logo = this.$('#logo');
 
-        // 헤더 스타일 강제 적용
+        // 헤더를 플로팅 레이어처럼 완전히 독립적으로 설정
         if (header) {
           header.style.cssText = `
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             right: 0 !important;
-            width: 100% !important;
-            background-color: ${bgColor} !important;
+            width: 100vw !important;
+            height: 70px !important;
+            background: ${bgColor} !important;
             color: ${textColor} !important;
-            z-index: 9999 !important;
+            z-index: 999999 !important;
             opacity: 1 !important;
             visibility: visible !important;
-            display: block !important;
+            display: flex !important;
+            align-items: center !important;
+            border: none !important;
+            border-bottom: 1px solid ${borderColor} !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            pointer-events: auto !important;
           `;
-          this.debug('✅ 헤더 스타일 강제 적용 완료');
+          this.debug('✅ 헤더 플로팅 레이어 스타일 적용 완료');
+        }
+
+        // 헤더 내부 컨테이너
+        if (headerInner) {
+          headerInner.style.cssText = `
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+            max-width: 1200px !important;
+            height: 100% !important;
+            margin: 0 auto !important;
+            padding: 0 20px !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+          `;
+          this.debug('✅ 헤더 내부 컨테이너 스타일 적용 완료');
         }
 
         // 메뉴 네비게이션 표시
         if (menuNav) {
           menuNav.style.cssText = `
-            display: block !important;
+            display: flex !important;
             opacity: 1 !important;
             visibility: visible !important;
+            pointer-events: auto !important;
           `;
           this.debug('✅ 메뉴 네비게이션 표시 완료');
         }
@@ -792,32 +822,84 @@ class HeaderComponent extends BaseComponent {
             display: flex !important;
             opacity: 1 !important;
             visibility: visible !important;
+            list-style: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            gap: 30px !important;
+            pointer-events: auto !important;
           `;
           this.debug('✅ 메뉴 리스트 표시 완료');
         }
 
         // 각 메뉴 링크 표시
         menuLinks.forEach((link, index) => {
+          // 특수 메뉴가 아닌 일반 메뉴만
+          if (!link.classList.contains('special-menu')) {
+            link.style.cssText = `
+              display: inline-block !important;
+              opacity: 1 !important;
+              visibility: visible !important;
+              color: ${textColor} !important;
+              text-decoration: none !important;
+              font-size: 16px !important;
+              font-weight: 500 !important;
+              white-space: nowrap !important;
+              pointer-events: auto !important;
+              cursor: pointer !important;
+            `;
+            this.debug(`✅ 메뉴 링크 ${index + 1} 표시 완료`);
+          }
+        });
+
+        // 특수 메뉴 버튼 (관심고객등록) 스타일 강제 적용
+        specialMenuLinks.forEach((link, index) => {
           link.style.cssText = `
             display: inline-block !important;
             opacity: 1 !important;
             visibility: visible !important;
-            color: ${textColor} !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: #ffffff !important;
+            padding: 10px 20px !important;
+            border-radius: 25px !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+            font-size: 16px !important;
+            white-space: nowrap !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            border: none !important;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
           `;
-          this.debug(`✅ 메뉴 링크 ${index + 1} 표시 완료`);
+          this.debug(`✅ 특수 메뉴 버튼 ${index + 1} 표시 완료`);
         });
 
         // 로고 표시
         if (logo) {
           logo.style.cssText = `
             display: flex !important;
+            align-items: center !important;
             opacity: 1 !important;
             visibility: visible !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
           `;
+
+          // 로고 이미지도 강제 표시
+          const logoImg = this.$('#logo-img');
+          if (logoImg) {
+            logoImg.style.cssText = `
+              display: block !important;
+              opacity: 1 !important;
+              visibility: visible !important;
+              height: 40px !important;
+              width: auto !important;
+              object-fit: contain !important;
+            `;
+          }
           this.debug('✅ 로고 표시 완료');
         }
 
-        console.log('[STORY-IMWEB-004] 헤더 스타일 강제 적용 완료');
+        console.log('[STORY-IMWEB-004] 헤더 플로팅 레이어 스타일 강제 적용 완료');
       }, 100); // 100ms 딜레이
     } catch (error) {
       console.error('[STORY-IMWEB-004] 헤더 스타일 강제 적용 실패:', error);

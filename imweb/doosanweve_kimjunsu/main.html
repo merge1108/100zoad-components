@@ -1,0 +1,363 @@
+<!--
+  ================================================
+  100zoad Header Component - 아임웹 배포용
+  ================================================
+
+  사용법:
+  1. 이 파일 전체를 복사
+  2. 아임웹 → 코드위젯 → 붙여넣기
+  3. CONFIG 설정 수정 (현장명, 로고, 메뉴 등)
+
+  ================================================
+-->
+
+<div id="zoad-header-container"></div>
+
+<script>
+// ================================================
+// CONFIG 설정
+// ================================================
+// 이 부분만 수정하면 됩니다!
+
+window.ZOAD_HEADER_CONFIG = {
+  // 로고 설정
+  logo: {
+    url: 'https://cdn.imweb.me/upload/S20251124bbc848073a8d6/46f6b8cc97277.png',  // 로고 이미지 URL
+    alt: '두산위브더제니스 센트럴천안'
+  },
+
+  // 페이지 타입 ("onepage" 또는 "multipage")
+  pageType: 'onepage',
+
+  // 메뉴 항목 (최대 6개)
+  menu: [
+    { text: '사업안내', target: '#section1' },
+    { text: '입지안내', target: '#section2' },
+    { text: '프리미엄', target: '#section3' },
+    { text: '평면안내', target: '#section4' }
+  ],
+
+  // 특수 메뉴 (관심고객등록 버튼)
+  specialMenu: {
+    text: '관심고객등록',
+    target: '#form-section',
+    animation: 'pulse'  // 'pulse', 'glow', 'shake'
+  },
+
+  // 스타일 설정
+  styles: {
+    bgColor: '#ffffff',
+    textColor: '#333333',
+    hoverColor: '#003DA5'
+  }
+};
+
+// ================================================
+// Header Component 코드 (수정하지 마세요)
+// ================================================
+(function() {
+  const config = window.ZOAD_HEADER_CONFIG;
+  const container = document.getElementById('zoad-header-container');
+
+  // HTML 생성
+  const headerHTML = `
+    <style>
+      @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+      #zoad-header {
+        font-family: "Pretendard", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      }
+
+      .zoad-header-spacer {
+        height: 70px;
+      }
+
+      .zoad-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        background-color: ${config.styles.bgColor} !important;
+        color: ${config.styles.textColor};
+        z-index: 1000;
+        border-bottom: 1px solid #e5e5e5;
+      }
+
+      .zoad-header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 100%;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .zoad-header-logo img {
+        height: 40px;
+        cursor: pointer;
+      }
+
+      .zoad-header-logo-text {
+        font-size: 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .zoad-header-menu {
+        display: flex;
+        gap: 30px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .zoad-header-menu-link {
+        color: ${config.styles.textColor};
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+
+      .zoad-header-menu-link:hover {
+        color: ${config.styles.hoverColor};
+      }
+
+      .zoad-header-menu-link.special {
+        background: ${config.styles.hoverColor};
+        color: #ffffff !important;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 700;
+      }
+
+      .zoad-header-menu-link.special:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 61, 165, 0.4);
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+
+      .zoad-header-menu-link.special.animation-pulse {
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      /* 모바일 햄버거 */
+      .zoad-hamburger-btn {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+      }
+
+      .zoad-hamburger-btn span {
+        width: 25px;
+        height: 3px;
+        background: ${config.styles.textColor};
+        border-radius: 2px;
+        transition: 0.3s;
+      }
+
+      .zoad-mobile-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 320px;
+        height: 100vh;
+        background: ${config.styles.bgColor} !important;
+        box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+        z-index: 1001;
+        transition: right 0.3s;
+        overflow-y: auto;
+      }
+
+      .zoad-mobile-menu.open {
+        right: 0;
+      }
+
+      .zoad-mobile-menu-header {
+        padding: 20px;
+        border-bottom: 1px solid #e5e5e5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .zoad-mobile-menu-close {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+      }
+
+      .zoad-mobile-menu-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .zoad-mobile-menu-item {
+        border-bottom: 1px solid #e5e5e5;
+      }
+
+      .zoad-mobile-menu-link {
+        display: block;
+        padding: 18px 20px;
+        color: ${config.styles.textColor};
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .zoad-mobile-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        display: none;
+      }
+
+      .zoad-mobile-overlay.active {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        .zoad-header-menu-nav {
+          display: none;
+        }
+
+        .zoad-hamburger-btn {
+          display: flex;
+        }
+
+        .zoad-header {
+          height: 60px;
+        }
+
+        .zoad-header-spacer {
+          height: 60px;
+        }
+
+        .zoad-header-logo img {
+          height: 32px;
+        }
+      }
+    </style>
+
+    <!-- 헤더 스페이서 -->
+    <div class="zoad-header-spacer"></div>
+
+    <!-- 헤더 -->
+    <header class="zoad-header">
+      <div class="zoad-header-inner">
+        <!-- 로고 -->
+        <div class="zoad-header-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+          ${config.logo.url
+            ? `<img src="${config.logo.url}" alt="${config.logo.alt}">`
+            : `<span class="zoad-header-logo-text">${config.logo.alt}</span>`
+          }
+        </div>
+
+        <!-- PC 메뉴 -->
+        <nav class="zoad-header-menu-nav">
+          <ul class="zoad-header-menu">
+            ${config.menu.map(item => `
+              <li>
+                <a href="${item.target}" class="zoad-header-menu-link" data-target="${item.target}">
+                  ${item.text}
+                </a>
+              </li>
+            `).join('')}
+            ${config.specialMenu ? `
+              <li>
+                <a href="${config.specialMenu.target}" class="zoad-header-menu-link special animation-${config.specialMenu.animation}" data-target="${config.specialMenu.target}">
+                  ${config.specialMenu.text}
+                </a>
+              </li>
+            ` : ''}
+          </ul>
+        </nav>
+
+        <!-- 햄버거 버튼 -->
+        <button class="zoad-hamburger-btn" onclick="window.zoadToggleMobileMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 모바일 오버레이 -->
+    <div class="zoad-mobile-overlay" onclick="window.zoadCloseMobileMenu()"></div>
+
+    <!-- 모바일 메뉴 -->
+    <div class="zoad-mobile-menu">
+      <div class="zoad-mobile-menu-header">
+        <div>${config.logo.alt}</div>
+        <button class="zoad-mobile-menu-close" onclick="window.zoadCloseMobileMenu()">×</button>
+      </div>
+      <ul class="zoad-mobile-menu-list">
+        ${config.menu.map(item => `
+          <li class="zoad-mobile-menu-item">
+            <a href="${item.target}" class="zoad-mobile-menu-link" onclick="window.zoadCloseMobileMenu()">
+              ${item.text}
+            </a>
+          </li>
+        `).join('')}
+        ${config.specialMenu ? `
+          <li class="zoad-mobile-menu-item">
+            <a href="${config.specialMenu.target}" class="zoad-mobile-menu-link" onclick="window.zoadCloseMobileMenu()" style="background: ${config.styles.hoverColor}; color: #fff; text-align: center; border-radius: 8px; margin: 10px; font-weight: 700;">
+              ${config.specialMenu.text}
+            </a>
+          </li>
+        ` : ''}
+      </ul>
+    </div>
+  `;
+
+  container.innerHTML = headerHTML;
+
+  // 원페이지 스크롤 이벤트
+  if (config.pageType === 'onepage') {
+    document.querySelectorAll('.zoad-header-menu-link, .zoad-mobile-menu-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const target = this.getAttribute('data-target');
+        if (target && target.startsWith('#')) {
+          e.preventDefault();
+          const section = document.querySelector(target);
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      });
+    });
+  }
+
+  // 모바일 메뉴 토글 함수
+  window.zoadToggleMobileMenu = function() {
+    const menu = document.querySelector('.zoad-mobile-menu');
+    const overlay = document.querySelector('.zoad-mobile-overlay');
+    menu.classList.toggle('open');
+    overlay.classList.toggle('active');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  };
+
+  window.zoadCloseMobileMenu = function() {
+    document.querySelector('.zoad-mobile-menu').classList.remove('open');
+    document.querySelector('.zoad-mobile-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+  };
+})();
+</script>
