@@ -699,6 +699,65 @@ class HeaderComponent extends BaseComponent {
     });
 
     this.debug('이벤트 리스너 연결 완료');
+
+    // STORY-007: 파비콘 자동 설정
+    this.setFavicon();
+  }
+
+  /**
+   * 파비콘 자동 설정 (STORY-007)
+   * Config의 로고 URL을 브라우저 탭 파비콘으로 설정합니다.
+   *
+   * Acceptance Criteria:
+   * - [ ] Config의 로고 URL을 파비콘으로 자동 설정
+   * - [ ] 512x512px PNG 지원
+   * - [ ] 브라우저 탭에 파비콘 표시
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#rel
+   */
+  setFavicon() {
+    try {
+      // Config에서 로고 URL 가져오기
+      const logoUrl = this.getConfigValue('logo.url', '');
+
+      if (!logoUrl) {
+        this.debug('파비콘 설정 건너뜀: 로고 URL이 없습니다.');
+        return;
+      }
+
+      // 기존 favicon link 태그 찾기
+      let faviconLink = document.querySelector('link[rel="icon"]');
+
+      if (!faviconLink) {
+        // 없으면 새로 생성
+        faviconLink = document.createElement('link');
+        faviconLink.rel = 'icon';
+        faviconLink.type = 'image/png'; // PNG 형식 명시
+        document.head.appendChild(faviconLink);
+        this.debug('파비콘 link 태그 생성');
+      }
+
+      // 파비콘 URL 설정
+      faviconLink.href = logoUrl;
+
+      // 512x512px PNG 지원을 위한 추가 link 태그 (Apple Touch Icon)
+      // iOS 및 Android 홈 화면에 추가 시 사용
+      let appleTouchIcon = document.querySelector('link[rel="apple-touch-icon"]');
+
+      if (!appleTouchIcon) {
+        appleTouchIcon = document.createElement('link');
+        appleTouchIcon.rel = 'apple-touch-icon';
+        appleTouchIcon.sizes = '512x512'; // 크기 명시
+        document.head.appendChild(appleTouchIcon);
+      }
+
+      appleTouchIcon.href = logoUrl;
+
+      this.debug(`✅ 파비콘 설정 완료: ${logoUrl}`);
+      console.log(`[HeaderComponent] 파비콘 설정: ${logoUrl}`);
+    } catch (error) {
+      console.error(`[HeaderComponent] 파비콘 설정 실패:`, error);
+    }
   }
 
   /**
